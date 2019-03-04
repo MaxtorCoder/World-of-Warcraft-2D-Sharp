@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using WoW_2D.States;
 
 namespace WoW_2D
 {
@@ -11,8 +12,7 @@ namespace WoW_2D
     {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-
-        private Texture2D background;
+        private GameStateManager stateManager;
 
         public WorldofWarcraft()
         {
@@ -32,7 +32,11 @@ namespace WoW_2D
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            stateManager = GameStateManager.Instance;
+            stateManager.SetContent(Content);
+            stateManager.AddState(new MainMenuState(graphics.GraphicsDevice) { ID = 1 });
+            stateManager.AddState(new TestState(graphics.GraphicsDevice) { ID = 2 });
+            stateManager.EnterState(1);
 
             base.Initialize();
         }
@@ -45,8 +49,6 @@ namespace WoW_2D
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            background = Content.Load<Texture2D>("bg_0");
-            
         }
 
         /// <summary>
@@ -55,7 +57,6 @@ namespace WoW_2D
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -68,9 +69,11 @@ namespace WoW_2D
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            // Debug: Test state switching.
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+                stateManager.EnterState(2);
 
-            base.Update(gameTime);
+            stateManager.Update(gameTime);
         }
 
         /// <summary>
@@ -79,14 +82,7 @@ namespace WoW_2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            spriteBatch.Begin();
-            spriteBatch.Draw(background, new Vector2(0f, 0f), Color.White);
-            spriteBatch.End();
-
-
-            base.Draw(gameTime);
+            stateManager.Draw(spriteBatch);
         }
     }
 }
