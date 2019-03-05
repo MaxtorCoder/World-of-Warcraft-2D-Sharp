@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 using WoW_2D.States;
 
 namespace WoW_2D
@@ -33,10 +34,9 @@ namespace WoW_2D
         protected override void Initialize()
         {
             stateManager = GameStateManager.Instance;
-            stateManager.SetContent(Content);
+            stateManager.SetContentManager(Content);
             stateManager.AddState(new MainMenuState(graphics.GraphicsDevice) { ID = 1 });
             stateManager.AddState(new TestState(graphics.GraphicsDevice) { ID = 2 });
-            stateManager.EnterState(1);
 
             base.Initialize();
         }
@@ -70,7 +70,7 @@ namespace WoW_2D
                 Exit();
 
             // Debug: Test state switching.
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 stateManager.EnterState(2);
 
             stateManager.Update(gameTime);

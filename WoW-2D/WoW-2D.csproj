@@ -41,6 +41,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Gfx\Animation\Animation.cs" />
+    <Compile Include="Gfx\Animation\AnimationManager.cs" />
+    <Compile Include="Gfx\SpriteSheet.cs" />
     <Compile Include="States\IGameState.cs" />
     <Compile Include="States\GameStateManager.cs" />
     <Compile Include="States\MainMenuState.cs" />

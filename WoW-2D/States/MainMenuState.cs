@@ -31,6 +31,7 @@ namespace WoW_2D.States
         {
             background = content.Load<Texture2D>("bg_0");
             font = content.Load<SpriteFont>("System/font");
+            /** Drawback #2! Can't load custom fonts with the default importers and processors! **/
         }
 
         public override void UnloadContent()

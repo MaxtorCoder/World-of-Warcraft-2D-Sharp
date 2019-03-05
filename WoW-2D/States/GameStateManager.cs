@@ -34,7 +34,7 @@ namespace WoW_2D.States
         /// Set the manager's content manager.
         /// </summary>
         /// <param name="content"></param>
-        public void SetContent(ContentManager content)
+        public void SetContentManager(ContentManager content)
         {
             this.content = content;
         }
@@ -89,6 +89,8 @@ namespace WoW_2D.States
             var state = states.Find(x => x.IsActive);
             if (state != null)
                 state.Update(gameTime);
+            else
+                EnterState(1);
         }
 
         /// <summary>
