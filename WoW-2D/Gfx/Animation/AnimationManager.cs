@@ -2,10 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WoW_2D.Gfx.Animation
 {
@@ -30,15 +26,33 @@ namespace WoW_2D.Gfx.Animation
         /// Attempt to set an animation to the currently active one based on a predicate.
         /// </summary>
         /// <param name="predicate"></param>
-        public void SetActive(Predicate<Animation> predicate)
+        public void SetActiveAnimation(Predicate<Animation> predicate)
         {
             var animation = animations.Find(predicate);
             if (animation != null)
             {
-                var currentlyActiveAnimation = animations.Find(x => x.IsActive);
-                if (currentlyActiveAnimation != null)
-                    currentlyActiveAnimation.IsActive = false;
-                animation.IsActive = true;
+                if (!animation.IsActive)
+                {
+                    var currentlyActiveAnimation = animations.Find(x => x.IsActive);
+                    if (currentlyActiveAnimation != null)
+                        currentlyActiveAnimation.IsActive = false;
+                    animation.IsActive = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Set the idle state of an animation.
+        /// </summary>
+        /// <param name="isIdle"></param>
+        public void SetIdle(bool isIdle)
+        {
+            var animation = animations.Find(x => x.IsActive);
+            if (animation != null)
+            {
+                animation.IsIdle = isIdle;
+                if (isIdle)
+                    animation.Reset();
             }
         }
 
@@ -49,11 +63,11 @@ namespace WoW_2D.Gfx.Animation
                 currentlyActiveAnimation.Update(gameTime);
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             var currentlyActiveAnimation = animations.Find(x => x.IsActive);
             if (currentlyActiveAnimation != null)
-                currentlyActiveAnimation.Draw(spriteBatch);
+                currentlyActiveAnimation.Draw(spriteBatch, position);
         }
     }
 }

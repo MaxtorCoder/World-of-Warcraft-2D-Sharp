@@ -41,13 +41,21 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="GameObject\AnimatedObject.cs" />
+    <Compile Include="GameObject\IPlayerObject.cs" />
+    <Compile Include="GameObject\PlayerObject.cs" />
     <Compile Include="Gfx\Animation\Animation.cs" />
     <Compile Include="Gfx\Animation\AnimationManager.cs" />
+    <Compile Include="Gfx\Gui\GuiButton.cs" />
+    <Compile Include="Gfx\Gui\GuiEntryText.cs" />
+    <Compile Include="Gfx\Gui\IGuiControl.cs" />
+    <Compile Include="Gfx\Gui\IGuiTextField.cs" />
     <Compile Include="Gfx\SpriteSheet.cs" />
     <Compile Include="States\IGameState.cs" />
     <Compile Include="States\GameStateManager.cs" />
     <Compile Include="States\MainMenuState.cs" />
     <Compile Include="States\TestState.cs" />
+    <Compile Include="Utils\InputHandler.cs" />
     <Compile Include="WorldofWarcraft.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +74,7 @@
   <ItemGroup>
     <Content Include="Icon.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

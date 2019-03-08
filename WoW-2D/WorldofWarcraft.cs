@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Diagnostics;
+using WoW_2D.Gfx.Gui;
 using WoW_2D.States;
+using WoW_2D.Utils;
 
 namespace WoW_2D
 {
@@ -15,12 +18,15 @@ namespace WoW_2D
         private SpriteBatch spriteBatch;
         private GameStateManager stateManager;
 
+        public static Color DefaultYellow = new Color(223, 195, 15);
+
         public WorldofWarcraft()
         {
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
             Window.Title = "World of Warcraft 2D";
+            Window.TextInput += OnKeyTyped;
             IsMouseVisible = true;
             Content.RootDirectory = "Content";
         }
@@ -35,8 +41,11 @@ namespace WoW_2D
         {
             stateManager = GameStateManager.Instance;
             stateManager.SetContentManager(Content);
-            stateManager.AddState(new MainMenuState(graphics.GraphicsDevice) { ID = 1 });
-            stateManager.AddState(new TestState(graphics.GraphicsDevice) { ID = 2 });
+            stateManager.AddState(new MainMenuState(this, graphics.GraphicsDevice) { ID = 1 });
+            stateManager.AddState(new TestState(this, graphics.GraphicsDevice) { ID = 2 });
+
+            InputHandler.AddKeyPressHandler(delegate () { OnEscapePressed(); }, Keys.Escape);
+            InputHandler.AddKeyPressHandler(delegate () { OnRightArrowPressed(); }, Keys.Right);
 
             base.Initialize();
         }
@@ -66,13 +75,7 @@ namespace WoW_2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // Debug: Test state switching.
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-                stateManager.EnterState(2);
-
+            InputHandler.Update();
             stateManager.Update(gameTime);
         }
 
@@ -83,6 +86,38 @@ namespace WoW_2D
         protected override void Draw(GameTime gameTime)
         {
             stateManager.Draw(spriteBatch);
+        }
+
+        /// <summary>
+        /// Send the typed-key to all controls in the active state supporting text input.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnKeyTyped(object sender, TextInputEventArgs e)
+        {
+            var currentlyActiveState = stateManager.GetActiveState();
+            var controlsSupportingTextInput = currentlyActiveState.GetGUIControlsSupporting(x => x.IsAcceptingTextInput);
+            if (controlsSupportingTextInput.Count > 0)
+            {
+                foreach (IGuiControl control in controlsSupportingTextInput)
+                    control.OnKeyTyped(e.Key, e.Character);
+            }
+        }
+
+        /// <summary>
+        /// Fired when the Escape key has been pressed.
+        /// </summary>
+        private void OnEscapePressed()
+        {
+            Exit();
+        }
+
+        /// <summary>
+        /// Fired when the right arrow has been pressed.
+        /// </summary>
+        private void OnRightArrowPressed()
+        {
+            stateManager.EnterState(2);
         }
     }
 }

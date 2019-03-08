@@ -1,12 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WoW_2D.States
 {
@@ -69,6 +64,15 @@ namespace WoW_2D.States
                     currentlyActiveState.IsActive = false;
                 state.IsActive = true;
             }
+        }
+
+        /// <summary>
+        /// Get the currently-active state.
+        /// </summary>
+        /// <returns></returns>
+        public IGameState GetActiveState()
+        {
+            return states.Find(x => x.IsActive);
         }
 
         /// <summary>

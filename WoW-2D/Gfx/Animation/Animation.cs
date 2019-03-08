@@ -1,10 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WoW_2D.Gfx.Animation
 {
@@ -15,6 +11,7 @@ namespace WoW_2D.Gfx.Animation
     {
         public string Name { get; set; }
         public bool IsActive { get; set; }
+        public bool IsIdle { get; set; }
 
         private Frame frame;
         private int frameIndex = 0;
@@ -30,6 +27,25 @@ namespace WoW_2D.Gfx.Animation
         public void AddFrame(Texture2D texture, int duration)
         {
             frames.Add(new Frame(texture, duration));
+        }
+
+        /// <summary>
+        /// Sets an idle frame for this animation.
+        /// </summary>
+        /// <param name="index"></param>
+        public void SetIdleFrame(int index)
+        {
+            var frame = frames[index];
+            if (frame != null)
+                frame.IsFrameIdle = true;
+        }
+
+        /// <summary>
+        /// Resets the animation back to the first index.
+        /// </summary>
+        public void Reset()
+        {
+            frame = frames[0];
         }
 
         public void Update(GameTime gameTime)
@@ -48,10 +64,13 @@ namespace WoW_2D.Gfx.Animation
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Vector2 position)
         {
             spriteBatch.Begin();
-            spriteBatch.Draw(frame.Texture, new Vector2(), Color.White);
+            if (IsIdle)
+                spriteBatch.Draw(frames.Find(x => x.IsFrameIdle).Texture, position, Color.White);
+            else
+                spriteBatch.Draw(frame.Texture, position, Color.White);
             spriteBatch.End();
         }
 
@@ -62,6 +81,7 @@ namespace WoW_2D.Gfx.Animation
         {
             public Texture2D Texture { get; set; }
             public int Duration { get; set; }
+            public bool IsFrameIdle;
 
             public Frame(Texture2D texture, int duration)
             {
