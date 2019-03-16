@@ -2,7 +2,10 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using WoW_2D.Utils;
+using MonoGame.Extended.BitmapFonts;
+using MonoGame.Extended.Graphics;
+using MonoGameHelper.Gfx;
+using MonoGameHelper.Utils;
 
 namespace WoW_2D.Gfx.Gui
 {
@@ -15,7 +18,7 @@ namespace WoW_2D.Gfx.Gui
 
         private Texture2D button_enabled;
         private Texture2D button_disabled;
-        private SpriteFont font;
+        private BitmapFont font;
 
         private bool isHovering = false;
         private Color hoverColor;
@@ -26,7 +29,7 @@ namespace WoW_2D.Gfx.Gui
         {
             button_enabled = content.Load<Texture2D>("Sprites/UI/button_enabled");
             button_disabled = content.Load<Texture2D>("Sprites/UI/button_disabled");
-            font = content.Load<SpriteFont>("System/font");
+            font = content.Load<BitmapFont>("System/Font/font");
             BaseTexture = button_enabled; // Set for positioning since both textures are the same size.
         }
 
@@ -42,7 +45,7 @@ namespace WoW_2D.Gfx.Gui
 
         private void UpdateMousePress()
         {
-            if (InputHandler.isMouseButtonPressed(InputHandler.MouseButton.LeftButton))
+            if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton))
             {
                 if (isHovering)
                     base.OnClickedEvent();
@@ -52,7 +55,7 @@ namespace WoW_2D.Gfx.Gui
         public override void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(BaseTexture, Position, Color.White);
-            spriteBatch.DrawString(font, Text, new Vector2(Position.X + (BaseTexture.Width / 2), Position.Y + (BaseTexture.Height / 2)), hoverColor, 0f, font.MeasureString(Text) / 2, 0.5f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(font, Text, new Vector2((Position.X + (BaseTexture.Width / 2)), (Position.Y + (BaseTexture.Height / 2))), hoverColor, 0f, font.MeasureString(Text) / 2, 1f, SpriteEffects.None, 0f);
         }
     }
 }

@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGameHelper.GameState;
+using MonoGameHelper.Gfx;
+using MonoGameHelper.Utils;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.States;
-using WoW_2D.Utils;
 
 namespace WoW_2D
 {
@@ -15,9 +18,9 @@ namespace WoW_2D
     public class WorldofWarcraft : Game
     {
         private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-        private GameStateManager stateManager;
 
+        private static readonly string Version = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+        public static string VersionStr = $"v{Version}";
         public static Color DefaultYellow = new Color(223, 195, 15);
 
         public WorldofWarcraft()
@@ -25,10 +28,11 @@ namespace WoW_2D
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 720;
+
+            Content.RootDirectory = "Content";
             Window.Title = "World of Warcraft 2D";
             Window.TextInput += OnKeyTyped;
             IsMouseVisible = true;
-            Content.RootDirectory = "Content";
         }
 
         /// <summary>
@@ -39,13 +43,9 @@ namespace WoW_2D
         /// </summary>
         protected override void Initialize()
         {
-            stateManager = GameStateManager.Instance;
-            stateManager.SetContentManager(Content);
-            stateManager.AddState(new MainMenuState(this, graphics.GraphicsDevice) { ID = 1 });
-            stateManager.AddState(new TestState(this, graphics.GraphicsDevice) { ID = 2 });
-
-            InputHandler.AddKeyPressHandler(delegate () { OnEscapePressed(); }, Keys.Escape);
-            InputHandler.AddKeyPressHandler(delegate () { OnRightArrowPressed(); }, Keys.Right);
+            GameStateManager.SetContentManager(Content);
+            GameStateManager.AddState(new MainMenuState(GraphicsDevice) { ID = 1 });
+            GameStateManager.AddState(new TestState(GraphicsDevice) { ID = 2 });
 
             base.Initialize();
         }
@@ -55,18 +55,14 @@ namespace WoW_2D
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
-        {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-        }
+        {}
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// game-specific content.
         /// </summary>
         protected override void UnloadContent()
-        {
-        }
+        {}
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -76,7 +72,7 @@ namespace WoW_2D
         protected override void Update(GameTime gameTime)
         {
             InputHandler.Update();
-            stateManager.Update(gameTime);
+            GameStateManager.Update(gameTime);
         }
 
         /// <summary>
@@ -85,7 +81,7 @@ namespace WoW_2D
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            stateManager.Draw(spriteBatch);
+            GameStateManager.Draw(gameTime);
         }
 
         /// <summary>
@@ -95,29 +91,13 @@ namespace WoW_2D
         /// <param name="e"></param>
         private void OnKeyTyped(object sender, TextInputEventArgs e)
         {
-            var currentlyActiveState = stateManager.GetActiveState();
+            var currentlyActiveState = GameStateManager.GetActiveState();
             var controlsSupportingTextInput = currentlyActiveState.GetGUIControlsSupporting(x => x.IsAcceptingTextInput);
             if (controlsSupportingTextInput.Count > 0)
             {
                 foreach (IGuiControl control in controlsSupportingTextInput)
                     control.OnKeyTyped(e.Key, e.Character);
             }
-        }
-
-        /// <summary>
-        /// Fired when the Escape key has been pressed.
-        /// </summary>
-        private void OnEscapePressed()
-        {
-            Exit();
-        }
-
-        /// <summary>
-        /// Fired when the right arrow has been pressed.
-        /// </summary>
-        private void OnRightArrowPressed()
-        {
-            stateManager.EnterState(2);
         }
     }
 }

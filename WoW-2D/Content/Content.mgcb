@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\packages\MonoGame.Extended.Content.Pipeline.1.1.0\tools\MonoGame.Extended.Content.Pipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -61,10 +62,20 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/UI/button_enabled.png
 
-#begin System/font.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
+#begin System/Font/font.fnt
+/importer:BitmapFontImporter
+/processor:BitmapFontProcessor
+/build:System/Font/font.fnt
+
+#begin System/Font/font_0.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
 /processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:System/font.spritefont
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:System/Font/font_0.png
 

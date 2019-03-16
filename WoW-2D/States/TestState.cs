@@ -1,6 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGameHelper.GameState;
+using MonoGameHelper.Utils;
 using WoW_2D.GameObject;
 
 namespace WoW_2D.States
@@ -12,16 +16,20 @@ namespace WoW_2D.States
     {
         private PlayerObject player;
 
-        public TestState(WorldofWarcraft wow, GraphicsDevice graphics) : base(wow, graphics) { }
+        public TestState(GraphicsDevice graphics) : base(graphics) { }
 
         public override void Initialize()
         {
-            player = new PlayerObject(Graphics);
+            player = new PlayerObject(graphics);
+
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnRightArrowPress(); }, Keys.Right);
         }
 
-        public override void LoadContent(ContentManager Content)
+        public override void LoadContent(ContentManager content)
         {
-            player.LoadContent(Content);
+            base.LoadContent(content);
+
+            player.LoadContent(content);
         }
 
         public override void UnloadContent()
@@ -32,11 +40,18 @@ namespace WoW_2D.States
             player.Update(gameTime);
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw(GameTime gameTime)
         {
-            Graphics.Clear(Color.Black);
+            graphics.Clear(Color.Black);
 
             player.Draw(spriteBatch);
         }
+
+        #region Event/Key Handlers
+        private void OnRightArrowPress()
+        {
+            GameStateManager.EnterState(1);
+        }
+        #endregion
     }
 }

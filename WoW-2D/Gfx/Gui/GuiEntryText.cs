@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.BitmapFonts;
+using MonoGameHelper.Gfx;
 
 namespace WoW_2D.Gfx.Gui
 {
@@ -18,28 +21,25 @@ namespace WoW_2D.Gfx.Gui
             Color[] bgColor = new Color[Width * Height];
             for (int i = 0; i < bgColor.Length; i++) bgColor[i] = BackgroundColor;
 
-            backgroundTexture = new Texture2D(Graphics, Width, Height);
-            backgroundTexture.SetData(bgColor);
+            BaseTexture = new Texture2D(graphics, Width, Height);
+            BaseTexture.SetData(bgColor);
             clippingRectangle = new Rectangle(Position.ToPoint(), new Point(Width, Height));
 
-            textFont = content.Load<SpriteFont>("System/font");
+            textFont = content.Load<BitmapFont>("System/Font/font");
             Text = "";
         }
 
         public override void Update()
         {
-            localCurosrPosition = (int)textFont.MeasureString(Text.Substring(0, cursorPosition)).X / 2;
-            if (localCurosrPosition > Width - 1)
-                matrix = Matrix.CreateTranslation(Width - localCurosrPosition - textFont.MeasureString(Cursor).X / 2, 0f, 0f);
-            else
-                matrix = Matrix.Identity;
+            base.Update();
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
             /** Draw the background of the textfield first with no modifiers. **/
             spriteBatch.Begin();
-            spriteBatch.Draw(backgroundTexture, Position, Color.White);
+            spriteBatch.DrawRectangle(new Vector2(Position.X - 1f, Position.Y - 1f), new Size2(BaseTexture.Width + 2, BaseTexture.Height + 2), Color.DarkGray, 2.5f);
+            spriteBatch.Draw(BaseTexture, Position, Color.White);
             spriteBatch.End();
 
             /** Draw the textfield text with a modified matrix and clip. **/
@@ -47,43 +47,16 @@ namespace WoW_2D.Gfx.Gui
             Rectangle oldClip = spriteBatch.GraphicsDevice.ScissorRectangle; // Save the old clip.
 
             spriteBatch.GraphicsDevice.ScissorRectangle = clippingRectangle;
-            spriteBatch.DrawString(textFont, Text, new Vector2(Position.X, Position.Y + 7), ForegroundColor, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(textFont, Text, new Vector2(Position.X, Position.Y + (BaseTexture.Height / 2)), ForegroundColor, 0f, new Vector2(0f, textFont.MeasureString(Text).Height / 2), 1f, SpriteEffects.None, 0f);
             if (IsActive)
-                spriteBatch.DrawString(textFont, Cursor, new Vector2(Position.X+localCurosrPosition, Position.Y + 6), ForegroundColor, 0f, Vector2.Zero, 0.5f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(textFont, Cursor, new Vector2(Position.X+localCurosrPosition, Position.Y + (BaseTexture.Height / 2)), ForegroundColor, 0f, new Vector2(0f, textFont.MeasureString(Cursor).Height / 2), 1f, SpriteEffects.None, 0f);
             spriteBatch.GraphicsDevice.ScissorRectangle = oldClip;
             spriteBatch.End();
         }
         
         public override void OnKeyTyped(Keys key, char character)
         {
-            if (IsActive)
-            {
-                if (!filteredKeys.Contains(key))
-                {
-                    switch (key)
-                    {
-                        case Keys.Back:
-                            if (Text.Length > 0)
-                            {
-                                if (MaskCharacter > 0)
-                                    PasswordText = PasswordText.Substring(0, PasswordText.Length - 1);
-                                Text = Text.Substring(0, Text.Length - 1);
-                                cursorPosition--;
-                            }
-                            break;
-                        default:
-                            if (MaskCharacter > 0)
-                            {
-                                Text = Text + MaskCharacter;
-                                PasswordText = PasswordText + character;
-                            }
-                            else
-                                Text = Text + character;
-                            cursorPosition++;
-                            break;
-                    }
-                }
-            }
+            base.OnKeyTyped(key, character);
         }
     }
 }
