@@ -1,4 +1,6 @@
-﻿using Isopoh.Cryptography.Argon2;
+﻿using Framework.Network;
+using Framework.Network.Cryptography;
+using Isopoh.Cryptography.Argon2;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -24,7 +26,7 @@ namespace Framework
         private const string SqlUsername = "root";
         private const string SqlPassword = "admin";
 
-        private static string AuthenticationConnectionStr =
+        private static readonly string AuthenticationConnectionStr =
             $"Server={SqlServer}; Database=demi_auth; User Id={SqlUsername}; Password={SqlPassword};";
 
         private static async Task<Status> InitializeAsync(MySqlConnection connection)
@@ -32,7 +34,7 @@ namespace Framework
             var status = Status.OK;
 
             try { await connection.OpenAsync(); }
-            catch (MySqlException ex) { status = Status.Fatal; }
+            catch (MySqlException) { status = Status.Fatal; }
 
             return status;
         }
@@ -70,7 +72,7 @@ namespace Framework
             {
                 await connection.OpenAsync();
                 await command.ExecuteNonQueryAsync();
-            } catch (MySqlException ex) { status = Status.Fatal; }
+            } catch (MySqlException) { status = Status.Fatal; }
 
             return status;
         }
@@ -92,9 +94,30 @@ namespace Framework
                 int count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 if (count > 0)
                     status = Status.RowExists;
-            } catch (MySqlException ex) { status = Status.Fatal; }
+            } catch (MySqlException) { status = Status.Fatal; }
 
             return status;
+        }
+
+        private static async Task<Account> ExecuteReader(MySqlConnection connection, MySqlCommand command)
+        {
+            var account = new Account();
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    account.ID = reader.GetInt32(0);
+                    account.Username = reader.GetString(1);
+                    account.Password_Hashed = reader.GetString(2);
+                    account.Security = (AccountSecurity)reader.GetInt32(3);
+                }
+            }
+            catch (MySqlException) { account.Status = Account.LoginStatus.ServerError; }
+
+            return account;
         }
 
         /// <summary>
@@ -102,7 +125,7 @@ namespace Framework
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        private static Status UserExists(string username)
+        public static Status UserExists(string username)
         {
             var status = Status.OK;
             var query = "SELECT COUNT(*) FROM account WHERE username=@username";
@@ -133,7 +156,7 @@ namespace Framework
             if (existStatus == Status.RowExists || existStatus == Status.Fatal)
                 return existStatus;
 
-            var password_hash = Argon2.Hash(password);
+            var password_hash = CryptoHelper.ArgonHash(CryptoHelper.ComputeSHA256(password));
             var query = "INSERT INTO account (username, password_hash, security) VALUES (@username, @password, @security)";
             var status = Status.OK;
 
@@ -143,13 +166,49 @@ namespace Framework
                 {
                     command.Parameters.AddWithValue("@username", username);
                     command.Parameters.AddWithValue("@password", password_hash);
-                    command.Parameters.AddWithValue("@security", 0);
+                    command.Parameters.AddWithValue("@security", AccountSecurity.Player);
                     command.Connection = connection;
 
                     status = ExecuteCommand(connection, command).Result;
                 }
             }
             return status;
+        }
+
+        /// <summary>
+        /// This method assumes the user does in-fact exist.
+        /// Attempt to log the player in with the given password.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static Account TryLogin(string username, string password)
+        {
+            var account = new Account();
+            var query = "SELECT * FROM account WHERE username=@username";
+
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@username", username);
+                    command.Connection = connection;
+                    account = ExecuteReader(connection, command).Result;
+                }
+            }
+
+            if (account.Status == Account.LoginStatus.ServerError)
+                return account;
+
+            bool isPasswordCorrect = CryptoHelper.VerifyPassword(account.Password_Hashed, password);
+            if (!isPasswordCorrect)
+            {
+                account.Status = Account.LoginStatus.Unknown;
+                return account;
+            }
+            account.Status = Account.LoginStatus.LoggedIn;
+
+            return account;
         }
     }
 }

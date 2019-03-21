@@ -16,19 +16,16 @@ namespace WorldServer
     /// </summary>
     public class WorldServer
     {
-        private static readonly string Version = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
-        private string VersionStr = $"WorldServer Version v{Version}";
-        private List<ICommand> commands = new List<ICommand>()
+        private static readonly string Version = $"" +
+                    $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMajorPart}." +
+                    $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
+                    $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
+        private readonly string VersionStr = $"WorldServer Version v{Version}";
+
+        private readonly List<ICommand> commands = new List<ICommand>()
         {
             new CommandAccount()
         };
-
-        public enum Security : int
-        {
-            Player = 0,
-            Gamemaster = 1,
-            Administrator = 2,
-        }
 
         public WorldServer()
         {

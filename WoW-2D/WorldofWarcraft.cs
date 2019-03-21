@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Framework.Network.Packet;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGameHelper.GameState;
@@ -6,8 +7,10 @@ using MonoGameHelper.Gfx;
 using MonoGameHelper.Utils;
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Reflection;
 using WoW_2D.Gfx.Gui;
+using WoW_2D.Network.Handler;
 using WoW_2D.States;
 
 namespace WoW_2D
@@ -19,9 +22,13 @@ namespace WoW_2D
     {
         private GraphicsDeviceManager graphics;
 
-        private static readonly string Version = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+        private static readonly string Version = $"" +
+            $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMajorPart}." +
+            $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
+            $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
         public static Color DefaultYellow = new Color(223, 195, 15);
+        public readonly static IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
 
         public WorldofWarcraft()
         {
@@ -44,8 +51,11 @@ namespace WoW_2D
         protected override void Initialize()
         {
             GameStateManager.SetContentManager(Content);
-            GameStateManager.AddState(new MainMenuState(GraphicsDevice) { ID = 1 });
-            GameStateManager.AddState(new TestState(GraphicsDevice) { ID = 2 });
+            GameStateManager.AddState(new MainMenuState(GraphicsDevice));
+
+            GuiNotification.Initialize(GraphicsDevice, Content);
+
+            PacketRegistry.DefineHandler(OpCodes.SMSG_LOGON, AuthHandler.HandleLogin);
 
             base.Initialize();
         }

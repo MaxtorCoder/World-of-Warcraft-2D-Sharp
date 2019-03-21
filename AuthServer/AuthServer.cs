@@ -1,6 +1,5 @@
 ﻿using AuthServer.Network;
 using AuthServer.Network.Handlers;
-using AuthServer.Utils;
 using Framework;
 using Framework.Network.Connection;
 using Framework.Network.Packet;
@@ -23,8 +22,11 @@ namespace AuthServer
     /// </summary>
     public class AuthServer
     {
-        private static readonly string Version = $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
-        private string VersionStr = $"AuthServer Version v{Version}";
+        private static readonly string Version = $"" +
+                    $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMajorPart}." +
+                    $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
+                    $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
+        private readonly string VersionStr = $"AuthServer Version v{Version}";
         private TCPSocketServer tcpServer;
 
         public AuthServer()
@@ -44,7 +46,7 @@ namespace AuthServer
 
         private void CoreThread()
         {
-            PacketManager.DefineOpcode(OpCodes.CMSG_LOGON, AccountHandler.Login);
+            PacketRegistry.DefineHandler(OpCodes.CMSG_LOGON, AuthHandler.HandleLogin);
 
             // TODO: Ping every client x/sec here; Handle disconnects.
             while (!tcpServer.IsDisposed)
@@ -72,24 +74,18 @@ namespace AuthServer
         {
             var authConnection = new AuthConnection(tcpServer.EndAccept(asyncResult));
             authConnection.OnDataReceived += OnDataReceived;
-            Global.Connections.Add(authConnection);
+            Global.AddConnection(authConnection);
         }
 
         // TODO: Handle disconnects.
         private void OnDataReceived(IAsyncResult asyncResult)
         {
-            var authConnection = (AuthConnection)asyncResult.AsyncState;
+            var authConnection = asyncResult.AsyncState as AuthConnection;
             var len = authConnection.EndReceive(asyncResult);
             var dataBuffer = new byte[len];
-            Array.Copy(Global.TemporaryDataBuffer, dataBuffer, len);
-            
-            using (var reader = new BinaryReader(new MemoryStream(dataBuffer)))
-            {
-                var opcode = reader.ReadByte();
-                var data = reader.ReadString();
+            Array.Copy(Global.GetTempBuffer(), dataBuffer, len);
 
-                PacketManager.InvokeHandler(opcode, data);
-            }
+            PacketRegistry.Invoke(dataBuffer[0], authConnection, dataBuffer);
         }
 
         static void Main(string[] args) => new AuthServer();

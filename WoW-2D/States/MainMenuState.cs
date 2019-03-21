@@ -8,6 +8,7 @@ using MonoGame.Extended.BitmapFonts;
 using MonoGameHelper.GameState;
 using MonoGameHelper.Utils;
 using WoW_2D.Gfx.Gui;
+using WoW_2D.Network;
 
 namespace WoW_2D.States
 {
@@ -58,7 +59,6 @@ namespace WoW_2D.States
             Controls.Add(passwordText);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnTabPress(); }, Keys.Tab);
-            InputHandler.AddKeyPressHandler(ID, delegate () { OnRightArrowPress(); }, Keys.Right);
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPress(); }, Keys.Enter);
         }
 
@@ -88,6 +88,15 @@ namespace WoW_2D.States
             loginButton.Update();
             usernameText.Update();
             passwordText.Update();
+
+            UpdateUsability();
+        }
+
+        private void UpdateUsability()
+        {
+            loginButton.IsEnabled = NetworkManager.State == NetworkManager.NetworkState.Waiting;
+            usernameText.IsEnabled = NetworkManager.State == NetworkManager.NetworkState.Waiting;
+            passwordText.IsEnabled = NetworkManager.State == NetworkManager.NetworkState.Waiting;
         }
 
         public override void Draw(GameTime gameTime)
@@ -96,16 +105,18 @@ namespace WoW_2D.States
 
             spriteBatch.Begin();
             spriteBatch.Draw(background, new Vector2(0f), Color.White);
-            DrawUIStrings(spriteBatch);
+            DrawUIStrings();
             loginButton.Draw(spriteBatch);
             spriteBatch.End();
 
             // Render the textfield outside of the last spritebatch call since we begin a new one.
             usernameText.Draw(spriteBatch);
             passwordText.Draw(spriteBatch);
+
+            DrawNetworkUpdates();
         }
 
-        private void DrawUIStrings(SpriteBatch spriteBatch)
+        private void DrawUIStrings()
         {
             spriteBatch.DrawString(font, "March 3 2019", new Vector2(0f, graphics.Viewport.Height - font.LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(font, WorldofWarcraft.VersionStr, new Vector2(0f, graphics.Viewport.Height - font.LineHeight * 2), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
@@ -119,12 +130,40 @@ namespace WoW_2D.States
             spriteBatch.DrawString(font, passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2), passwordText.Position.Y - (font.LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(font.MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
         }
 
+        private void DrawNetworkUpdates()
+        {
+            switch (NetworkManager.State)
+            {
+                case NetworkManager.NetworkState.Connecting:
+                    GuiNotification.Draw(font, spriteBatch, "Connecting...");
+                    break;
+                case NetworkManager.NetworkState.ConnectingFailed:
+                    GuiNotification.Draw(font, spriteBatch, "Unable to connect. Please check your realmlist file or contact a developer.", true);
+                    break;
+                case NetworkManager.NetworkState.Authenticating:
+                    GuiNotification.Draw(font, spriteBatch, "Authenticating...");
+                    break;
+                case NetworkManager.NetworkState.AuthenticatingFailed:
+                    GuiNotification.Draw(font, spriteBatch, "Incorrect username/password was entered. Please try again or contact a developer.", true);
+                    break;
+                case NetworkManager.NetworkState.AuthenticatingUnk:
+                    GuiNotification.Draw(font, spriteBatch, "This account could not be found. Please try again or contact a developer.", true);
+                    break;
+                case NetworkManager.NetworkState.RetrievingRealmlist:
+                    GuiNotification.Draw(font, spriteBatch, "Retrieving realmlist...");
+                    break;
+                case NetworkManager.NetworkState.ServerError:
+                    GuiNotification.Draw(font, spriteBatch, "Server error.", true);
+                    break;
+            }
+        }
+
         #region Event/Key Handlers
         private void OnLoginPress()
         {
-            Debug.WriteLine($"Username: {usernameText.GetText()}");
-            Debug.WriteLine($"Password: {passwordText.GetText()}");
-            loginButton.IsEnabled = false;
+            if (loginButton.IsEnabled)
+            // TODO: Fix setting text to 0
+                NetworkManager.Initialize(usernameText.GetText(), passwordText.GetText());
         }
         
         private void OnTabPress()
@@ -139,11 +178,6 @@ namespace WoW_2D.States
                 passwordText.IsActive = false;
                 usernameText.IsActive = true;
             }
-        }
-        
-        private void OnRightArrowPress()
-        {
-            GameStateManager.EnterState(2);
         }
         
         private void OnEnterPress()

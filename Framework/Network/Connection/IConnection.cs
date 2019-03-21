@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Network.Packet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -23,5 +24,25 @@ namespace Framework.Network.Connection
 
         public IConnection(Socket clientSocket) => _clientSocket = clientSocket;
         public int EndReceive(IAsyncResult asyncResult) => _clientSocket.EndReceive(asyncResult);
+
+        public void Send(IPacket packet)
+        {
+            byte[] packetData = packet.SerializePacket();
+            _clientSocket.BeginSend(packetData, 0, packetData.Length, SocketFlags.None, new AsyncCallback(SendCallback), _clientSocket);
+        }
+
+        private void SendCallback(IAsyncResult asyncResult)
+        {
+            var socket = asyncResult.AsyncState as Socket;
+            try { socket.EndSend(asyncResult); }
+            catch { Close(); }
+        }
+
+        public void Close()
+        {
+            try { _clientSocket.Shutdown(SocketShutdown.Both); }
+            catch { }
+            finally { _clientSocket.Close(); }
+        }
     }
 }

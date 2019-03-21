@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Network;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,10 +15,10 @@ namespace WorldServer.Command
     public abstract class ICommand
     {
         private string _prefix;
-        private Security _security;
+        private AccountSecurity _security;
         protected Dictionary<string, MethodInfo> _subCommands;
 
-        public ICommand(string prefix, Security security)
+        public ICommand(string prefix, AccountSecurity security)
         {
             _prefix = prefix;
             _security = security;
@@ -35,7 +36,7 @@ namespace WorldServer.Command
             return _prefix;
         }
 
-        public Security GetSecurity()
+        public AccountSecurity GetSecurity()
         {
             return _security;
         }

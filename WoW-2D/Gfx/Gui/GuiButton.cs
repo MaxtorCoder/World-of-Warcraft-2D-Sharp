@@ -6,6 +6,7 @@ using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.Graphics;
 using MonoGameHelper.Gfx;
 using MonoGameHelper.Utils;
+using System.Diagnostics;
 
 namespace WoW_2D.Gfx.Gui
 {
@@ -45,10 +46,12 @@ namespace WoW_2D.Gfx.Gui
 
         private void UpdateMousePress()
         {
-            if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton))
+            if (isHovering)
             {
-                if (isHovering)
+                if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton)) 
+                {
                     base.OnClickedEvent();
+                }
             }
         }
 

@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using WoW_2D.Gfx;
-using WoW_2D.Gfx.Animation;
 
 namespace WoW_2D.GameObject
 {
@@ -22,9 +21,7 @@ namespace WoW_2D.GameObject
             South_East = 6,
             South_West = 7
         }
-
-        protected SpriteSheet SpriteSheet { get; set; }
-        protected AnimationManager AnimationManager { get; set; }
+        
         public GraphicsDevice Graphics;
         public Vector2 Position;
         public MovementDirection Direction { get; set; }

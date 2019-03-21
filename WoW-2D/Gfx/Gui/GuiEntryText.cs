@@ -56,7 +56,8 @@ namespace WoW_2D.Gfx.Gui
         
         public override void OnKeyTyped(Keys key, char character)
         {
-            base.OnKeyTyped(key, character);
+            if (IsEnabled)
+                base.OnKeyTyped(key, character);
         }
     }
 }

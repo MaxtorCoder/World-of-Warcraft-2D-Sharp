@@ -1,11 +1,11 @@
 ﻿using Framework;
+using Framework.Network;
 using Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static WorldServer.WorldServer;
 
 namespace WorldServer.Command
 {
@@ -14,7 +14,7 @@ namespace WorldServer.Command
     /// </summary>
     public class CommandAccount : ICommand
     {
-        public CommandAccount() : base("account", Security.Administrator)
+        public CommandAccount() : base("account", AccountSecurity.Administrator)
         {
             _subCommands.Add("create", GetType().GetMethod("HandleCreation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
         }
