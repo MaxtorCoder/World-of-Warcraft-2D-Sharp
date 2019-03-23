@@ -1,8 +1,10 @@
 ﻿using AuthServer.Network;
 using AuthServer.Network.Handlers;
 using Framework;
+using Framework.Entity;
 using Framework.Network.Connection;
 using Framework.Network.Packet;
+using Framework.Network.Packet.OpCodes;
 using Framework.Network.Server;
 using Framework.Utils;
 using System;
@@ -29,6 +31,8 @@ namespace AuthServer
         private readonly string VersionStr = $"AuthServer Version v{Version}";
         private TCPSocketServer tcpServer;
 
+        private static List<Realm> Realmlist;
+
         public AuthServer()
         {
             Console.Title = "DemiCore - Authentication";
@@ -40,21 +44,42 @@ namespace AuthServer
             if (DatabaseManager.Initialize() == DatabaseManager.Status.Fatal)
                 tcpServer.ExitCode = ExitCode.Exit_Code_Database;
 
-            Logger.Write(Logger.LogType.Server, $"Initialized on {tcpServer.GetLocalEP().Port}");
+            if (tcpServer.ExitCode == 0)
+            {
+                Realmlist = DatabaseManager.FetchRealms();
+                Logger.Write(Logger.LogType.Server, $"Loaded {Realmlist.Count} realm(s)");
+                Logger.Write(Logger.LogType.Server, $"Initialized on {tcpServer.GetLocalEP().Port}");
+            }
             (new Thread(new ThreadStart(CoreThread))).Start();
         }
 
         private void CoreThread()
         {
-            PacketRegistry.DefineHandler(OpCodes.CMSG_LOGON, AuthHandler.HandleLogin);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_LOGON, AuthHandler.HandleLogin);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_REALMLIST, AuthHandler.HandleRealmlist);
 
-            // TODO: Ping every client x/sec here; Handle disconnects.
             while (!tcpServer.IsDisposed)
             {
                 Thread.Sleep(10);
 
                 if (tcpServer.ExitCode > 0 || tcpServer.ExitCode < 0)
                     tcpServer.IsDisposed = true;
+
+                var connections = Global.GetConnections();
+                for (int i = 0; i < connections.Count; i++)
+                {
+                    var connection = connections[i];
+                    if (connection.ShouldDisconnect)
+                    {
+                        connection.OnDataReceived -= OnDataReceived;
+                        connection.Close();
+                        Global.RemoveConnection(connection);
+
+                        var authConnection = (AuthConnection)connection;
+                        if (authConnection.Account != null)
+                            Logger.Write(Logger.LogType.Server, $"{authConnection.Account.Username} has disconnected.");
+                    }
+                }
             }
             DisplayErrorCode();
         }
@@ -77,15 +102,38 @@ namespace AuthServer
             Global.AddConnection(authConnection);
         }
 
-        // TODO: Handle disconnects.
         private void OnDataReceived(IAsyncResult asyncResult)
         {
             var authConnection = asyncResult.AsyncState as AuthConnection;
             var len = authConnection.EndReceive(asyncResult);
-            var dataBuffer = new byte[len];
-            Array.Copy(Global.GetTempBuffer(), dataBuffer, len);
+            if (len < 0)
+            {
+                authConnection.ShouldDisconnect = true;
+                return;
+            }
 
-            PacketRegistry.Invoke(dataBuffer[0], authConnection, dataBuffer);
+            try
+            {
+                var dataBuffer = new byte[len];
+                Array.Copy(Global.GetTempBuffer(), dataBuffer, len);
+
+                var opcode = dataBuffer[0];
+                if (Enum.IsDefined(typeof(ClientOpcodes), (int)opcode))
+                    PacketRegistry.Invoke(opcode, authConnection, dataBuffer);
+                else
+                    Logger.WriteDebug($"[Demi Auth] Received unknown opcode: {opcode.ToString("x2")}");
+
+                authConnection.Receive();
+            }
+            catch
+            {
+                authConnection.ShouldDisconnect = true;
+            }
+        }
+
+        public static List<Realm> GetRealmlist()
+        {
+            return Realmlist;
         }
 
         static void Main(string[] args) => new AuthServer();

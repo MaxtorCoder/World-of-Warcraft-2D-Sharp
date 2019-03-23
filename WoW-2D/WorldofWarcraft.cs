@@ -1,4 +1,6 @@
-﻿using Framework.Network.Packet;
+﻿using Framework.Entity;
+using Framework.Network.Packet;
+using Framework.Network.Packet.OpCodes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,6 +12,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Reflection;
 using WoW_2D.Gfx.Gui;
+using WoW_2D.Network;
 using WoW_2D.Network.Handler;
 using WoW_2D.States;
 
@@ -29,6 +32,7 @@ namespace WoW_2D
         public static string VersionStr = $"v{Version}";
         public static Color DefaultYellow = new Color(223, 195, 15);
         public readonly static IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
+        public static Realm ConnectedRealm;
 
         public WorldofWarcraft()
         {
@@ -52,10 +56,13 @@ namespace WoW_2D
         {
             GameStateManager.SetContentManager(Content);
             GameStateManager.AddState(new MainMenuState(GraphicsDevice));
+            GameStateManager.AddState(new CharacterSelectState(GraphicsDevice));
+            GameStateManager.AddState(new CharacterCreateState(GraphicsDevice));
 
             GuiNotification.Initialize(GraphicsDevice, Content);
 
-            PacketRegistry.DefineHandler(OpCodes.SMSG_LOGON, AuthHandler.HandleLogin);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_LOGON, AuthHandler.HandleLogin);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_REALMLIST, AuthHandler.HandleRealmlist);
 
             base.Initialize();
         }

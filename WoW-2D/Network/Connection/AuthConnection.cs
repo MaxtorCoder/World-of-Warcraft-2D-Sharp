@@ -1,6 +1,7 @@
 ﻿using Framework.Network.Connection;
 using Framework.Network.Packet;
 using Framework.Network.Packet.Client;
+using Framework.Network.Packet.OpCodes;
 using Framework.Utils;
 using System;
 using System.Collections.Generic;
@@ -41,7 +42,7 @@ namespace WoW_2D.Network.Connection
                 _clientSocket.EndConnect(asyncResult);
                 NetworkManager.State = NetworkManager.NetworkState.Authenticating;
 
-                _clientSocket.BeginReceive(Global.GetTempBuffer(), 0, Global.GetTempBuffer().Length, SocketFlags.None, new AsyncCallback(RaiseDataReceived), this);
+                Receive();
                 Send(new CMSG_Logon() { Username = username, Password = password });
             }
             catch
@@ -50,14 +51,35 @@ namespace WoW_2D.Network.Connection
             }
         }
 
+        public override void Close()
+        {
+            OnDataReceived -= ProcessRecvd;
+            base.Close();
+        }
+
+        // TODO: Handle server close.
         private void ProcessRecvd(IAsyncResult asyncResult)
         {
-            var authConnection = (AuthConnection)asyncResult.AsyncState;
+            var authConnection = asyncResult.AsyncState as AuthConnection;
             var len = authConnection.EndReceive(asyncResult);
             var buffer = new byte[len];
             Array.Copy(Global.GetTempBuffer(), buffer, len);
 
-            PacketRegistry.Invoke(buffer[0], this, buffer);
+            try
+            {
+                var opcode = buffer[0];
+                if (Enum.IsDefined(typeof(ServerOpcodes), (int)opcode))
+                    PacketRegistry.Invoke(opcode, this, buffer);
+                else
+                    Logger.WriteDebug($"[Client] Received unknown opcode: {opcode.ToString("x2")}");
+
+                Receive();
+            }
+            catch
+            {
+                authConnection.OnDataReceived -= ProcessRecvd;
+                Close();
+            }
         }
     }
 }

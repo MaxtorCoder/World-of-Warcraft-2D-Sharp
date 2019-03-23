@@ -1,5 +1,7 @@
-﻿using Framework.Network;
+﻿using Framework.Entity;
+using Framework.Network;
 using Framework.Network.Cryptography;
+using Framework.Network.Entity;
 using Isopoh.Cryptography.Argon2;
 using MySql.Data.MySqlClient;
 using System;
@@ -99,7 +101,7 @@ namespace Framework
             return status;
         }
 
-        private static async Task<Account> ExecuteReader(MySqlConnection connection, MySqlCommand command)
+        private static async Task<Account> ExecuteAccountReader(MySqlConnection connection, MySqlCommand command)
         {
             var account = new Account();
 
@@ -118,6 +120,50 @@ namespace Framework
             catch (MySqlException) { account.Status = Account.LoginStatus.ServerError; }
 
             return account;
+        }
+
+        private static async Task<List<Realm>> ExecuteRealmReader(MySqlConnection connection, MySqlCommand command)
+        {
+            var realmlist = new List<Realm>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var realm = new Realm()
+                    {
+                        ID = reader.GetInt32(0),
+                        Name = reader.GetString(1),
+                        Port = reader.GetInt32(2)
+                    };
+                    realmlist.Add(realm);
+                }
+            }
+            catch (MySqlException) { }
+
+            return realmlist;
+        }
+
+        /// <summary>
+        /// Fetch all realms for the realmlist.
+        /// </summary>
+        /// <returns></returns>
+        public static List<Realm> FetchRealms()
+        {
+            var realmlist = new List<Realm>();
+            var query = "SELECT * FROM realmlist";
+
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Connection = connection;
+                    realmlist = ExecuteRealmReader(connection, command).Result;
+                }
+            }
+            return realmlist;
         }
 
         /// <summary>
@@ -193,7 +239,7 @@ namespace Framework
                 {
                     command.Parameters.AddWithValue("@username", username);
                     command.Connection = connection;
-                    account = ExecuteReader(connection, command).Result;
+                    account = ExecuteAccountReader(connection, command).Result;
                 }
             }
 

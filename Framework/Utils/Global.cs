@@ -24,5 +24,15 @@ namespace Framework.Utils
         {
             _connections.Add(connection);
         }
+
+        public static void RemoveConnection(IConnection connection)
+        {
+            _connections.Remove(connection);
+        }
+
+        public static List<IConnection> GetConnections()
+        {
+            return _connections;
+        }
     }
 }

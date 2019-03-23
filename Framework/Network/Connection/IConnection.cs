@@ -1,4 +1,5 @@
 ﻿using Framework.Network.Packet;
+using Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace Framework.Network.Connection
     public class IConnection
     {
         protected Socket _clientSocket;
+        public bool ShouldDisconnect { get; set; }
 
         #region Event/Handlers
         public delegate void DataReceived(IAsyncResult asyncResult);
@@ -23,11 +25,24 @@ namespace Framework.Network.Connection
         #endregion
 
         public IConnection(Socket clientSocket) => _clientSocket = clientSocket;
-        public int EndReceive(IAsyncResult asyncResult) => _clientSocket.EndReceive(asyncResult);
+        public int EndReceive(IAsyncResult asyncResult)
+        {
+            int len = -1;
+
+            try { len = _clientSocket.EndReceive(asyncResult); }
+            catch { Close(); }
+
+            return len;
+        }
+
+        public void Receive()
+        {
+            _clientSocket.BeginReceive(Global.GetTempBuffer(), 0, Global.GetTempBuffer().Length, SocketFlags.None, new AsyncCallback(RaiseDataReceived), this);
+        }
 
         public void Send(IPacket packet)
         {
-            byte[] packetData = packet.SerializePacket();
+            byte[] packetData = packet.Serialize();
             _clientSocket.BeginSend(packetData, 0, packetData.Length, SocketFlags.None, new AsyncCallback(SendCallback), _clientSocket);
         }
 
@@ -38,9 +53,10 @@ namespace Framework.Network.Connection
             catch { Close(); }
         }
 
-        public void Close()
+        public virtual void Close()
         {
-            try { _clientSocket.Shutdown(SocketShutdown.Both); }
+            try
+            { _clientSocket.Shutdown(SocketShutdown.Both); }
             catch { }
             finally { _clientSocket.Close(); }
         }

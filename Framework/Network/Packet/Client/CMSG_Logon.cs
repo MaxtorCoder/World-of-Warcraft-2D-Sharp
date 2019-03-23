@@ -1,4 +1,5 @@
 ﻿using Framework.Network.Cryptography;
+using Framework.Network.Packet.OpCodes;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,9 +18,9 @@ namespace Framework.Network.Packet.Client
         public string Username { get; set; }
         public string Password { get; set; }
 
-        public CMSG_Logon() : base(OpCodes.CMSG_LOGON) { }
+        public CMSG_Logon() : base((byte)ClientOpcodes.CMSG_LOGON) { }
 
-        public override byte[] SerializePacket()
+        public override byte[] Serialize()
         {
             using (var memStr = new MemoryStream())
             {
@@ -33,7 +34,7 @@ namespace Framework.Network.Packet.Client
             }
         }
 
-        public override IPacket DeserializePacket(byte[] data)
+        public override IPacket Deserialize(byte[] data)
         {
             var obj = new CMSG_Logon();
             using (var memStr = new MemoryStream(data))

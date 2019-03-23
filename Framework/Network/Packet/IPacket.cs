@@ -15,7 +15,7 @@ namespace Framework.Network.Packet
 
         public IPacket(byte opcode) => _opcode = opcode;
 
-        public abstract byte[] SerializePacket();
-        public abstract IPacket DeserializePacket(byte[] data);
+        public abstract byte[] Serialize();
+        public abstract IPacket Deserialize(byte[] data);
     }
 }

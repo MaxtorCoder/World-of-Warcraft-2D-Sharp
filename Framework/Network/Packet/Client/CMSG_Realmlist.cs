@@ -6,16 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.Network.Packet.Server
+namespace Framework.Network.Packet.Client
 {
     /// <summary>
-    /// The server logon packet.
+    /// The realmlist packet.
     /// </summary>
-    public class SMSG_Logon : IPacket
+    public class CMSG_Realmlist : IPacket
     {
-        public byte Magic { get; set; }
-
-        public SMSG_Logon() : base((byte)ServerOpcodes.SMSG_LOGON) { }
+        public CMSG_Realmlist() : base((byte)ClientOpcodes.CMSG_REALMLIST) { }
 
         public override byte[] Serialize()
         {
@@ -24,7 +22,6 @@ namespace Framework.Network.Packet.Server
                 using (var writer = new BinaryWriter(memStr))
                 {
                     writer.Write(_opcode);
-                    writer.Write(Magic);
                 }
                 return memStr.ToArray();
             }
@@ -32,13 +29,12 @@ namespace Framework.Network.Packet.Server
 
         public override IPacket Deserialize(byte[] data)
         {
-            var obj = new SMSG_Logon();
+            var obj = new CMSG_Realmlist();
             using (var memStr = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memStr))
                 {
                     reader.ReadByte();
-                    obj.Magic = reader.ReadByte();
                 }
             }
             return obj;

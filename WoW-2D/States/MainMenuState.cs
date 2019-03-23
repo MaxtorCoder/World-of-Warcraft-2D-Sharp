@@ -71,7 +71,6 @@ namespace WoW_2D.States
 
             loginButton.LoadContent(content);
             loginButton.Position = new Vector2(graphics.Viewport.Width / 2 - loginButton.BaseTexture.Width / 2, graphics.Viewport.Height / 2 + 150);
-            loginButton.IsEnabled = true;
 
             usernameText.Position = new Vector2(graphics.Viewport.Width / 2 - usernameText.Width / 2, graphics.Viewport.Height / 2 - usernameText.Height / 2 - 50);
             passwordText.Position = new Vector2(graphics.Viewport.Width / 2 - passwordText.Width / 2, usernameText.Position.Y + 120);
@@ -103,7 +102,7 @@ namespace WoW_2D.States
         {
             graphics.Clear(Color.Black);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             spriteBatch.Draw(background, new Vector2(0f), Color.White);
             DrawUIStrings();
             loginButton.Draw(spriteBatch);
@@ -149,8 +148,15 @@ namespace WoW_2D.States
                 case NetworkManager.NetworkState.AuthenticatingUnk:
                     GuiNotification.Draw(font, spriteBatch, "This account could not be found. Please try again or contact a developer.", true);
                     break;
+                case NetworkManager.NetworkState.AlreadyLoggedIn:
+                    GuiNotification.Draw(font, spriteBatch, "This account is already logged in.", true);
+                    break;
                 case NetworkManager.NetworkState.RetrievingRealmlist:
                     GuiNotification.Draw(font, spriteBatch, "Retrieving realmlist...");
+                    break;
+                case NetworkManager.NetworkState.Realmlist:
+                    GameStateManager.EnterState(2);
+                    NetworkManager.State = NetworkManager.NetworkState.SelectingChar;
                     break;
                 case NetworkManager.NetworkState.ServerError:
                     GuiNotification.Draw(font, spriteBatch, "Server error.", true);

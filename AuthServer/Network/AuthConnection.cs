@@ -1,5 +1,6 @@
 ﻿using Framework.Network;
 using Framework.Network.Connection;
+using Framework.Network.Entity;
 using Framework.Utils;
 using System;
 using System.Collections.Generic;
@@ -17,9 +18,6 @@ namespace AuthServer.Network
     {
         public Account Account { get; set; }
 
-        public AuthConnection(Socket clientSocket) : base(clientSocket)
-        {
-            _clientSocket.BeginReceive(Global.GetTempBuffer(), 0, Global.GetTempBuffer().Length, SocketFlags.None, new AsyncCallback(RaiseDataReceived), this);
-        }
+        public AuthConnection(Socket clientSocket) : base(clientSocket) => Receive();
     }
 }

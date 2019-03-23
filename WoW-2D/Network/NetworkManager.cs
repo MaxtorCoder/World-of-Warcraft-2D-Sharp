@@ -21,8 +21,18 @@ namespace WoW_2D.Network
             Authenticating,
             AuthenticatingFailed,
             AuthenticatingUnk,
+            AlreadyLoggedIn,
             RetrievingRealmlist,
+            Realmlist,
+            SelectingChar,
             ServerError
+        }
+
+        public enum Direction
+        {
+            Auth,
+            World,
+            Both
         }
 
         public static NetworkState State { get; set; } = NetworkState.Waiting;
@@ -38,6 +48,17 @@ namespace WoW_2D.Network
             authConnection = new AuthConnection(
                 new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp),
                 username, password);
+        }
+
+        public static void Disconnect(Direction direction)
+        {
+            State = NetworkState.Waiting;
+            switch (direction)
+            {
+                case Direction.Auth:
+                    authConnection.Close();
+                    break;
+            }
         }
     }
 }

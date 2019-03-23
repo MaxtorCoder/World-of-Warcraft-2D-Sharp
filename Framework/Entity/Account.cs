@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.Network
+namespace Framework.Network.Entity
 {
     /// <summary>
     /// Holds account data.
@@ -14,6 +14,7 @@ namespace Framework.Network
         public enum LoginStatus
         {
             LoggedIn,
+            AlreadyLoggedIn,
             Unknown,
             ServerError
         }

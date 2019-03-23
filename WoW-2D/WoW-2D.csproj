@@ -66,6 +66,8 @@
     <Compile Include="Network\Connection\AuthConnection.cs" />
     <Compile Include="Network\Handler\AuthHandler.cs" />
     <Compile Include="Network\NetworkManager.cs" />
+    <Compile Include="States\CharacterCreateState.cs" />
+    <Compile Include="States\CharacterSelectState.cs" />
     <Compile Include="States\MainMenuState.cs" />
     <Compile Include="WorldofWarcraft.cs" />
     <Compile Include="Program.cs" />

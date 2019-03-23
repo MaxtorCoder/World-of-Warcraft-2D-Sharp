@@ -37,7 +37,7 @@ namespace Framework.Network.Cryptography
         /// <returns></returns>
         public static string ArgonHash(string rawData)
         {
-            // TODO: Research argon2 settings (specifically memorycost).
+            // Research argon2 settings (specifically memorycost).
             return Argon2.Hash(rawData, 3, 256);
         }
         

@@ -1,6 +1,10 @@
-﻿using Framework.Network.Connection;
+﻿using Framework.Entity;
+using Framework.Network.Connection;
 using Framework.Network.Packet;
+using Framework.Network.Packet.Client;
+using Framework.Network.Packet.OpCodes;
 using Framework.Network.Packet.Server;
+using Framework.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,19 +21,44 @@ namespace WoW_2D.Network.Handler
     {
         public static void HandleLogin(IConnection connection, byte[] buffer)
         {
-            var packet = (SMSG_Logon)new SMSG_Logon().DeserializePacket(buffer);
-
-            if (packet.Magic == OpCodes.SMSG_LOGON_FAILED)
-                NetworkManager.State = NetworkManager.NetworkState.AuthenticatingFailed;
-            else if (packet.Magic == OpCodes.SMSG_LOGON_UNK)
-                NetworkManager.State = NetworkManager.NetworkState.AuthenticatingUnk;
-            else if (packet.Magic == OpCodes.SMSG_LOGON_SERVER_ERROR)
-                NetworkManager.State = NetworkManager.NetworkState.ServerError;
-            else if (packet.Magic == OpCodes.SMSG_LOGON_SUCCESS)
+            var packet = (SMSG_Logon)new SMSG_Logon().Deserialize(buffer);
+            
+            if (Enum.IsDefined(typeof(ServerOpcodes), (int)packet.Magic))
             {
-                NetworkManager.State = NetworkManager.NetworkState.RetrievingRealmlist;
-                // TODO: send realmlist packet.
+                switch (packet.Magic)
+                {
+                    case (byte)ServerOpcodes.SMSG_LOGON_FAILED:
+                        NetworkManager.State = NetworkManager.NetworkState.AuthenticatingFailed;
+                        break;
+                    case (byte)ServerOpcodes.SMSG_LOGON_UNK:
+                        NetworkManager.State = NetworkManager.NetworkState.AuthenticatingUnk;
+                        break;
+                    case (byte)ServerOpcodes.SMSG_LOGON_SERVER_ERROR:
+                        NetworkManager.State = NetworkManager.NetworkState.ServerError;
+                        break;
+                    case (byte)ServerOpcodes.SMSG_LOGON_ALREADY_LOGGED_IN:
+                        NetworkManager.State = NetworkManager.NetworkState.AlreadyLoggedIn;
+                        break;
+                    case (byte)ServerOpcodes.SMSG_LOGON_SUCCESS:
+                        NetworkManager.State = NetworkManager.NetworkState.RetrievingRealmlist;
+                        connection.Send(new CMSG_Realmlist());
+                        break;
+                }
             }
+        }
+
+        public static void HandleRealmlist(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Realmlist)new SMSG_Realmlist().Deserialize(buffer);
+
+            WorldofWarcraft.ConnectedRealm = new Realm()
+            {
+                ID = packet.ID,
+                Name = packet.Name,
+                Port = packet.Port
+            };
+
+            NetworkManager.State = NetworkManager.NetworkState.Realmlist;
         }
     }
 }

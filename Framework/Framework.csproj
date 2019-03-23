@@ -197,16 +197,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Network\Account.cs" />
+    <Compile Include="Entity\Account.cs" />
     <Compile Include="DatabaseManager.cs" />
+    <Compile Include="Entity\Realm.cs" />
     <Compile Include="Network\Connection\IConnection.cs" />
     <Compile Include="Network\Cryptography\CryptoHelper.cs" />
     <Compile Include="Network\Packet\Client\CMSG_Logon.cs" />
+    <Compile Include="Network\Packet\Client\CMSG_Realmlist.cs" />
     <Compile Include="Network\Packet\IPacket.cs" />
-    <Compile Include="Network\Packet\OpCodes.cs" />
     <Compile Include="Network\AccountSecurity.cs" />
+    <Compile Include="Network\Packet\OpCodes\ClientOpcodes.cs" />
+    <Compile Include="Network\Packet\OpCodes\ServerOpcodes.cs" />
     <Compile Include="Network\Packet\PacketRegistry.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Logon.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_Realmlist.cs" />
     <Compile Include="Network\Server\IServer.cs" />
     <Compile Include="Network\Server\TCPSocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
