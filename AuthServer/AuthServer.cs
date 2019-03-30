@@ -57,6 +57,9 @@ namespace AuthServer
         {
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_LOGON, AuthHandler.HandleLogin);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_REALMLIST, AuthHandler.HandleRealmlist);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_CREATE, CharHandler.HandleCreation);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_LIST, CharHandler.HandleList);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
 
             while (!tcpServer.IsDisposed)
             {
@@ -76,8 +79,12 @@ namespace AuthServer
                         Global.RemoveConnection(connection);
 
                         var authConnection = (AuthConnection)connection;
-                        if (authConnection.Account != null)
-                            Logger.Write(Logger.LogType.Server, $"{authConnection.Account.Username} has disconnected.");
+                        try
+                        {
+                            if (!string.IsNullOrWhiteSpace(authConnection.Account.Username))
+                                Logger.Write(Logger.LogType.Server, $"{authConnection.Account.Username} has disconnected.");
+                        }
+                        catch { }
                     }
                 }
             }

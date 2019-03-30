@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -156,7 +157,6 @@ namespace WoW_2D.States
                     break;
                 case NetworkManager.NetworkState.Realmlist:
                     GameStateManager.EnterState(2);
-                    NetworkManager.State = NetworkManager.NetworkState.SelectingChar;
                     break;
                 case NetworkManager.NetworkState.ServerError:
                     GuiNotification.Draw(font, spriteBatch, "Server error.", true);

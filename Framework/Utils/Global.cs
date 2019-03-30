@@ -12,7 +12,7 @@ namespace Framework.Utils
     /// </summary>
     public class Global
     {
-        private static readonly byte[] _temporaryDataBuffer = new byte[1024];
+        private static readonly byte[] _temporaryDataBuffer = new byte[4096];
         private static readonly List<IConnection> _connections = new List<IConnection>();
 
         public static byte[] GetTempBuffer()

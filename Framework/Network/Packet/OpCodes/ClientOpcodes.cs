@@ -11,8 +11,10 @@ namespace Framework.Network.Packet.OpCodes
     /// </summary>
     public enum ClientOpcodes
     {
-        CMSG_LOGON          =           0x01,
-        CMSG_REALMLIST      =           0x10,
-        CMSG_LOGOUT         =           0xFF,
+        CMSG_LOGON              =           0x01,
+        CMSG_CHARACTER_LIST     =           0x02,
+        CMSG_CHARACTER_CREATE   =           0x03,
+        CMSG_CHARACTER_DELETE   =           0x04,
+        CMSG_REALMLIST          =           0x10
     }
 }

@@ -8,6 +8,7 @@ using MonoGameHelper.GameState;
 using MonoGameHelper.Gfx;
 using MonoGameHelper.Utils;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Reflection;
@@ -32,7 +33,8 @@ namespace WoW_2D
         public static string VersionStr = $"v{Version}";
         public static Color DefaultYellow = new Color(223, 195, 15);
         public readonly static IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
-        public static Realm ConnectedRealm;
+        public static Realm Realm;
+        public static List<RealmCharacter> RealmCharacters = new List<RealmCharacter>(7);
 
         public WorldofWarcraft()
         {
@@ -63,6 +65,9 @@ namespace WoW_2D
 
             PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_LOGON, AuthHandler.HandleLogin);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_REALMLIST, AuthHandler.HandleRealmlist);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_CHARACTER_CREATE, CharHandler.HandleCreation);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_CHARACTER_LIST, CharHandler.HandleList);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
 
             base.Initialize();
         }

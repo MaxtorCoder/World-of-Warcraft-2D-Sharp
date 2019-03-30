@@ -7,12 +7,18 @@ using System.Threading.Tasks;
 namespace Framework.Entity
 {
     /// <summary>
-    /// Holds realm data.
+    /// The game's classes.
     /// </summary>
-    public struct Realm
+    public enum Class
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public int Port { get; set; }
+        Warrior,
+        Paladin,
+        Rogue,
+        Priest,
+        Mage,
+        Warlock,
+        Hunter,
+        Druid,
+        Shaman
     }
 }

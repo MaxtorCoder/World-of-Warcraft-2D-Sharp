@@ -37,7 +37,7 @@ namespace AuthServer.Network.Handlers
                 foreach (var c in connections)
                 {
                     var authConnection = (AuthConnection)c;
-                    if (authConnection.Account != null)
+                    try
                     {
                         if (packet.Username.ToLower() == authConnection.Account.Username.ToLower())
                         {
@@ -46,6 +46,7 @@ namespace AuthServer.Network.Handlers
                             return;
                         }
                     }
+                    catch { }
                 }
             }
 

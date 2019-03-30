@@ -51,7 +51,7 @@ namespace WoW_2D.Network.Handler
         {
             var packet = (SMSG_Realmlist)new SMSG_Realmlist().Deserialize(buffer);
 
-            WorldofWarcraft.ConnectedRealm = new Realm()
+            WorldofWarcraft.Realm = new Realm()
             {
                 ID = packet.ID,
                 Name = packet.Name,

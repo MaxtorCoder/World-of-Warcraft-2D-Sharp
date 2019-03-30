@@ -9,7 +9,7 @@ namespace Framework.Network.Entity
     /// <summary>
     /// Holds account data.
     /// </summary>
-    public class Account
+    public struct Account
     {
         public enum LoginStatus
         {

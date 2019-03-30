@@ -31,6 +31,9 @@ namespace Framework
         private static readonly string AuthenticationConnectionStr =
             $"Server={SqlServer}; Database=demi_auth; User Id={SqlUsername}; Password={SqlPassword};";
 
+        private static readonly string CharacterConnectionStr =
+            $"Server={SqlServer}; Database=demi_character; User Id={SqlUsername}; Password={SqlPassword};";
+
         private static async Task<Status> InitializeAsync(MySqlConnection connection)
         {
             var status = Status.OK;
@@ -49,6 +52,12 @@ namespace Framework
             List<Status> statuses = new List<Status>();
 
             using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                Status status = InitializeAsync(connection).Result;
+                statuses.Add(status);
+            }
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
             {
                 Status status = InitializeAsync(connection).Result;
                 statuses.Add(status);
@@ -74,7 +83,11 @@ namespace Framework
             {
                 await connection.OpenAsync();
                 await command.ExecuteNonQueryAsync();
-            } catch (MySqlException) { status = Status.Fatal; }
+            } catch (MySqlException ex)
+            {
+                Console.WriteLine(ex.Message);
+                status = Status.Fatal;
+            }
 
             return status;
         }
@@ -96,11 +109,21 @@ namespace Framework
                 int count = Convert.ToInt32(await command.ExecuteScalarAsync());
                 if (count > 0)
                     status = Status.RowExists;
-            } catch (MySqlException) { status = Status.Fatal; }
+            } catch (MySqlException ex)
+            {
+                status = Status.Fatal;
+                Console.WriteLine(ex.Message);
+            }
 
             return status;
         }
 
+        /// <summary>
+        /// Execute an account reader.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
         private static async Task<Account> ExecuteAccountReader(MySqlConnection connection, MySqlCommand command)
         {
             var account = new Account();
@@ -122,6 +145,12 @@ namespace Framework
             return account;
         }
 
+        /// <summary>
+        /// Execute a realm reader.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
         private static async Task<List<Realm>> ExecuteRealmReader(MySqlConnection connection, MySqlCommand command)
         {
             var realmlist = new List<Realm>();
@@ -144,6 +173,59 @@ namespace Framework
             catch (MySqlException) { }
 
             return realmlist;
+        }
+
+        /// <summary>
+        /// Execute a character reader.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private static async Task<List<RealmCharacter>> ExecuteCharacterReader(MySqlConnection connection, MySqlCommand command)
+        {
+            var characters = new List<RealmCharacter>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    characters.Add(new RealmCharacter()
+                    {
+                        Name = reader["Username"].ToString(),
+                        Level = (int)reader["Level"],
+                        Class = (Class)reader["Class"],
+                        Race = (Race)reader["Race"],
+                        Location = "Elwynn Forest"
+                    });
+                }
+            }
+            catch (MySqlException) { }
+
+            return characters;
+        }
+
+        /// <summary>
+        /// Fetch a character guid.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private static async Task<string> FetchCharacterGUID(MySqlConnection connection, MySqlCommand command)
+        {
+            var guid = string.Empty;
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    guid = reader["character_id"].ToString();
+            }
+            catch (MySqlException) { }
+
+            return guid;
         }
 
         /// <summary>
@@ -206,7 +288,7 @@ namespace Framework
             var query = "INSERT INTO account (username, password_hash, security) VALUES (@username, @password, @security)";
             var status = Status.OK;
 
-            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
             {
                 using (var command = new MySqlCommand(query))
                 {
@@ -219,6 +301,162 @@ namespace Framework
                 }
             }
             return status;
+        }
+
+        /// <summary>
+        /// Does this character exist?
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private static Status CharacterExists(string name)
+        {
+            var status = Status.OK;
+            var query = "SELECT COUNT(*) FROM user_character WHERE name=@name";
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@name", name);
+                    command.Connection = connection;
+
+                    status = ExecuteCount(connection, command).Result;
+                }
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Attempts to create a character.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <param name="race"></param>
+        /// <returns></returns>
+        public static Status CreateCharacter(int userId, string name, Race race)
+        {
+            name = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
+            var existStatus = CharacterExists(name);
+            if (existStatus == Status.RowExists || existStatus == Status.Fatal)
+                return existStatus;
+
+            var guid = Guid.NewGuid();
+            var query = "INSERT INTO user_character (user_id, character_id, name) VALUES (@userId, @characterId, @name)";
+            var status = Status.OK;
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@characterId", guid);
+                    command.Parameters.AddWithValue("@name", name);
+                    command.Connection = connection;
+
+                    status = ExecuteCommand(connection, command).Result;
+                }
+            }
+
+            if (status != Status.OK)
+                return status;
+
+            query = "INSERT INTO character_data (user_id, character_id, level, class_id, race_id) VALUES (@userId, @characterId, @level, @classId, @raceId)";
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@characterId", guid);
+                    command.Parameters.AddWithValue("@level", 1);
+                    command.Parameters.AddWithValue("@classId", (int)Class.Warrior);
+                    command.Parameters.AddWithValue("@raceId", (int)race);
+                    command.Connection = connection;
+
+                    status = ExecuteCommand(connection, command).Result;
+                }
+            }
+
+            return status;
+        }
+
+        /// <summary>
+        /// Get the characters for the specified user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public static List<RealmCharacter> FetchCharacters(int userId)
+        {
+            var characters = new List<RealmCharacter>();
+            var query = "SELECT DISTINCT user_character.name as Username, character_data.level as Level, character_data.class_id as Class, character_data.race_id as Race " +
+                "FROM user_character, character_data " +
+                "WHERE user_character.user_id=@userId AND character_data.user_id=@userId";
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Connection = connection;
+                    characters = ExecuteCharacterReader(connection, command).Result;
+                }
+            }
+
+            return characters;
+        }
+
+        /// <summary>
+        /// Attempt to delete the given character for the specified user.
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Status DeleteCharacter(int userId, string name)
+        {
+            var guidQuery = "SELECT character_id FROM user_character WHERE user_id=@userId AND name=@name";
+            var guid = string.Empty;
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(guidQuery))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@name", name);
+                    command.Connection = connection;
+                    guid = FetchCharacterGUID(connection, command).Result;
+                }
+            }
+
+            /** I have no real way of testing this at the moment. **/
+            if (guid == string.Empty)
+                return Status.Fatal;
+
+            var tables = new string[]
+            {
+                "user_character",
+                "character_data"
+            };
+            
+            foreach (var table in tables)
+            {
+                var status = Status.OK;
+
+                var deleteQuery = "DELETE FROM "+table+" WHERE character_id=@characterId";
+                using (var connection = new MySqlConnection(CharacterConnectionStr))
+                {
+                    using (var command = new MySqlCommand(deleteQuery))
+                    {
+                        command.Parameters.AddWithValue("@characterId", guid);
+                        command.Connection = connection;
+                        status = ExecuteCommand(connection, command).Result;
+                    }
+                }
+
+                if (status == Status.Fatal)
+                    return status;
+            }
+
+            return Status.OK;
         }
 
         /// <summary>

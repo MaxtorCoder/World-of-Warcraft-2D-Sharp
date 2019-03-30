@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Framework.Network.Packet;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -24,7 +26,12 @@ namespace WoW_2D.Network
             AlreadyLoggedIn,
             RetrievingRealmlist,
             Realmlist,
-            SelectingChar,
+            CreatingCharacter,
+            CreateCharacterError,
+            CharacterExists,
+            CharacterCreated,
+            RetrievingCharacters,
+            DeletingCharacter,
             ServerError
         }
 
@@ -48,6 +55,16 @@ namespace WoW_2D.Network
             authConnection = new AuthConnection(
                 new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp),
                 username, password);
+        }
+
+        public static void Send(IPacket packet, Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Auth:
+                    authConnection.Send(packet);
+                    break;
+            }
         }
 
         public static void Disconnect(Direction direction)
