@@ -62,6 +62,8 @@ namespace WoW_2D.States
             Controls.Add(nameText);
 
             raceSelection = new RaceSelection(graphics);
+
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPress(); }, Keys.Enter);
         }
 
         public override void LoadContent(ContentManager content)
@@ -152,23 +154,23 @@ namespace WoW_2D.States
 
         private void OnAcceptButtonPressed()
         {
-            NetworkManager.State = NetworkManager.NetworkState.CreatingCharacter;
-            NetworkManager.Send(new CMSG_Character_Create()
+            if (acceptButton.IsEnabled)
             {
-                Name = nameText.Text.Trim(),
-                Race = raceSelection.GetSelectedRace()
-            }, NetworkManager.Direction.Auth);
+                NetworkManager.State = NetworkManager.NetworkState.CreatingCharacter;
+                NetworkManager.Send(new CMSG_Character_Create()
+                {
+                    Name = nameText.Text.Trim(),
+                    Race = raceSelection.GetSelectedRace()
+                }, NetworkManager.Direction.Auth);
+            }
         }
 
-        private void OnBackButtonPressed()
-        {
-            GameStateManager.EnterState(2);
-        }
-
+        private void OnBackButtonPressed() => GameStateManager.EnterState(2);
         private void OnRandomizeButtonPressed()
-        {
+        {}
 
-        }
+        private void OnEnterPress() => OnAcceptButtonPressed();
+        public override void OnStateEnter() => nameText.ResetText();
     }
 
     /// <summary>

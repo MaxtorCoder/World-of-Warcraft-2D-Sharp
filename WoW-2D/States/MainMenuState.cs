@@ -168,8 +168,13 @@ namespace WoW_2D.States
         private void OnLoginPress()
         {
             if (loginButton.IsEnabled)
-            // TODO: Fix setting text to 0
                 NetworkManager.Initialize(usernameText.GetText(), passwordText.GetText());
+
+            usernameText.ResetText();
+            passwordText.ResetText();
+
+            usernameText.IsActive = true;
+            passwordText.IsActive = false;
         }
         
         private void OnTabPress()

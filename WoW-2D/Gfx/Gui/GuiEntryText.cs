@@ -59,5 +59,13 @@ namespace WoW_2D.Gfx.Gui
             if (IsEnabled)
                 base.OnKeyTyped(key, character);
         }
+
+        public void ResetText()
+        {
+            Text = string.Empty;
+            PasswordText = string.Empty;
+            localCurosrPosition = 0;
+            cursorPosition = 0;
+        }
     }
 }
