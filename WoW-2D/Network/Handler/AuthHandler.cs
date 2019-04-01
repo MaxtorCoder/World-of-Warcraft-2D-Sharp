@@ -23,24 +23,25 @@ namespace WoW_2D.Network.Handler
         {
             var packet = (SMSG_Logon)new SMSG_Logon().Deserialize(buffer);
             
-            if (Enum.IsDefined(typeof(ServerOpcodes), (int)packet.Magic))
+            if (Enum.IsDefined(typeof(ServerOpcodes.Responses), (int)packet.Magic))
             {
                 switch (packet.Magic)
                 {
-                    case (byte)ServerOpcodes.SMSG_LOGON_FAILED:
+                    case (byte)ServerOpcodes.Responses.SMSG_LOGON_FAILED:
                         NetworkManager.State = NetworkManager.NetworkState.AuthenticatingFailed;
                         break;
-                    case (byte)ServerOpcodes.SMSG_LOGON_UNK:
+                    case (byte)ServerOpcodes.Responses.SMSG_LOGON_UNK:
                         NetworkManager.State = NetworkManager.NetworkState.AuthenticatingUnk;
                         break;
-                    case (byte)ServerOpcodes.SMSG_LOGON_SERVER_ERROR:
+                    case (byte)ServerOpcodes.Responses.SMSG_LOGON_SERVER_ERROR:
                         NetworkManager.State = NetworkManager.NetworkState.ServerError;
                         break;
-                    case (byte)ServerOpcodes.SMSG_LOGON_ALREADY_LOGGED_IN:
+                    case (byte)ServerOpcodes.Responses.SMSG_LOGON_ALREADY_LOGGED_IN:
                         NetworkManager.State = NetworkManager.NetworkState.AlreadyLoggedIn;
                         break;
-                    case (byte)ServerOpcodes.SMSG_LOGON_SUCCESS:
+                    case (byte)ServerOpcodes.Responses.SMSG_LOGON_SUCCESS:
                         NetworkManager.State = NetworkManager.NetworkState.RetrievingRealmlist;
+                        NetworkManager.SessionID = Guid.Parse(packet.SessionID);
                         connection.Send(new CMSG_Realmlist());
                         break;
                 }
@@ -58,7 +59,7 @@ namespace WoW_2D.Network.Handler
                 Port = packet.Port
             };
 
-            NetworkManager.State = NetworkManager.NetworkState.Realmlist;
+            NetworkManager.LogIntoGameServer();
         }
     }
 }

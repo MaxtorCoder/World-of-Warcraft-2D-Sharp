@@ -14,8 +14,9 @@ namespace Framework.Network.Packet.Server
     public class SMSG_Logon : IPacket
     {
         public byte Magic { get; set; }
+        public string SessionID { get; set; }
 
-        public SMSG_Logon() : base((byte)ServerOpcodes.SMSG_LOGON) { }
+        public SMSG_Logon() : base((byte)ServerOpcodes.Opcodes.SMSG_LOGON) { }
 
         public override byte[] Serialize()
         {
@@ -25,6 +26,7 @@ namespace Framework.Network.Packet.Server
                 {
                     writer.Write(_opcode);
                     writer.Write(Magic);
+                    writer.Write(SessionID);
                 }
                 return memStr.ToArray();
             }
@@ -39,6 +41,7 @@ namespace Framework.Network.Packet.Server
                 {
                     reader.ReadByte();
                     obj.Magic = reader.ReadByte();
+                    obj.SessionID = reader.ReadString();
                 }
             }
             return obj;

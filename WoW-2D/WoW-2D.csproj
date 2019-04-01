@@ -67,8 +67,10 @@
     <Compile Include="Gfx\Gui\GuiNotification.cs" />
     <Compile Include="Gfx\SpriteSheet.cs" />
     <Compile Include="Network\Connection\AuthConnection.cs" />
+    <Compile Include="Network\Connection\WorldConnection.cs" />
     <Compile Include="Network\Handler\AuthHandler.cs" />
     <Compile Include="Network\Handler\CharHandler.cs" />
+    <Compile Include="Network\Handler\WorldHandler.cs" />
     <Compile Include="Network\NetworkManager.cs" />
     <Compile Include="States\CharacterCreateState.cs" />
     <Compile Include="States\CharacterSelectState.cs" />

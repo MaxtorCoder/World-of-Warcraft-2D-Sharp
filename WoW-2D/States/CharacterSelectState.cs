@@ -225,19 +225,19 @@ namespace WoW_2D.States
         private void OnDeleteCharacterPress()
         {
             NetworkManager.State = NetworkManager.NetworkState.DeletingCharacter;
-            NetworkManager.Send(new CMSG_Character_Delete() { Name = realmCharacter.Name }, NetworkManager.Direction.Auth);
+            NetworkManager.Send(new CMSG_Character_Delete() { Name = realmCharacter.Name }, NetworkManager.Direction.World);
         }
 
         private void OnBackPress()
         {
-            NetworkManager.Disconnect(NetworkManager.Direction.Auth);
+            NetworkManager.Disconnect(NetworkManager.Direction.Both);
             GameStateManager.EnterState(1);
         }
 
         public override void OnStateEnter()
         {
             NetworkManager.State = NetworkManager.NetworkState.RetrievingCharacters;
-            NetworkManager.Send(new CMSG_Character_List(), NetworkManager.Direction.Auth);
+            NetworkManager.Send(new CMSG_Character_List(), NetworkManager.Direction.World);
         }
     }
 }

@@ -46,7 +46,6 @@
     <Compile Include="AuthServer.cs" />
     <Compile Include="Network\AuthConnection.cs" />
     <Compile Include="Network\Handlers\AuthHandler.cs" />
-    <Compile Include="Network\Handlers\CharHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -15,7 +15,7 @@ namespace Framework.Network.Packet.Server
     {
         public byte Magic { get; set; }
 
-        public SMSG_Character_Create() : base((byte)ServerOpcodes.SMSG_CHARACTER_CREATE) { }
+        public SMSG_Character_Create() : base((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_CREATE) { }
 
         public override byte[] Serialize()
         {

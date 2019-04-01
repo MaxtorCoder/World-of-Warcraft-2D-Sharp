@@ -25,7 +25,9 @@ namespace WoW_2D.Network
             AuthenticatingUnk,
             AlreadyLoggedIn,
             RetrievingRealmlist,
-            Realmlist,
+            LoggingIntoGameServer,
+            GameServerConnectionFailed,
+            GameServer,
             CreatingCharacter,
             CreateCharacterError,
             CharacterExists,
@@ -44,6 +46,9 @@ namespace WoW_2D.Network
 
         public static NetworkState State { get; set; } = NetworkState.Waiting;
         private static AuthConnection authConnection;
+        private static WorldConnection worldConnection;
+
+        public static Guid SessionID { get; set; }
 
         /// <summary>
         /// Initialize a connection to the authentication server.
@@ -57,6 +62,11 @@ namespace WoW_2D.Network
                 username, password);
         }
 
+        public static void LogIntoGameServer()
+        {
+            worldConnection = new WorldConnection();
+        }
+
         public static void Send(IPacket packet, Direction direction)
         {
             switch (direction)
@@ -64,16 +74,25 @@ namespace WoW_2D.Network
                 case Direction.Auth:
                     authConnection.Send(packet);
                     break;
+                case Direction.World:
+                    worldConnection.Send(packet);
+                    break;
             }
         }
 
         public static void Disconnect(Direction direction)
         {
-            State = NetworkState.Waiting;
             switch (direction)
             {
                 case Direction.Auth:
                     authConnection.Close();
+                    break;
+                case Direction.World:
+                    worldConnection.Close();
+                    break;
+                case Direction.Both:
+                    authConnection.Close();
+                    worldConnection.Close();
                     break;
             }
         }

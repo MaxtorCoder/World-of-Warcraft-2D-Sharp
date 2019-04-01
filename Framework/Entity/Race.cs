@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Framework.Entity
 {
+    /// <summary>
+    /// The game's different races.
+    /// </summary>
     public enum Race
     {
-        None,
         Human,
         Dwarf,
         NightElf,

@@ -6,19 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.Network.Packet.Server
+namespace Framework.Network.Packet.Client
 {
     /// <summary>
-    /// The server realmlist packet.
-    /// Only allows for a single realm to be written.
+    /// The world initialization packet.
     /// </summary>
-    public class SMSG_Realmlist : IPacket
+    public class CMSG_World : IPacket
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public int Port { get; set; }
+        public string SessionID { get; set; }
 
-        public SMSG_Realmlist() : base((byte)ServerOpcodes.Opcodes.SMSG_REALMLIST) { }
+        public CMSG_World() : base((byte)ClientOpcodes.CMSG_WORLD) { }
 
         public override byte[] Serialize()
         {
@@ -27,9 +24,7 @@ namespace Framework.Network.Packet.Server
                 using (var writer = new BinaryWriter(memStr))
                 {
                     writer.Write(_opcode);
-                    writer.Write(ID);
-                    writer.Write(Name);
-                    writer.Write(Port);
+                    writer.Write(SessionID);
                 }
                 return memStr.ToArray();
             }
@@ -37,15 +32,13 @@ namespace Framework.Network.Packet.Server
 
         public override IPacket Deserialize(byte[] data)
         {
-            var obj = new SMSG_Realmlist();
+            var obj = new CMSG_World();
             using (var memStr = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memStr))
                 {
                     reader.ReadByte();
-                    obj.ID = reader.ReadInt32();
-                    obj.Name = reader.ReadString();
-                    obj.Port = reader.ReadInt32();
+                    obj.SessionID = reader.ReadString();
                 }
             }
             return obj;

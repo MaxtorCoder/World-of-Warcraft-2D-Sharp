@@ -12,7 +12,7 @@ namespace WorldServer.Command
     /// <summary>
     /// Command for handling account data.
     /// </summary>
-    public class CommandAccount : ICommand
+    public class CommandAccount : AbstractCommand
     {
         public CommandAccount() : base("account", AccountSecurity.Administrator)
         {
@@ -48,13 +48,13 @@ namespace WorldServer.Command
             switch (status)
             {
                 case DatabaseManager.Status.OK:
-                    Logger.Write(Logger.LogType.Server, $"Account created: {username}.");
+                    MainWindow.QueueLogMessage($"Account created: {username}.");
                     break;
                 case DatabaseManager.Status.RowExists:
-                    Logger.Write(Logger.LogType.Server, $"Unable to create account {username}; Already exists!");
+                    MainWindow.QueueLogMessage($"Unable to create account {username}; Already exists!");
                     break;
                 case DatabaseManager.Status.Fatal:
-                    Logger.Write(Logger.LogType.Error, $"A fatal error occurred while trying to create account {username}. Database error?");
+                    MainWindow.QueueLogMessage($"A fatal error occurred while trying to create account {username}. Database error?");
                     break;
             }
         }

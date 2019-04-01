@@ -18,7 +18,7 @@ namespace Framework.Network.Packet.Server
     {
         public List<RealmCharacter> Characters { get; set; }
 
-        public SMSG_Character_List() : base((byte)ServerOpcodes.SMSG_CHARACTER_LIST) { }
+        public SMSG_Character_List() : base((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_LIST) { }
 
         public override byte[] Serialize()
         {

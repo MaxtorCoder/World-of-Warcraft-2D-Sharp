@@ -68,10 +68,8 @@ namespace WoW_2D.Network.Connection
             try
             {
                 var opcode = buffer[0];
-                if (Enum.IsDefined(typeof(ServerOpcodes), (int)opcode))
+                if (Enum.IsDefined(typeof(ServerOpcodes.Opcodes), (int)opcode))
                     PacketRegistry.Invoke(opcode, this, buffer);
-                else
-                    Logger.WriteDebug($"[Client] Received unknown opcode: {opcode.ToString("x2")}");
 
                 Receive();
             }

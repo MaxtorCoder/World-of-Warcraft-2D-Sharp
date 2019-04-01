@@ -288,7 +288,7 @@ namespace Framework
             var query = "INSERT INTO account (username, password_hash, security) VALUES (@username, @password, @security)";
             var status = Status.OK;
 
-            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
             {
                 using (var command = new MySqlCommand(query))
                 {
@@ -491,6 +491,54 @@ namespace Framework
                 return account;
             }
             account.Status = Account.LoginStatus.LoggedIn;
+
+            if (account.Status == Account.LoginStatus.LoggedIn)
+            {
+                var updateQuery = "UPDATE account SET session_id=@sessionId WHERE user_id=@userId";
+                var sessionId = Guid.NewGuid();
+                var sessionUpdate = Status.OK;
+                using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+                {
+                    using (var command = new MySqlCommand(updateQuery))
+                    {
+                        command.Parameters.AddWithValue("@sessionId", sessionId);
+                        command.Parameters.AddWithValue("@userId", account.ID);
+                        command.Connection = connection;
+                        sessionUpdate = ExecuteCommand(connection, command).Result;
+                    }
+                }
+
+                if (sessionUpdate != Status.OK)
+                    account.Status = Account.LoginStatus.ServerError;
+                else
+                    account.SessionID = sessionId;
+            }
+
+            return account;
+        }
+
+        /// <summary>
+        /// Fetch the account that the given sessionId belongs to.
+        /// </summary>
+        /// <param name="sessionId"></param>
+        /// <returns></returns>
+        public static Account FetchAccount(string sessionId)
+        {
+            var account = new Account();
+            var query = "SELECT * FROM account WHERE session_id=@sessionId";
+
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@sessionId", sessionId);
+                    command.Connection = connection;
+                    account = ExecuteAccountReader(connection, command).Result;
+                }
+            }
+
+            if (account.Status == Account.LoginStatus.ServerError)
+                return account;
 
             return account;
         }

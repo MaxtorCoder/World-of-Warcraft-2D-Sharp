@@ -155,11 +155,19 @@ namespace WoW_2D.States
                 case NetworkManager.NetworkState.RetrievingRealmlist:
                     GuiNotification.Draw(font, spriteBatch, "Retrieving realmlist...");
                     break;
-                case NetworkManager.NetworkState.Realmlist:
+                case NetworkManager.NetworkState.LoggingIntoGameServer:
+                    GuiNotification.Draw(font, spriteBatch, "Logging into game-server....");
+                    break;
+                case NetworkManager.NetworkState.GameServerConnectionFailed:
+                    GuiNotification.Draw(font, spriteBatch, "Failed to log-in to game-server. Please try again later.", true);
+                    NetworkManager.Disconnect(NetworkManager.Direction.Auth);
+                    break;
+                case NetworkManager.NetworkState.GameServer:
                     GameStateManager.EnterState(2);
                     break;
                 case NetworkManager.NetworkState.ServerError:
                     GuiNotification.Draw(font, spriteBatch, "Server error.", true);
+                    NetworkManager.Disconnect(NetworkManager.Direction.Auth);
                     break;
             }
         }

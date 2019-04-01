@@ -26,7 +26,7 @@ namespace AuthServer.Network.Handlers
             var status = DatabaseManager.UserExists(packet.Username);
             if (status != DatabaseManager.Status.RowExists)
             {
-                connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.SMSG_LOGON_UNK });
+                connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.Responses.SMSG_LOGON_UNK });
                 connection.ShouldDisconnect = true;
                 return;
             }
@@ -41,7 +41,7 @@ namespace AuthServer.Network.Handlers
                     {
                         if (packet.Username.ToLower() == authConnection.Account.Username.ToLower())
                         {
-                            connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.SMSG_LOGON_ALREADY_LOGGED_IN });
+                            connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.Responses.SMSG_LOGON_ALREADY_LOGGED_IN });
                             connection.ShouldDisconnect = true;
                             return;
                         }
@@ -53,14 +53,14 @@ namespace AuthServer.Network.Handlers
             var account = DatabaseManager.TryLogin(packet.Username, packet.Password);
             if (account.Status == Account.LoginStatus.Unknown)
             {
-                connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.SMSG_LOGON_FAILED });
+                connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.Responses.SMSG_LOGON_FAILED });
                 connection.ShouldDisconnect = true;
                 return;
             }
 
             if (account.Status == Account.LoginStatus.ServerError)
             {
-                connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.SMSG_LOGON_SERVER_ERROR });
+                connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.Responses.SMSG_LOGON_SERVER_ERROR });
                 connection.ShouldDisconnect = true;
                 return;
             }
@@ -68,7 +68,11 @@ namespace AuthServer.Network.Handlers
             ((AuthConnection)connection).Account = account;
             Logger.Write(Logger.LogType.Server, $"{account.Username} ({account.Security}) has logged in.");
 
-            connection.Send(new SMSG_Logon() { Magic = (byte)ServerOpcodes.SMSG_LOGON_SUCCESS });
+            connection.Send(new SMSG_Logon()
+            {
+                Magic = (byte)ServerOpcodes.Responses.SMSG_LOGON_SUCCESS,
+                SessionID = account.SessionID.ToString()
+            });
         }
 
         public static void HandleRealmlist(IConnection connection, byte[] buffer)

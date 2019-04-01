@@ -63,11 +63,12 @@ namespace WoW_2D
 
             GuiNotification.Initialize(GraphicsDevice, Content);
 
-            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_LOGON, AuthHandler.HandleLogin);
-            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_REALMLIST, AuthHandler.HandleRealmlist);
-            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_CHARACTER_CREATE, CharHandler.HandleCreation);
-            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_CHARACTER_LIST, CharHandler.HandleList);
-            PacketRegistry.DefineHandler((byte)ServerOpcodes.SMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_LOGON, AuthHandler.HandleLogin);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_REALMLIST, AuthHandler.HandleRealmlist);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_CREATE, CharHandler.HandleCreation);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_LIST, CharHandler.HandleList);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD, WorldHandler.HandleWorldLogin);
 
             base.Initialize();
         }

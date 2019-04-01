@@ -14,7 +14,7 @@ namespace Framework.Network.Packet.Server
     /// </summary>
     public class SMSG_Character_Delete : IPacket
     {
-        public SMSG_Character_Delete() : base((byte)ServerOpcodes.SMSG_CHARACTER_DELETE) { }
+        public SMSG_Character_Delete() : base((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_DELETE) { }
 
         public override byte[] Serialize()
         {

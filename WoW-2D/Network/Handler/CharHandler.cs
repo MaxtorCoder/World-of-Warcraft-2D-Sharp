@@ -19,18 +19,17 @@ namespace WoW_2D.Network.Handler
         public static void HandleCreation(IConnection connection, byte[] buffer)
         {
             var packet = (SMSG_Character_Create)new SMSG_Character_Create().Deserialize(buffer);
-
-            if (Enum.IsDefined(typeof(ServerOpcodes), (int)packet.Magic))
+            if (Enum.IsDefined(typeof(ServerOpcodes.Responses), (int)packet.Magic))
             {
                 switch (packet.Magic)
                 {
-                    case (byte)ServerOpcodes.SMSG_CHARACTER_EXISTS:
+                    case (byte)ServerOpcodes.Responses.SMSG_CHARACTER_EXISTS:
                         NetworkManager.State = NetworkManager.NetworkState.CharacterExists;
                         break;
-                    case (byte)ServerOpcodes.SMSG_CHARACTER_SERVER_ERROR:
+                    case (byte)ServerOpcodes.Responses.SMSG_CHARACTER_SERVER_ERROR:
                         NetworkManager.State = NetworkManager.NetworkState.CreateCharacterError;
                         break;
-                    case (byte)ServerOpcodes.SMSG_CHARACTER_SUCCESS:
+                    case (byte)ServerOpcodes.Responses.SMSG_CHARACTER_SUCCESS:
                         NetworkManager.State = NetworkManager.NetworkState.CharacterCreated;
                         break;
                 }
@@ -50,7 +49,7 @@ namespace WoW_2D.Network.Handler
         public static void HandleDeletion(IConnection connection, byte[] buffer)
         {
             NetworkManager.State = NetworkManager.NetworkState.RetrievingCharacters;
-            NetworkManager.Send(new CMSG_Character_List(), NetworkManager.Direction.Auth);
+            NetworkManager.Send(new CMSG_Character_List(), NetworkManager.Direction.World);
         }
     }
 }

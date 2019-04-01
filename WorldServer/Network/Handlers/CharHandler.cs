@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuthServer.Network.Handlers
+namespace WorldServer.Network.Handlers
 {
     /// <summary>
     /// Handles everything related to player characters.
@@ -21,24 +21,24 @@ namespace AuthServer.Network.Handlers
         {
             var packet = (CMSG_Character_Create)new CMSG_Character_Create().Deserialize(buffer);
 
-            var status = DatabaseManager.CreateCharacter(((AuthConnection)connection).Account.ID, packet.Name, packet.Race);
+            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race);
             switch (status)
             {
                 case DatabaseManager.Status.RowExists:
-                    connection.Send(new SMSG_Character_Create() { Magic = (byte)ServerOpcodes.SMSG_CHARACTER_EXISTS });
+                    connection.Send(new SMSG_Character_Create() { Magic = (byte)ServerOpcodes.Responses.SMSG_CHARACTER_EXISTS });
                     return;
                 case DatabaseManager.Status.Fatal:
-                    connection.Send(new SMSG_Character_Create() { Magic = (byte)ServerOpcodes.SMSG_CHARACTER_SERVER_ERROR });
+                    connection.Send(new SMSG_Character_Create() { Magic = (byte)ServerOpcodes.Responses.SMSG_CHARACTER_SERVER_ERROR });
                     return;
                 case DatabaseManager.Status.OK:
-                    connection.Send(new SMSG_Character_Create() { Magic = (byte)ServerOpcodes.SMSG_CHARACTER_SUCCESS });
+                    connection.Send(new SMSG_Character_Create() { Magic = (byte)ServerOpcodes.Responses.SMSG_CHARACTER_SUCCESS });
                     return;
             }
         }
 
         public static void HandleList(IConnection connection, byte[] buffer)
         {
-            var characters = DatabaseManager.FetchCharacters(((AuthConnection)connection).Account.ID);
+            var characters = DatabaseManager.FetchCharacters(((WorldConnection)connection).Account.ID);
 
             connection.Send(new SMSG_Character_List() { Characters = characters });
         }
@@ -46,7 +46,7 @@ namespace AuthServer.Network.Handlers
         public static void HandleDeletion(IConnection connection, byte[] buffer)
         {
             var packet = (CMSG_Character_Delete)new CMSG_Character_Delete().Deserialize(buffer);
-            var status = DatabaseManager.DeleteCharacter(((AuthConnection)connection).Account.ID, packet.Name);
+            var status = DatabaseManager.DeleteCharacter(((WorldConnection)connection).Account.ID, packet.Name);
 
             if (status == DatabaseManager.Status.OK)
                 connection.Send(new SMSG_Character_Delete());

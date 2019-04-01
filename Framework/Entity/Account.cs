@@ -23,6 +23,7 @@ namespace Framework.Network.Entity
         public string Username { get; set; }
         public string Password_Hashed { get; set; }
         public AccountSecurity Security { get; set; }
+        public Guid SessionID { get; set; }
 
         public LoginStatus Status { get; set; }
     }

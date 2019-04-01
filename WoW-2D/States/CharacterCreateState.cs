@@ -161,7 +161,7 @@ namespace WoW_2D.States
                 {
                     Name = nameText.Text.Trim(),
                     Race = raceSelection.GetSelectedRace()
-                }, NetworkManager.Direction.Auth);
+                }, NetworkManager.Direction.World);
             }
         }
 

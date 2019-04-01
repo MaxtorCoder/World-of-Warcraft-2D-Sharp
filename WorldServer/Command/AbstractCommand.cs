@@ -5,20 +5,19 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static WorldServer.WorldServer;
 
 namespace WorldServer.Command
 {
     /// <summary>
     /// A base class for command-types.
     /// </summary>
-    public abstract class ICommand
+    public abstract class AbstractCommand
     {
         private string _prefix;
         private AccountSecurity _security;
         protected Dictionary<string, MethodInfo> _subCommands;
 
-        public ICommand(string prefix, AccountSecurity security)
+        public AbstractCommand(string prefix, AccountSecurity security)
         {
             _prefix = prefix;
             _security = security;

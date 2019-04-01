@@ -210,6 +210,7 @@
     <Compile Include="Network\Packet\Client\CMSG_Character_List.cs" />
     <Compile Include="Network\Packet\Client\CMSG_Logon.cs" />
     <Compile Include="Network\Packet\Client\CMSG_Realmlist.cs" />
+    <Compile Include="Network\Packet\Client\CMSG_World.cs" />
     <Compile Include="Network\Packet\IPacket.cs" />
     <Compile Include="Network\AccountSecurity.cs" />
     <Compile Include="Network\Packet\OpCodes\ClientOpcodes.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="Network\Packet\Server\SMSG_Character_List.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Logon.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Realmlist.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_World.cs" />
     <Compile Include="Network\Server\IServer.cs" />
     <Compile Include="Network\Server\TCPSocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
