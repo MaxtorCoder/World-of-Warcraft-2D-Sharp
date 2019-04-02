@@ -5,18 +5,15 @@ using Framework.Network.Server;
 using Framework.Utils;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using WorldServer.Command;
 using WorldServer.Network;
 using WorldServer.Network.Handlers;
+using WorldServer.World;
 
 namespace WorldServer
 {
@@ -43,21 +40,16 @@ namespace WorldServer
         public MainWindow()
         {
             InitializeComponent();
-            PrintIntro();
             InitializeWorld();
 
             _logInput.KeyUp += OnKeyPressed;
             Closing += OnClosing;
         }
 
-        private void PrintIntro()
-        {
-            QueueLogMessage("My first XAML project <3");
-            QueueLogMessage(VersionStr);
-        }
-
         private void InitializeWorld()
         {
+            QueueLogMessage(VersionStr);
+
             tcpServer = new TCPSocketServer("127.0.0.1", port);
             tcpServer.OnClientConnected += OnClientConnected;
 
@@ -66,10 +58,10 @@ namespace WorldServer
 
             if (tcpServer.ExitCode == 0)
             {
+                MapManager.Initialize();
+                QueueLogMessage($"Loaded {MapManager.GetCount()} maps");
                 QueueLogMessage($"Initialized on {port}");
             }
-
-            // TODO: Load maps and such.
 
             coreThread = new Thread(new ThreadStart(CoreThread));
             coreThread.Start();

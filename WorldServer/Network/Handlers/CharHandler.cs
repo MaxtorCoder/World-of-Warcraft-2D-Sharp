@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.World;
 
 namespace WorldServer.Network.Handlers
 {
@@ -21,7 +22,8 @@ namespace WorldServer.Network.Handlers
         {
             var packet = (CMSG_Character_Create)new CMSG_Character_Create().Deserialize(buffer);
 
-            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race);
+            var mapId = DatabaseManager.FetchMapIDForRace((int)packet.Race);
+            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race, mapId);
             switch (status)
             {
                 case DatabaseManager.Status.RowExists:
@@ -50,8 +52,6 @@ namespace WorldServer.Network.Handlers
 
             if (status == DatabaseManager.Status.OK)
                 connection.Send(new SMSG_Character_Delete());
-
-            // TODO: Handle a fatal return.
         }
     }
 }

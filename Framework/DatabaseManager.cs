@@ -197,7 +197,7 @@ namespace Framework
                         Level = (int)reader["Level"],
                         Class = (Class)reader["Class"],
                         Race = (Race)reader["Race"],
-                        Location = "Elwynn Forest"
+                        Location = "Elwynn Forest" // TODO: Read from database.
                     });
                 }
             }
@@ -229,6 +229,28 @@ namespace Framework
         }
 
         /// <summary>
+        /// Fetch a map id.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private static async Task<int> FetchMapID(MySqlConnection connection, MySqlCommand command)
+        {
+            var mapId = -1;
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    mapId = int.Parse(reader["map_id"].ToString());
+            }
+            catch (MySqlException) { }
+
+            return mapId;
+        }
+
+        /// <summary>
         /// Fetch all realms for the realmlist.
         /// </summary>
         /// <returns></returns>
@@ -246,6 +268,29 @@ namespace Framework
                 }
             }
             return realmlist;
+        }
+
+        /// <summary>
+        /// Fetch the map id belonging to the specified race id.
+        /// </summary>
+        /// <param name="raceId"></param>
+        /// <returns></returns>
+        public static int FetchMapIDForRace(int raceId)
+        {
+            var mapId = -1;
+            var query = "SELECT map_id FROM character_spawns WHERE race_id=@raceId";
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Connection = connection;
+                    command.Parameters.AddWithValue("@raceId", raceId);
+                    mapId = FetchMapID(connection, command).Result;
+                }
+            }
+
+            return mapId;
         }
 
         /// <summary>
@@ -334,7 +379,7 @@ namespace Framework
         /// <param name="name"></param>
         /// <param name="race"></param>
         /// <returns></returns>
-        public static Status CreateCharacter(int userId, string name, Race race)
+        public static Status CreateCharacter(int userId, string name, Race race, int mapId)
         {
             name = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
             var existStatus = CharacterExists(name);
@@ -371,6 +416,19 @@ namespace Framework
                     command.Parameters.AddWithValue("@level", 1);
                     command.Parameters.AddWithValue("@classId", (int)Class.Warrior);
                     command.Parameters.AddWithValue("@raceId", (int)race);
+                    command.Connection = connection;
+
+                    status = ExecuteCommand(connection, command).Result;
+                }
+            }
+
+            query = "INSERT INTO character_location_data (character_id, map_id, cell_id, x, y) VALUES (@characterId, @mapId, -1, 0.0, 0.0)";
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@characterId", guid);
+                    command.Parameters.AddWithValue("@mapId", mapId);
                     command.Connection = connection;
 
                     status = ExecuteCommand(connection, command).Result;
@@ -434,7 +492,8 @@ namespace Framework
             var tables = new string[]
             {
                 "user_character",
-                "character_data"
+                "character_data",
+                "character_location_data"
             };
             
             foreach (var table in tables)
