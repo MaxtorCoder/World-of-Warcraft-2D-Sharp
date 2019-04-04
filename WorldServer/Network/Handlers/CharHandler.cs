@@ -23,7 +23,10 @@ namespace WorldServer.Network.Handlers
             var packet = (CMSG_Character_Create)new CMSG_Character_Create().Deserialize(buffer);
 
             var mapId = DatabaseManager.FetchMapIDForRace((int)packet.Race);
-            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race, mapId);
+            var map = MapManager.GetMapByID(mapId);
+            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race, map);
+            if (map.ID == -1)
+                status = DatabaseManager.Status.Fatal;
             switch (status)
             {
                 case DatabaseManager.Status.RowExists:
@@ -41,6 +44,15 @@ namespace WorldServer.Network.Handlers
         public static void HandleList(IConnection connection, byte[] buffer)
         {
             var characters = DatabaseManager.FetchCharacters(((WorldConnection)connection).Account.ID);
+            for (int i = 0; i < characters.Count; i++)
+            {
+                var character = characters[i];
+                var mapId = DatabaseManager.FetchMapIDForCharacter(character.GUID);
+                var map = MapManager.GetMapByID(mapId);
+                character.GUID = string.Empty; // Security reasons?
+                character.Location = map.Name;
+                characters[i] = character;
+            }
 
             connection.Send(new SMSG_Character_List() { Characters = characters });
         }

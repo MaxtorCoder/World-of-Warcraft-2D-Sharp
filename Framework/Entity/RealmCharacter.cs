@@ -12,6 +12,7 @@ namespace Framework.Entity
     [Serializable]
     public struct RealmCharacter
     {
+        public string GUID { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
         public Class Class { get; set; }

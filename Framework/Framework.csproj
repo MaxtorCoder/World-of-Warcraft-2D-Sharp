@@ -195,11 +195,15 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TiledSharp, Version=0.15.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TiledSharp.1.0.1\lib\netstandard2.0\TiledSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entity\Account.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="Entity\Class.cs" />
+    <Compile Include="Entity\Map.cs" />
     <Compile Include="Entity\Race.cs" />
     <Compile Include="Entity\Realm.cs" />
     <Compile Include="Entity\RealmCharacter.cs" />

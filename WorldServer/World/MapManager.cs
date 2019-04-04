@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Entity;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace WorldServer.World
     /// </summary>
     public class MapManager
     {
-        private static Dictionary<int, Map> _maps = new Dictionary<int, Map>();
+        private static List<Map> _maps = new List<Map>();
         private const string _mapDirectory = "Data/Maps";
 
         public static void Initialize()
@@ -21,9 +22,11 @@ namespace WorldServer.World
             foreach (var mapFile in Directory.EnumerateFiles(_mapDirectory, "*.tmx"))
             {
                 var tmx = new TmxMap(mapFile);
-                _maps.Add(int.Parse(tmx.Properties["map_id"]), new Map()
+                _maps.Add(new Map()
                 {
-                    Name = tmx.Properties["map_name"]
+                    ID = int.Parse(tmx.Properties["MapID"]),
+                    Name = tmx.Properties["MapName"],
+                    Spawns = tmx.ObjectGroups["SpawnObjects"]
                 });
             }
         }
@@ -32,10 +35,10 @@ namespace WorldServer.World
         {
             foreach (var map in _maps)
             {
-                if (map.Key == mapId)
-                    return map.Value;
+                if (map.ID == mapId)
+                    return map;
             }
-            return null;
+            return new Map() { ID = -1 };
         }
 
         public static int GetCount()

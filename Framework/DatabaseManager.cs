@@ -193,11 +193,11 @@ namespace Framework
                 {
                     characters.Add(new RealmCharacter()
                     {
+                        GUID = reader["CharacterID"].ToString(),
                         Name = reader["Username"].ToString(),
                         Level = (int)reader["Level"],
                         Class = (Class)reader["Class"],
-                        Race = (Race)reader["Race"],
-                        Location = "Elwynn Forest" // TODO: Read from database.
+                        Race = (Race)reader["Race"]
                     });
                 }
             }
@@ -294,6 +294,29 @@ namespace Framework
         }
 
         /// <summary>
+        /// Fetch the mapId for the character; Used for the character list.
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns></returns>
+        public static int FetchMapIDForCharacter(string characterId)
+        {
+            var mapId = -1;
+            var query = "SELECT map_id FROM character_location_data WHERE character_id=@characterId";
+
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Connection = connection;
+                    command.Parameters.AddWithValue("@characterId", characterId);
+                    mapId = FetchMapID(connection, command).Result;
+                }
+            }
+
+            return mapId;
+        }
+
+        /// <summary>
         /// Does this user exist?
         /// </summary>
         /// <param name="username"></param>
@@ -379,7 +402,7 @@ namespace Framework
         /// <param name="name"></param>
         /// <param name="race"></param>
         /// <returns></returns>
-        public static Status CreateCharacter(int userId, string name, Race race, int mapId)
+        public static Status CreateCharacter(int userId, string name, Race race, Map map)
         {
             name = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
             var existStatus = CharacterExists(name);
@@ -414,7 +437,7 @@ namespace Framework
                     command.Parameters.AddWithValue("@userId", userId);
                     command.Parameters.AddWithValue("@characterId", guid);
                     command.Parameters.AddWithValue("@level", 1);
-                    command.Parameters.AddWithValue("@classId", (int)Class.Warrior);
+                    command.Parameters.AddWithValue("@classId", (int)Class.Warrior); // TODO: Implement class stuff client-side.
                     command.Parameters.AddWithValue("@raceId", (int)race);
                     command.Connection = connection;
 
@@ -422,13 +445,15 @@ namespace Framework
                 }
             }
 
-            query = "INSERT INTO character_location_data (character_id, map_id, cell_id, x, y) VALUES (@characterId, @mapId, -1, 0.0, 0.0)";
+            query = "INSERT INTO character_location_data (character_id, map_id, cell_id, x, y) VALUES (@characterId, @mapId, -1, @x, @y)";
             using (var connection = new MySqlConnection(CharacterConnectionStr))
             {
                 using (var command = new MySqlCommand(query))
                 {
                     command.Parameters.AddWithValue("@characterId", guid);
-                    command.Parameters.AddWithValue("@mapId", mapId);
+                    command.Parameters.AddWithValue("@mapId", map.ID);
+                    command.Parameters.AddWithValue("@x", map.Spawns.Objects["Player"].X);
+                    command.Parameters.AddWithValue("@y", map.Spawns.Objects["Player"].Y);
                     command.Connection = connection;
 
                     status = ExecuteCommand(connection, command).Result;
@@ -446,7 +471,7 @@ namespace Framework
         public static List<RealmCharacter> FetchCharacters(int userId)
         {
             var characters = new List<RealmCharacter>();
-            var query = "SELECT DISTINCT user_character.name as Username, character_data.level as Level, character_data.class_id as Class, character_data.race_id as Race " +
+            var query = "SELECT DISTINCT user_character.name as Username, character_data.level as Level, character_data.class_id as Class, character_data.race_id as Race, character_data.character_id as CharacterID " +
                 "FROM user_character, character_data " +
                 "WHERE user_character.user_id=@userId AND character_data.user_id=@userId";
 

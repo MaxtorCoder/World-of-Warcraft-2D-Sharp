@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TiledSharp;
 
-namespace WorldServer.World
+namespace Framework.Entity
 {
     /// <summary>
     /// Manages specific map data.
     /// </summary>
-    public class Map
+    public struct Map
     {
+        public int ID { get; set; }
         public string Name { get; set; }
 
-        // TODO: GameObjects such as spawn, gobj spawns, etc,.
+        public TmxObjectGroup Spawns { get; set; }
     }
 }

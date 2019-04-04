@@ -60,8 +60,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="GameObject\IPlayerObject.cs" />
-    <Compile Include="GameObject\PlayerObject.cs" />
     <Compile Include="Gfx\Gui\GuiButton.cs" />
     <Compile Include="Gfx\Gui\GuiEntryText.cs" />
     <Compile Include="Gfx\Gui\GuiNotification.cs" />
@@ -128,6 +126,9 @@
       <Project>{0118BE1A-77D0-4EDF-AEF7-CFC7AC71261E}</Project>
       <Name>Framework</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="World\GameObjects\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="left-down" width="25" height="25" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.2" tiledversion="1.2.2" orientation="orthogonal" renderorder="left-down" width="25" height="25" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="3">
  <properties>
-  <property name="map_id" type="int" value="1"/>
-  <property name="map_name" value="Elwynn Forest"/>
+  <property name="MapID" type="int" value="1"/>
+  <property name="MapName" value="Elwynn Forest"/>
  </properties>
  <tileset firstgid="1" name="A2" tilewidth="16" tileheight="16" tilecount="768" columns="32">
   <image source="Tilesets/A2.png" width="512" height="384"/>
@@ -34,7 +34,7 @@
   <tile id="162" terrain="0,0,,"/>
   <tile id="163" terrain="0,,,"/>
  </tileset>
- <layer id="1" name="Tile Layer 1" width="25" height="25">
+ <layer id="1" name="Ground" width="25" height="25">
   <data>
    <tile gid="67"/>
    <tile gid="66"/>
@@ -84,7 +84,7 @@
    <tile gid="130"/>
    <tile gid="98"/>
    <tile gid="98"/>
-   <tile gid="131"/>
+   <tile gid="7"/>
    <tile gid="130"/>
    <tile gid="131"/>
    <tile gid="99"/>
@@ -663,4 +663,7 @@
    <tile gid="36"/>
   </data>
  </layer>
+ <objectgroup id="2" name="SpawnObjects">
+  <object id="2" name="Player" x="368" y="16" width="16" height="16"/>
+ </objectgroup>
 </map>
