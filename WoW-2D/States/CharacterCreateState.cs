@@ -84,7 +84,7 @@ namespace WoW_2D.States
             nameText.Position = new Vector2(graphics.Viewport.Width / 2 - nameText.Width / 2, randomizeButton.Position.Y - nameText.Height - 20);
             nameText.LoadContent(content);
 
-            humanTexture = content.Load<Texture2D>("Sprites/Human/Human");
+            humanTexture = Utils.Global.HumanSpritesheet.GetSprite(new Point(32, 0), new Point(32));
 
             raceSelection.LoadContent(content);
         }
@@ -118,7 +118,7 @@ namespace WoW_2D.States
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             if (selectedTexture != null)
-                spriteBatch.Draw(selectedTexture, new Vector2(graphics.Viewport.Width / 2 - selectedTexture.Width / 2, graphics.Viewport.Height / 2 - selectedTexture.Height / 2), null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.FlipVertically, 0f);
+                spriteBatch.Draw(selectedTexture, new Vector2(graphics.Viewport.Width / 2 - selectedTexture.Width / 2, graphics.Viewport.Height / 2 - selectedTexture.Height / 2), null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
             raceSelection.Draw(font, spriteBatch);
             acceptButton.Draw(spriteBatch);
             backButton.Draw(spriteBatch);

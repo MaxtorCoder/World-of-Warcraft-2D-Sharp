@@ -22,7 +22,7 @@ namespace WoW_2D.Network.Handler
         public static void HandleLogin(IConnection connection, byte[] buffer)
         {
             var packet = (SMSG_Logon)new SMSG_Logon().Deserialize(buffer);
-            
+
             if (Enum.IsDefined(typeof(ServerOpcodes.Responses), (int)packet.Magic))
             {
                 switch (packet.Magic)

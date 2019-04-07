@@ -17,5 +17,6 @@ namespace Framework.Network.Packet.OpCodes
         CMSG_CHARACTER_DELETE   =           0x04,
         CMSG_REALMLIST          =           0x10,
         CMSG_WORLD              =           0x05,
+        CMSG_WORLD_ENTER        =           0x06,
     }
 }

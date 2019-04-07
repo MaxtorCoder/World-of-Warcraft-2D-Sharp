@@ -34,6 +34,8 @@ namespace WoW_2D.Network
             CharacterCreated,
             RetrievingCharacters,
             DeletingCharacter,
+            EnteringWorld,
+            EnterWorld,
             ServerError
         }
 

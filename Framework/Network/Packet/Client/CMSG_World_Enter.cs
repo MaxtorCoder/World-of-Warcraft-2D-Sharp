@@ -6,17 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.Network.Packet.Server
+namespace Framework.Network.Packet.Client
 {
     /// <summary>
-    /// The server logon packet.
+    /// The world enter request packet.
     /// </summary>
-    public class SMSG_Logon : IPacket
+    public class CMSG_World_Enter : IPacket
     {
-        public byte Magic { get; set; }
-        public string SessionID { get; set; } = string.Empty;
+        public string GUID { get; set; }
 
-        public SMSG_Logon() : base((byte)ServerOpcodes.Opcodes.SMSG_LOGON) { }
+        public CMSG_World_Enter() : base((byte)ClientOpcodes.CMSG_WORLD_ENTER) { }
 
         public override byte[] Serialize()
         {
@@ -25,8 +24,7 @@ namespace Framework.Network.Packet.Server
                 using (var writer = new BinaryWriter(memStr))
                 {
                     writer.Write(_opcode);
-                    writer.Write(Magic);
-                    writer.Write(SessionID);
+                    writer.Write(GUID);
                 }
                 return memStr.ToArray();
             }
@@ -34,14 +32,13 @@ namespace Framework.Network.Packet.Server
 
         public override IPacket Deserialize(byte[] data)
         {
-            var obj = new SMSG_Logon();
+            var obj = new CMSG_World_Enter();
             using (var memStr = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memStr))
                 {
                     reader.ReadByte();
-                    obj.Magic = reader.ReadByte();
-                    obj.SessionID = reader.ReadString();
+                    obj.GUID = reader.ReadString();
                 }
             }
             return obj;

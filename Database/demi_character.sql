@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50719
 File Encoding         : 65001
 
-Date: 2019-03-30 12:30:34
+Date: 2019-04-06 23:18:13
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS `character_data`;
 CREATE TABLE `character_data` (
   `user_id` int(11) NOT NULL,
   `character_id` varchar(36) NOT NULL,
+  `name` varchar(12) DEFAULT NULL,
   `level` int(2) DEFAULT NULL,
   `class_id` int(2) DEFAULT NULL,
   `race_id` int(2) DEFAULT NULL,
@@ -36,8 +37,9 @@ CREATE TABLE `character_location_data` (
   `character_id` varchar(36) NOT NULL,
   `map_id` int(11) DEFAULT NULL,
   `cell_id` int(11) DEFAULT NULL,
-  `x` float(255,0) DEFAULT NULL,
-  `y` float(255,0) DEFAULT NULL,
+  `x` float(255,1) DEFAULT NULL,
+  `y` float(255,1) DEFAULT NULL,
+  `direction` int(1) DEFAULT NULL,
   PRIMARY KEY (`character_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -49,15 +51,4 @@ CREATE TABLE `character_spawns` (
   `race_id` int(2) NOT NULL,
   `map_id` int(11) NOT NULL,
   PRIMARY KEY (`race_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- ----------------------------
--- Table structure for user_character
--- ----------------------------
-DROP TABLE IF EXISTS `user_character`;
-CREATE TABLE `user_character` (
-  `user_id` int(11) NOT NULL,
-  `character_id` varchar(36) NOT NULL,
-  `name` varchar(12) NOT NULL,
-  PRIMARY KEY (`user_id`,`character_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

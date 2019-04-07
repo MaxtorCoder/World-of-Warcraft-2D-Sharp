@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
@@ -6,8 +7,10 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.BitmapFonts;
+using MonoGame.Extended.TextureAtlases;
 using MonoGameHelper.GameState;
 using MonoGameHelper.Utils;
+using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Network;
 

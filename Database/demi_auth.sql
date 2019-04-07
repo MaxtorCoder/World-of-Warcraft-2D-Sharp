@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50719
 File Encoding         : 65001
 
-Date: 2019-03-31 23:39:39
+Date: 2019-04-06 23:18:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -27,6 +27,16 @@ CREATE TABLE `account` (
   `session_id` varchar(36) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Table structure for account_online
+-- ----------------------------
+DROP TABLE IF EXISTS `account_online`;
+CREATE TABLE `account_online` (
+  `user_id` int(11) DEFAULT NULL,
+  `character_id` varchar(36) DEFAULT NULL,
+  `is_online` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Table structure for realmlist

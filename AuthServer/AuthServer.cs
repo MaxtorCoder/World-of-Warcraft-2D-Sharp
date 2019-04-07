@@ -47,7 +47,8 @@ namespace AuthServer
             if (tcpServer.ExitCode == 0)
             {
                 Realmlist = DatabaseManager.FetchRealms();
-                Logger.Write(Logger.LogType.Server, $"Loaded {Realmlist.Count} realm(s)");
+                foreach (var realm in Realmlist)
+                    Logger.Write(Logger.LogType.Server, $"Loaded {realm.Name}:{realm.Port}");
                 Logger.Write(Logger.LogType.Server, $"Initialized on {tcpServer.GetLocalEP().Port}");
             }
             (new Thread(new ThreadStart(CoreThread))).Start();
@@ -74,14 +75,6 @@ namespace AuthServer
                         connection.OnDataReceived -= OnDataReceived;
                         connection.Close();
                         Global.RemoveConnection(connection);
-
-                        var authConnection = (AuthConnection)connection;
-                        try
-                        {
-                            if (!string.IsNullOrWhiteSpace(authConnection.Account.Username))
-                                Logger.Write(Logger.LogType.Server, $"{authConnection.Account.Username} has disconnected.");
-                        }
-                        catch { }
                     }
                 }
             }
@@ -124,8 +117,6 @@ namespace AuthServer
                 var opcode = dataBuffer[0];
                 if (Enum.IsDefined(typeof(ClientOpcodes), (int)opcode))
                     PacketRegistry.Invoke(opcode, authConnection, dataBuffer);
-                else
-                    Logger.WriteDebug($"[Demi Auth] Received unknown opcode: {opcode.ToString("x2")}");
 
                 authConnection.Receive();
             }

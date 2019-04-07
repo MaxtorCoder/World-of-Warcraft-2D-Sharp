@@ -8,7 +8,7 @@ using TiledSharp;
 namespace Framework.Entity
 {
     /// <summary>
-    /// Manages specific map data.
+    /// Manages specific map data for the server.
     /// </summary>
     public struct Map
     {

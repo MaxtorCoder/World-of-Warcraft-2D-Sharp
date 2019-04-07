@@ -19,6 +19,7 @@ namespace Framework.Network.Packet.OpCodes
             SMSG_CHARACTER_DELETE           =          0x04,
             SMSG_REALMLIST                  =          0x10,
             SMSG_WORLD                      =          0x05,
+            SMSG_WORLD_ENTER                =          0x06,
         }
 
         public enum Responses

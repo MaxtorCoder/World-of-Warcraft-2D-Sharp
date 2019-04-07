@@ -7,17 +7,15 @@ using System.Threading.Tasks;
 namespace Framework.Entity
 {
     /// <summary>
-    /// Realm-character data.
+    /// The current character in the world.
     /// </summary>
-    [Serializable]
-    public class RealmCharacter
+    public class WorldCharacter
     {
         public string GUID { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
         public Class Class { get; set; }
-        public string Location { get; set; }
         public Race Race { get; set; }
-        public Vector Vector { get; set; } = new Vector();
+        public Vector Vector { get; set; }
     }
 }

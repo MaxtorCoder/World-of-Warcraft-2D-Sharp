@@ -14,8 +14,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Network;
+using WoW_2D.Utils;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace WoW_2D.States
 {
@@ -38,6 +41,8 @@ namespace WoW_2D.States
 
         private RealmCharacter realmCharacter;
         private Texture2D humanTexture, dwarfTexture, nightelfTexture, gnomeTexture;
+
+        private SpriteSheet spriteSheet;
 
         public CharacterSelectState(GraphicsDevice graphics) : base(graphics) { }
 
@@ -75,6 +80,8 @@ namespace WoW_2D.States
             Controls.Add(createCharacterButton);
             Controls.Add(deleteCharacterButton);
             Controls.Add(backButton);
+
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPressed(); }, Keys.Enter);
         }
 
         public override void LoadContent(ContentManager content)
@@ -83,7 +90,7 @@ namespace WoW_2D.States
 
             font = content.Load<BitmapFont>("System/Font/font");
             font_small = content.Load<BitmapFont>("System/Font/font_small");
-            humanTexture = content.Load<Texture2D>("Sprites/Human/Human");
+            humanTexture = Global.HumanSpritesheet.GetSprite(new Point(32, 0), new Point(32));
 
             enterWorldButton.LoadContent(content);
             enterWorldButton.Position = new Vector2(graphics.Viewport.Width / 2 - enterWorldButton.BaseTexture.Width / 2, graphics.Viewport.Height - enterWorldButton.BaseTexture.Height - 15);
@@ -123,8 +130,12 @@ namespace WoW_2D.States
             else
                 characterIndex = -1;
 
-            if (characterIndex > -1)
-                realmCharacter = WorldofWarcraft.RealmCharacters[characterIndex];
+            try
+            {
+                if (characterIndex > -1)
+                    realmCharacter = WorldofWarcraft.RealmCharacters[characterIndex];
+            }
+            catch { characterIndex = 0; }
 
             for (int i = 0; i < characterBoxes.Length; i++)
             {
@@ -164,7 +175,7 @@ namespace WoW_2D.States
                     switch (realmCharacter.Race)
                     {
                         case Race.Human:
-                            spriteBatch.Draw(humanTexture, new Vector2(graphics.Viewport.Width / 2 - humanTexture.Width / 2, graphics.Viewport.Height / 2 - humanTexture.Height / 2), null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.FlipVertically, 0f);
+                            spriteBatch.Draw(humanTexture, new Vector2(graphics.Viewport.Width / 2 - humanTexture.Width / 2, graphics.Viewport.Height / 2 - humanTexture.Height / 2), null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
                             break;
                     }
                 }
@@ -209,12 +220,22 @@ namespace WoW_2D.States
                 case NetworkManager.NetworkState.DeletingCharacter:
                     GuiNotification.Draw(font, spriteBatch, "Deleting character...");
                     break;
+                case NetworkManager.NetworkState.EnteringWorld:
+                    GuiNotification.Draw(font, spriteBatch, "Entering world...");
+                    break;
+                case NetworkManager.NetworkState.EnterWorld:
+                    GameStateManager.EnterState(4);
+                    break;
             }
         }
 
         private void OnEnterWorldPress()
         {
-
+            if (characterIndex > -1)
+            {
+                NetworkManager.State = NetworkManager.NetworkState.EnteringWorld;
+                NetworkManager.Send(new CMSG_World_Enter() { GUID = WorldofWarcraft.RealmCharacters[characterIndex].GUID }, NetworkManager.Direction.World);
+            }
         }
 
         private void OnCreateCharacterPress()
@@ -232,6 +253,11 @@ namespace WoW_2D.States
         {
             NetworkManager.Disconnect(NetworkManager.Direction.Both);
             GameStateManager.EnterState(1);
+        }
+
+        private void OnEnterPressed()
+        {
+            OnEnterWorldPress();
         }
 
         public override void OnStateEnter()

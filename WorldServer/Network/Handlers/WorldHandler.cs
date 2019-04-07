@@ -1,4 +1,5 @@
 ﻿using Framework;
+using Framework.Entity;
 using Framework.Network.Connection;
 using Framework.Network.Entity;
 using Framework.Network.Packet.Client;
@@ -36,6 +37,35 @@ namespace WorldServer.Network.Handlers
             connection.Send(new SMSG_World()
             {
                 Magic = (byte)ServerOpcodes.Responses.SMSG_WORLD_SUCCESS
+            });
+        }
+
+        public static void HandleWorldEnter(IConnection connection, byte[] buffer)
+        {
+            var worldConnection = (WorldConnection)connection;
+            var packet = (CMSG_World_Enter)new CMSG_World_Enter().Deserialize(buffer);
+
+            foreach (var character in worldConnection.Account.RealmCharacters)
+            {
+                if (character.GUID == packet.GUID)
+                {
+                    worldConnection.Account.Character = new WorldCharacter()
+                    {
+                        GUID = character.GUID,
+                        Name = character.Name,
+                        Level = character.Level,
+                        Class = character.Class,
+                        Race = character.Race,
+                        Vector = character.Vector
+                    };
+                }
+            }
+            DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
+            MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
+
+            worldConnection.Send(new SMSG_World_Enter()
+            {
+                WorldCharacter = worldConnection.Account.Character
             });
         }
     }

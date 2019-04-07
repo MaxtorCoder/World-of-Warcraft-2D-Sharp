@@ -12,10 +12,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Reflection;
+using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Network;
 using WoW_2D.Network.Handler;
 using WoW_2D.States;
+using WoW_2D.Utils;
+using WoW_2D.World;
 
 namespace WoW_2D
 {
@@ -35,12 +38,16 @@ namespace WoW_2D
         public readonly static IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
         public static Realm Realm;
         public static List<RealmCharacter> RealmCharacters = new List<RealmCharacter>(7);
+        public static WorldCharacter Character;
+        public static ClientMap Map { get; set; }
 
         public WorldofWarcraft()
         {
-            graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+            graphics = new GraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 1280,
+                PreferredBackBufferHeight = 720
+            };
 
             Content.RootDirectory = "Content";
             Window.Title = "World of Warcraft 2D";
@@ -56,10 +63,15 @@ namespace WoW_2D
         /// </summary>
         protected override void Initialize()
         {
+            Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice);
+            Global.HumanSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/Human/Human"));
+
             GameStateManager.SetContentManager(Content);
             GameStateManager.AddState(new MainMenuState(GraphicsDevice));
             GameStateManager.AddState(new CharacterSelectState(GraphicsDevice));
             GameStateManager.AddState(new CharacterCreateState(GraphicsDevice));
+            GameStateManager.AddState(new LoadingState(GraphicsDevice));
+            GameStateManager.AddState(new GameState(GraphicsDevice));
 
             GuiNotification.Initialize(GraphicsDevice, Content);
 
@@ -69,6 +81,7 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_LIST, CharHandler.HandleList);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD, WorldHandler.HandleWorldLogin);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
 
             base.Initialize();
         }

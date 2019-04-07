@@ -66,8 +66,6 @@ namespace AuthServer.Network.Handlers
             }
 
             ((AuthConnection)connection).Account = account;
-            Logger.Write(Logger.LogType.Server, $"{account.Username} ({account.Security}) has logged in.");
-
             connection.Send(new SMSG_Logon()
             {
                 Magic = (byte)ServerOpcodes.Responses.SMSG_LOGON_SUCCESS,

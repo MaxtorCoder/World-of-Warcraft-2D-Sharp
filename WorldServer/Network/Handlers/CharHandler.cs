@@ -44,16 +44,15 @@ namespace WorldServer.Network.Handlers
         public static void HandleList(IConnection connection, byte[] buffer)
         {
             var characters = DatabaseManager.FetchCharacters(((WorldConnection)connection).Account.ID);
+
             for (int i = 0; i < characters.Count; i++)
             {
-                var character = characters[i];
-                var mapId = DatabaseManager.FetchMapIDForCharacter(character.GUID);
+                var mapId = DatabaseManager.FetchMapIDForCharacter(characters[i].GUID);
                 var map = MapManager.GetMapByID(mapId);
-                character.GUID = string.Empty; // Security reasons?
-                character.Location = map.Name;
-                characters[i] = character;
+                characters[i].Location = map.Name;
             }
 
+            ((WorldConnection)connection).Account.RealmCharacters = characters;
             connection.Send(new SMSG_Character_List() { Characters = characters });
         }
 

@@ -26,6 +26,35 @@
 /processorParam:TextureFormat=Color
 /build:bg_0.jpg
 
+#begin Maps/map1.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Maps/map1.tmx
+
+#begin Maps/Tilesets/A2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Maps/Tilesets/A2.png
+
+#begin Maps/Tilesets/B1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Maps/Tilesets/B1.png
+
 #begin Sprites/Human/Human.png
 /importer:TextureImporter
 /processor:TextureProcessor

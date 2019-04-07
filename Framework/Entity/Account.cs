@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,7 @@ namespace Framework.Network.Entity
     /// <summary>
     /// Holds account data.
     /// </summary>
-    public struct Account
+    public class Account
     {
         public enum LoginStatus
         {
@@ -24,6 +25,9 @@ namespace Framework.Network.Entity
         public string Password_Hashed { get; set; }
         public AccountSecurity Security { get; set; }
         public Guid SessionID { get; set; }
+
+        public List<RealmCharacter> RealmCharacters { get; set; }
+        public WorldCharacter Character { get; set; }
 
         public LoginStatus Status { get; set; }
     }

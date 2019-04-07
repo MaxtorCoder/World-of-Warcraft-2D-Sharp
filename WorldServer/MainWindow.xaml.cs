@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
+using TiledSharp;
 using WorldServer.Command;
 using WorldServer.Network;
 using WorldServer.Network.Handlers;
@@ -73,6 +74,7 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_LIST, CharHandler.HandleList);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_CREATE, CharHandler.HandleCreation);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
 
             while (true)
             {
@@ -96,7 +98,11 @@ namespace WorldServer
                         var worldConnection = (WorldConnection)connection;
                         try
                         {
-                            // TODO: Print character name if exists.
+                            if (worldConnection.Account.Character != null)
+                            {
+                                DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, string.Empty);
+                                QueueLogMessage($"{worldConnection.Account.Character.Name} has left our world!");
+                            }
                         }
                         catch { }
                     }

@@ -31,5 +31,16 @@ namespace WoW_2D.Network.Handler
                 }
             }
         }
+
+        public static void HandleWorldEnter(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_World_Enter)new SMSG_World_Enter().Deserialize(buffer);
+
+            if (packet.WorldCharacter.Vector.MapID != -1) // -1 is unused at the moment.
+            {
+                WorldofWarcraft.Character = packet.WorldCharacter;
+                NetworkManager.State = NetworkManager.NetworkState.EnterWorld;
+            }
+        }
     }
 }
