@@ -1,4 +1,5 @@
 ﻿using Framework.Entity;
+using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WoW_2D.Gfx;
+using WoW_2D.Network;
+using WoW_2D.Utils;
 using static Framework.Entity.Vector;
 
 namespace WoW_2D.World.GameObject
@@ -28,7 +31,6 @@ namespace WoW_2D.World.GameObject
         {
             camera = new Camera2D(graphics);
             camera.ZoomIn(1f);
-            SpriteSheet = new SpriteSheet(graphics);
         }
 
         public override void LoadContent(ContentManager content)
@@ -36,7 +38,7 @@ namespace WoW_2D.World.GameObject
             switch (WorldData.Race)
             {
                 case Race.Human:
-                    SpriteSheet.SetTexture(content.Load<Texture2D>("Sprites/Human/Human"));
+                    SpriteSheet = Global.HumanSpritesheet;
                     break;
             }
 
@@ -71,7 +73,25 @@ namespace WoW_2D.World.GameObject
             westAnimation.SetIdleFrame(0);
 
             Animations.AddRange(new[] { northAnimation, eastAnimation, southAnimation, westAnimation });
-            Animations[2].IsActive = true;
+            switch (WorldData.Vector.Direction)
+            {
+                case MoveDirection.North:
+                case MoveDirection.North_East:
+                case MoveDirection.North_West:
+                    Animations[0].IsActive = true;
+                    break;
+                case MoveDirection.South:
+                case MoveDirection.South_East:
+                case MoveDirection.South_West:
+                    Animations[2].IsActive = true;
+                    break;
+                case MoveDirection.East:
+                    Animations[1].IsActive = true;
+                    break;
+                case MoveDirection.West:
+                    Animations[3].IsActive = true;
+                    break;
+            }
         }
 
         public override void Update(GameTime gameTime)
@@ -94,41 +114,7 @@ namespace WoW_2D.World.GameObject
 
         private void UpdateAnimation(GameTime gameTime)
         {
-            if (IsMovingUp)
-                WorldData.Vector.Direction = MoveDirection.North;
-
-            if (IsMovingRight)
-            {
-                WorldData.Vector.Direction = MoveDirection.East;
-                SetAnimation(x => x.Name == "east_anim");
-            }
-
-            if (IsMovingUp && IsMovingRight)
-                WorldData.Vector.Direction = MoveDirection.North_East;
-
-            if (IsMovingDown)
-                WorldData.Vector.Direction = MoveDirection.South;
-
-            if (IsMovingDown && IsMovingRight)
-                WorldData.Vector.Direction = MoveDirection.South_East;
-
-            if (IsMovingLeft)
-            {
-                WorldData.Vector.Direction = MoveDirection.West;
-                SetAnimation(x => x.Name == "west_anim");
-            }
-
-            if (IsMovingUp && IsMovingLeft)
-                WorldData.Vector.Direction = MoveDirection.North_West;
-
-            if (IsMovingDown && IsMovingLeft)
-                WorldData.Vector.Direction = MoveDirection.South_West;
-
-            if (IsMovingDown || IsMovingDown && IsMovingRight || IsMovingDown && IsMovingLeft)
-                SetAnimation(x => x.Name == "south_anim");
-
-            if (IsMovingUp || IsMovingUp && IsMovingRight || IsMovingUp && IsMovingLeft)
-                SetAnimation(x => x.Name == "north_anim");
+            base.Update(gameTime);
 
             Animations.Find(x => x.IsActive).Update(gameTime);
         }
@@ -168,6 +154,13 @@ namespace WoW_2D.World.GameObject
                         WorldData.Vector.X -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                 }
+
+                NetworkManager.Send(new CMSG_Movement_Update()
+                {
+                    X = WorldData.Vector.X,
+                    Y = WorldData.Vector.Y,
+                    Direction = WorldData.Vector.Direction
+                }, NetworkManager.Direction.World);
             }
         }
 

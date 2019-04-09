@@ -59,8 +59,15 @@ namespace WorldServer
 
             if (tcpServer.ExitCode == 0)
             {
+                QueueLogMessage("Resetting sessions...");
+                DatabaseManager.ResetSessions();
+
+                QueueLogMessage("Resetting online characters...");
+                DatabaseManager.ResetOnlineCharacters();
+
+                QueueLogMessage("Initializing map data...");
                 MapManager.Initialize();
-                QueueLogMessage($"Loaded {MapManager.GetCount()} maps");
+
                 QueueLogMessage($"Initialized on {port}");
             }
 
@@ -75,6 +82,7 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_CREATE, CharHandler.HandleCreation);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_MOVEMENT_UPDATE, WorldHandler.HandleMoveUpdate);
 
             while (true)
             {
@@ -101,6 +109,7 @@ namespace WorldServer
                             if (worldConnection.Account.Character != null)
                             {
                                 DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, string.Empty);
+                                DatabaseManager.SaveCharacter(worldConnection.Account.Character);
                                 QueueLogMessage($"{worldConnection.Account.Character.Name} has left our world!");
                             }
                         }

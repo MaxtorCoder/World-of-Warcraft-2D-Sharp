@@ -65,6 +65,8 @@ namespace AuthServer.Network.Handlers
                 return;
             }
 
+            DatabaseManager.UpdateSession(ref account, true);
+
             ((AuthConnection)connection).Account = account;
             connection.Send(new SMSG_Logon()
             {

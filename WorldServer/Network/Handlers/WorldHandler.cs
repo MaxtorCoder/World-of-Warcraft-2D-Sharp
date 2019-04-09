@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Framework.Entity.Vector;
 
 namespace WorldServer.Network.Handlers
 {
@@ -67,6 +68,16 @@ namespace WorldServer.Network.Handlers
             {
                 WorldCharacter = worldConnection.Account.Character
             });
+        }
+
+        public static void HandleMoveUpdate(IConnection connection, byte[] buffer)
+        {
+            var worldConnection = (WorldConnection)connection;
+            var packet = (CMSG_Movement_Update)new CMSG_Movement_Update().Deserialize(buffer);
+
+            worldConnection.Account.Character.Vector.X = packet.X;
+            worldConnection.Account.Character.Vector.Y = packet.Y;
+            worldConnection.Account.Character.Vector.Direction = packet.Direction;
         }
     }
 }

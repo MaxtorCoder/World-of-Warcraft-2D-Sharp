@@ -84,11 +84,8 @@ namespace Framework
             {
                 await connection.OpenAsync();
                 await command.ExecuteNonQueryAsync();
-            } catch (MySqlException ex)
-            {
-                Console.WriteLine(ex.Message);
-                status = Status.Fatal;
             }
+            catch (MySqlException) { status = Status.Fatal; }
 
             return status;
         }
@@ -663,28 +660,6 @@ namespace Framework
             }
             account.Status = Account.LoginStatus.LoggedIn;
 
-            if (account.Status == Account.LoginStatus.LoggedIn)
-            {
-                var updateQuery = "UPDATE account SET session_id=@sessionId WHERE user_id=@userId";
-                var sessionId = Guid.NewGuid();
-                var sessionUpdate = Status.OK;
-                using (var connection = new MySqlConnection(AuthenticationConnectionStr))
-                {
-                    using (var command = new MySqlCommand(updateQuery))
-                    {
-                        command.Parameters.AddWithValue("@sessionId", sessionId);
-                        command.Parameters.AddWithValue("@userId", account.ID);
-                        command.Connection = connection;
-                        sessionUpdate = ExecuteCommand(connection, command).Result;
-                    }
-                }
-
-                if (sessionUpdate != Status.OK)
-                    account.Status = Account.LoginStatus.ServerError;
-                else
-                    account.SessionID = sessionId;
-            }
-
             return account;
         }
 
@@ -761,6 +736,94 @@ namespace Framework
                     if (updateCharacterId)
                         command.Parameters.AddWithValue("@characterId", characterId);
                     command.Parameters.AddWithValue("@userId", userId);
+                    command.Connection = connection;
+                    var status = ExecuteCommand(connection, command).Result;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update account sessionId.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        public static void UpdateSession(ref Account account, bool isNewSession)
+        {
+            if (account == null)
+                return;
+
+            var updateQuery = string.Empty;
+            if (isNewSession)
+                updateQuery = "UPDATE account SET session_id=@sessionId WHERE user_id=@userId";
+            else
+                updateQuery = "UPDATE account SET session_id=NULL WHERE user_id=@userId";
+            var sessionId = Guid.NewGuid();
+            var sessionUpdate = Status.OK;
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(updateQuery))
+                {
+                    if (isNewSession)
+                        command.Parameters.AddWithValue("@sessionId", sessionId);
+                    command.Parameters.AddWithValue("@userId", account.ID);
+                    command.Connection = connection;
+                    sessionUpdate = ExecuteCommand(connection, command).Result;
+                }
+            }
+
+            if (sessionUpdate != Status.OK)
+                account.Status = Account.LoginStatus.ServerError;
+            else
+                account.SessionID = sessionId;
+        }
+
+        /// <summary>
+        /// Save character data.
+        /// </summary>
+        /// <param name="character"></param>
+        public static void SaveCharacter(WorldCharacter character)
+        {
+            var query = "UPDATE character_location_data SET x=@x, y=@y, direction=@direction WHERE character_id=@characterId";
+            using (var connection = new MySqlConnection(CharacterConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@x", character.Vector.X);
+                    command.Parameters.AddWithValue("@y", character.Vector.Y);
+                    command.Parameters.AddWithValue("@direction", (int)character.Vector.Direction);
+                    command.Parameters.AddWithValue("@characterId", character.GUID);
+                    command.Connection = connection;
+                    var status = ExecuteCommand(connection, command).Result;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset all session id's.
+        /// </summary>
+        public static void ResetSessions()
+        {
+            var query = "UPDATE account SET session_id=NULL";
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Connection = connection;
+                    var status = ExecuteCommand(connection, command).Result;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reset all online characters.
+        /// </summary>
+        public static void ResetOnlineCharacters()
+        {
+            var query = "UPDATE account_online SET character_id=NULL, is_online=0";
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
                     command.Connection = connection;
                     var status = ExecuteCommand(connection, command).Result;
                 }

@@ -75,6 +75,10 @@ namespace AuthServer
                         connection.OnDataReceived -= OnDataReceived;
                         connection.Close();
                         Global.RemoveConnection(connection);
+
+                        var authConnection = (AuthConnection)connection;
+                        var account = authConnection.Account;
+                        DatabaseManager.UpdateSession(ref account, false);
                     }
                 }
             }
