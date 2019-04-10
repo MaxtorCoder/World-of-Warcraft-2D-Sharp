@@ -20,7 +20,7 @@ namespace WoW_2D.Gfx
         private Frame frame;
         private int frameIndex = 0;
         private int tickCounter = 0;
-        private float scale = 0.5f;
+        private float scale = 0.6f;
 
         private List<Frame> frames = new List<Frame>();
 

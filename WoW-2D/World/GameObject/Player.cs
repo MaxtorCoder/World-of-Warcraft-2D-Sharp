@@ -30,7 +30,7 @@ namespace WoW_2D.World.GameObject
         public override void Initialize(GraphicsDevice graphics)
         {
             camera = new Camera2D(graphics);
-            camera.ZoomIn(1f);
+            camera.ZoomIn(0.5f);
         }
 
         public override void LoadContent(ContentManager content)
@@ -99,7 +99,7 @@ namespace WoW_2D.World.GameObject
             UpdateKeyPress();
             UpdateAnimation(gameTime);
             UpdatePosition(gameTime);
-            camera.LookAt(new Vector2(WorldData.Vector.X, WorldData.Vector.Y));
+            camera.LookAt(new Vector2(WorldData.Vector.X + 8, WorldData.Vector.Y + 8));
         }
 
         private void UpdateKeyPress()

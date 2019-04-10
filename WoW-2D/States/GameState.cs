@@ -1,11 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
 using MonoGameHelper.GameState;
+using MonoGameHelper.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Gfx.Gui.Ui;
 
 namespace WoW_2D.States
 {
@@ -14,10 +19,22 @@ namespace WoW_2D.States
     /// </summary>
     public class GameState : IGameState
     {
+        private EscapeMenuUI escapeMenu;
+
         public GameState(GraphicsDevice graphics) : base(graphics) { }
 
         public override void Initialize()
         {
+            escapeMenu = new EscapeMenuUI(graphics);
+
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnEscapePressed(); }, Keys.Escape);
+        }
+
+        public override void LoadContent(ContentManager content)
+        {
+            base.LoadContent(content);
+
+            escapeMenu.LoadContent(content);
         }
 
         public override void UnloadContent()
@@ -27,11 +44,20 @@ namespace WoW_2D.States
         public override void Update(GameTime gameTime)
         {
             WorldofWarcraft.Map.Update(gameTime);
+
+            escapeMenu.Update();
         }
 
         public override void Draw(GameTime gameTime)
         {
             WorldofWarcraft.Map.Draw(spriteBatch, gameTime);
+
+            escapeMenu.Draw(spriteBatch);
+        }
+
+        private void OnEscapePressed()
+        {
+            escapeMenu.IsVisible = !escapeMenu.IsVisible;
         }
     }
 }
