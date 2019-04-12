@@ -17,6 +17,8 @@ namespace WoW_2D.Utils
 
         public static bool ShouldHideUI { get; set; } = false;
 
+        public static Queue<ChatMessage> Chats = new Queue<ChatMessage>();
+
         public static string WrapText(BitmapFont font, string text, float maxWidth)
         {
             string line = string.Empty;

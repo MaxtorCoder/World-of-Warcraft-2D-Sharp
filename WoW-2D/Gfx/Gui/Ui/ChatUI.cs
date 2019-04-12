@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
+using MonoGame.Extended.BitmapFonts;
+using WoW_2D.Network;
 using WoW_2D.Utils;
 
 namespace WoW_2D.Gfx.Gui.Ui
@@ -23,6 +26,9 @@ namespace WoW_2D.Gfx.Gui.Ui
         private const float alphaMax = 0.75f;
         private float alpha = alphaMin;
 
+        private List<ChatMessage> chats;
+        private BitmapFont font;
+
         public ChatUI(GraphicsDevice graphics) : base(graphics)
         {
             TextField = new GuiChatText(graphics)
@@ -36,11 +42,15 @@ namespace WoW_2D.Gfx.Gui.Ui
 
             chatBox = new RectangleF(0, 0, 400, 175);
             chatBox.Position = new Point2(0, graphics.Viewport.Height - chatBox.Height);
+
+            chats = new List<ChatMessage>();
         }
 
         public override void LoadContent(ContentManager content)
         {
             TextField.LoadContent(content);
+
+            font = content.Load<BitmapFont>("System/Font/font_small");
         }
 
         public override void Update()
@@ -61,6 +71,9 @@ namespace WoW_2D.Gfx.Gui.Ui
                 if (alpha < alphaMin)
                     alpha = alphaMin;
             }
+
+            if (Global.Chats.Count > 0)
+                chats.Add(Global.Chats.Dequeue());
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -73,6 +86,20 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.FillRectangle(chatBox, new Color(0f, 0f, 0f, alpha));
                 spriteBatch.DrawRectangle(chatBox, Color.Gray);
                 spriteBatch.End();
+                
+                spriteBatch.Begin();
+                for (int i = 0; i < chats.Count; i++)
+                {
+                    var chatMessage = chats[i];
+                    var message = $"[{chatMessage.Sender}] says: {chatMessage.Message}";
+                    var wrapped = Global.WrapText(font, message, chatBox.Width);
+
+                    if (i == 0)
+                        spriteBatch.DrawString(font, wrapped, new Vector2(chatBox.X + 1f, chatBox.Y), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    else
+                        spriteBatch.DrawString(font, wrapped, new Vector2(chatBox.X + 1f, chatBox.Y + (i * font.LineHeight)), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                }
+                spriteBatch.End();
             }
         }
 
@@ -83,8 +110,15 @@ namespace WoW_2D.Gfx.Gui.Ui
                 TextField.IsVisible = !TextField.IsVisible;
                 if (!TextField.IsVisible)
                 {
+                    var message = TextField.GetText();
+                    if (!string.IsNullOrWhiteSpace(message))
+                    {
+                        NetworkManager.Send(new CMSG_Chat()
+                        {
+                            Message = message
+                        }, NetworkManager.Direction.World);
+                    }
                     TextField.ResetText();
-
                 }
             }
         }

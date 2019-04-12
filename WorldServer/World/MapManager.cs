@@ -1,4 +1,5 @@
 ﻿using Framework.Entity;
+using Framework.Network.Connection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TiledSharp;
+using WorldServer.Network;
 
 namespace WorldServer.World
 {
@@ -29,6 +31,43 @@ namespace WorldServer.World
                     Spawns = tmx.ObjectGroups["SpawnObjects"]
                 });
             }
+        }
+
+        public static void AddCharacterToMap(WorldConnection character)
+        {
+            foreach (var map in _maps)
+            {
+                if (map.ID == character.Account.Character.Vector.MapID)
+                    map.Characters.Add(character);
+            }
+        }
+
+        public static void RemoveCharacterFromMap(WorldConnection character)
+        {
+            foreach (var map in _maps)
+            {
+                if (map.ID == character.Account.Character.Vector.MapID)
+                    map.Characters.Remove(character);
+            }
+        }
+
+        public static List<WorldConnection> GetCharactersWithinMap(int id)
+        {
+            List<IConnection> generics = null;
+            List<WorldConnection> worldConnections = new List<WorldConnection>();
+            foreach (var map in _maps)
+            {
+                if (map.ID == id)
+                    generics = map.Characters;
+            }
+
+            if (generics != null)
+            {
+                foreach (var connection in generics)
+                    worldConnections.Add((WorldConnection)connection);
+                return worldConnections;
+            }
+            return null;
         }
 
         public static Map GetMapByID(int mapId)

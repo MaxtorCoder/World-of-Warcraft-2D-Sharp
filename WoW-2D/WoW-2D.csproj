@@ -81,6 +81,7 @@
     <Compile Include="States\GameState.cs" />
     <Compile Include="States\LoadingState.cs" />
     <Compile Include="States\MainMenuState.cs" />
+    <Compile Include="Utils\ChatMessage.cs" />
     <Compile Include="Utils\Global.cs" />
     <Compile Include="WorldofWarcraft.cs" />
     <Compile Include="Program.cs" />

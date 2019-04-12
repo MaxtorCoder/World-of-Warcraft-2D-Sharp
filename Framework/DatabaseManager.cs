@@ -492,7 +492,7 @@ namespace Framework
                     command.Parameters.AddWithValue("@characterId", guid);
                     command.Parameters.AddWithValue("@name", name);
                     command.Parameters.AddWithValue("@level", 1);
-                    command.Parameters.AddWithValue("@classId", (int)Class.Warrior); // TODO: Implement class stuff client-side.
+                    command.Parameters.AddWithValue("@classId", (int)Class.Warrior);
                     command.Parameters.AddWithValue("@raceId", (int)race);
                     command.Connection = connection;
 

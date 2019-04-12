@@ -83,6 +83,7 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_MOVEMENT_UPDATE, WorldHandler.HandleMoveUpdate);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHAT, WorldHandler.HandleChatMessage);
 
             while (true)
             {
@@ -106,10 +107,12 @@ namespace WorldServer
                         var worldConnection = (WorldConnection)connection;
                         try
                         {
-                            if (worldConnection.Account.Character != null)
+                            var character = worldConnection.Account.Character;
+                            if (character != null)
                             {
                                 DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, string.Empty);
-                                DatabaseManager.SaveCharacter(worldConnection.Account.Character);
+                                DatabaseManager.SaveCharacter(character);
+                                MapManager.RemoveCharacterFromMap(worldConnection);
                                 QueueLogMessage($"{worldConnection.Account.Character.Name} has left our world!");
                             }
                         }

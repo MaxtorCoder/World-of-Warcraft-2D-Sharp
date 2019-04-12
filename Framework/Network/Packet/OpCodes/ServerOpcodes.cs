@@ -20,6 +20,7 @@ namespace Framework.Network.Packet.OpCodes
             SMSG_REALMLIST                  =          0x10,
             SMSG_WORLD                      =          0x05,
             SMSG_WORLD_ENTER                =          0x06,
+            SMSG_CHAT                       =          0x07,
         }
 
         public enum Responses

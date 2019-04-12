@@ -82,6 +82,7 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHARACTER_DELETE, CharHandler.HandleDeletion);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD, WorldHandler.HandleWorldLogin);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHAT, WorldHandler.HandleChatMessage);
 
             base.Initialize();
         }

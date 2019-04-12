@@ -82,6 +82,8 @@ namespace WoW_2D.States
             Controls.Add(backButton);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPressed(); }, Keys.Enter);
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnDownPressed(); }, Keys.Down);
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnUpPressed(); }, Keys.Up);
         }
 
         public override void LoadContent(ContentManager content)
@@ -253,6 +255,18 @@ namespace WoW_2D.States
         }
 
         private void OnEnterPressed() => OnEnterWorldPress();
+
+        private void OnDownPressed()
+        {
+            if (characterIndex != WorldofWarcraft.RealmCharacters.Count - 1)
+                characterIndex++;
+        }
+
+        private void OnUpPressed()
+        {
+            if (characterIndex != 0)
+                characterIndex--;
+        }
 
         public override void OnStateEnter()
         {

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorldServer.World;
 using static Framework.Entity.Vector;
 
 namespace WorldServer.Network.Handlers
@@ -61,6 +62,7 @@ namespace WorldServer.Network.Handlers
                     };
                 }
             }
+            MapManager.AddCharacterToMap(worldConnection);
             DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
             MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
 
@@ -78,6 +80,26 @@ namespace WorldServer.Network.Handlers
             worldConnection.Account.Character.Vector.X = packet.X;
             worldConnection.Account.Character.Vector.Y = packet.Y;
             worldConnection.Account.Character.Vector.Direction = packet.Direction;
+        }
+
+        public static void HandleChatMessage(IConnection connection, byte[] buffer)
+        {
+            var worldConnection = (WorldConnection)connection;
+            var packet = (CMSG_Chat)new CMSG_Chat().Deserialize(buffer);
+            
+            var players = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            if (players != null)
+            {
+                foreach (var player in players)
+                {
+                    player.Send(new SMSG_Chat()
+                    {
+                        Flag = (byte)ChatFlag.Player,
+                        Sender = worldConnection.Account.Character.Name,
+                        Message = packet.Message
+                    });
+                }
+            }
         }
     }
 }
