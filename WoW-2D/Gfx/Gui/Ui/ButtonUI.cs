@@ -15,7 +15,7 @@ namespace WoW_2D.Gfx.Gui.Ui
     /// <summary>
     /// A simplistic button for in-game UI.
     /// </summary>
-    public class UiButton : UiControl
+    public class ButtonUI : UiControl
     {
         public string Text { get; set; }
         public float Width { get; set; }
@@ -25,7 +25,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         private Color hoverColor;
         private BitmapFont font;
 
-        public UiButton(GraphicsDevice graphics) : base(graphics) { }
+        public ButtonUI(GraphicsDevice graphics) : base(graphics) { }
 
         public override void LoadContent(ContentManager content)
         {}

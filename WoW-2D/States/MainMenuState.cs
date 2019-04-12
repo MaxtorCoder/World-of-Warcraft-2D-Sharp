@@ -202,10 +202,7 @@ namespace WoW_2D.States
             }
         }
         
-        private void OnEnterPress()
-        {
-            OnLoginPress();
-        }
+        private void OnEnterPress() => OnLoginPress();
         #endregion
     }
 }

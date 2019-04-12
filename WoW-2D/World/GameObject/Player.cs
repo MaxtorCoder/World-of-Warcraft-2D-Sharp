@@ -24,6 +24,7 @@ namespace WoW_2D.World.GameObject
     public class Player : IPlayer
     {
         private Camera2D camera;
+        public bool CanMove { get; set; } = true;
 
         public Player() => WorldData = WorldofWarcraft.Character;
 
@@ -96,10 +97,20 @@ namespace WoW_2D.World.GameObject
 
         public override void Update(GameTime gameTime)
         {
-            UpdateKeyPress();
+            if (CanMove)
+                UpdateKeyPress();
             UpdateAnimation(gameTime);
             UpdatePosition(gameTime);
             camera.LookAt(new Vector2(WorldData.Vector.X + 8, WorldData.Vector.Y + 8));
+
+            if (!CanMove)
+                if (IsMovingUp || IsMovingRight || IsMovingLeft || IsMovingDown)
+                {
+                    IsMovingUp = false;
+                    IsMovingRight = false;
+                    IsMovingDown = false;
+                    IsMovingLeft = false;
+                }
         }
 
         private void UpdateKeyPress()

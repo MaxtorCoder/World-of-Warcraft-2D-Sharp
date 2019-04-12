@@ -238,10 +238,7 @@ namespace WoW_2D.States
             }
         }
 
-        private void OnCreateCharacterPress()
-        {
-            GameStateManager.EnterState(3);
-        }
+        private void OnCreateCharacterPress() => GameStateManager.EnterState(3);
 
         private void OnDeleteCharacterPress()
         {
@@ -255,10 +252,7 @@ namespace WoW_2D.States
             GameStateManager.EnterState(1);
         }
 
-        private void OnEnterPressed()
-        {
-            OnEnterWorldPress();
-        }
+        private void OnEnterPressed() => OnEnterWorldPress();
 
         public override void OnStateEnter()
         {

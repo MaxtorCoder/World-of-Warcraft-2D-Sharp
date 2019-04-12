@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WoW_2D.Network;
+using WoW_2D.Utils;
 
 namespace WoW_2D.Gfx.Gui
 {
@@ -34,7 +35,7 @@ namespace WoW_2D.Gfx.Gui
 
         public static void Draw(BitmapFont font, SpriteBatch spriteBatch, string text, bool drawButton = false)
         {
-            var wrapped = WrapText(font, text);
+            var wrapped = Global.WrapText(font, text, rectangle.Width);
             spriteBatch.Begin();
             spriteBatch.FillRectangle(rectangle, new Color(0f, 0f, 0f, 0.85f));
             spriteBatch.DrawRectangle(rectangle, WorldofWarcraft.DefaultYellow);
@@ -44,26 +45,6 @@ namespace WoW_2D.Gfx.Gui
             spriteBatch.End();
 
             button.Update();
-        }
-
-        private static string WrapText(BitmapFont font, string text)
-        {
-            string line = string.Empty;
-            string returnString = string.Empty;
-            string[] wordArray = text.Split(' ');
-
-            foreach (string word in wordArray)
-            {
-                if (font.MeasureString(line + word).Width > rectangle.Width)
-                {
-                    returnString = returnString + line + '\n';
-                    line = string.Empty;
-                }
-
-                line = line + word + ' ';
-            }
-
-            return returnString + line;
         }
 
         private static void OnButtonClicked()

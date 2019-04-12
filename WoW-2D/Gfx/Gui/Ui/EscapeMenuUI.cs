@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Utils;
 
 namespace WoW_2D.Gfx.Gui.Ui
 {
@@ -20,14 +21,14 @@ namespace WoW_2D.Gfx.Gui.Ui
         private BitmapFont font;
         private RectangleF menuBox;
 
-        private UiButton logoutButton;
+        private ButtonUI logoutButton;
 
         public EscapeMenuUI(GraphicsDevice graphics) : base(graphics)
         {
             menuBox = new RectangleF(0, 0, 175, 256);
             menuBox.Position = new Point2(graphics.Viewport.Width / 2 - menuBox.Width / 2, graphics.Viewport.Height / 2 - menuBox.Height / 2);
 
-            logoutButton = new UiButton(graphics)
+            logoutButton = new ButtonUI(graphics)
             {
                 Text = "Logout",
                 Width = menuBox.Width - 15,
@@ -44,7 +45,12 @@ namespace WoW_2D.Gfx.Gui.Ui
         public override void Update()
         {
             if (IsVisible)
+            {
                 logoutButton.Update();
+                Global.ShouldHideUI = true;
+            }
+            else
+                Global.ShouldHideUI = false;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

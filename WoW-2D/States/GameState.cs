@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Gfx.Gui;
 using WoW_2D.Gfx.Gui.Ui;
 
 namespace WoW_2D.States
@@ -20,14 +21,18 @@ namespace WoW_2D.States
     public class GameState : IGameState
     {
         private EscapeMenuUI escapeMenu;
+        private ChatUI chatUi;
 
         public GameState(GraphicsDevice graphics) : base(graphics) { }
 
         public override void Initialize()
         {
             escapeMenu = new EscapeMenuUI(graphics);
+            chatUi = new ChatUI(graphics);
+            Controls.Add(chatUi.TextField);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEscapePressed(); }, Keys.Escape);
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPressed(); }, Keys.Enter);
         }
 
         public override void LoadContent(ContentManager content)
@@ -35,17 +40,18 @@ namespace WoW_2D.States
             base.LoadContent(content);
 
             escapeMenu.LoadContent(content);
+            chatUi.LoadContent(content);
         }
 
         public override void UnloadContent()
-        {
-        }
+        {}
 
         public override void Update(GameTime gameTime)
         {
             WorldofWarcraft.Map.Update(gameTime);
 
             escapeMenu.Update();
+            chatUi.Update();
         }
 
         public override void Draw(GameTime gameTime)
@@ -53,11 +59,10 @@ namespace WoW_2D.States
             WorldofWarcraft.Map.Draw(spriteBatch, gameTime);
 
             escapeMenu.Draw(spriteBatch);
+            chatUi.Draw(spriteBatch);
         }
 
-        private void OnEscapePressed()
-        {
-            escapeMenu.IsVisible = !escapeMenu.IsVisible;
-        }
+        private void OnEscapePressed() => escapeMenu.IsVisible = !escapeMenu.IsVisible;
+        private void OnEnterPressed() => chatUi.OnEnterPressed();
     }
 }
