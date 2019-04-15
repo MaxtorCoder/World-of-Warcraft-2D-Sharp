@@ -31,17 +31,17 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public ChatUI(GraphicsDevice graphics) : base(graphics)
         {
-            TextField = new GuiChatText(graphics)
-            {
-                Width = 365,
-                Height = 25,
-                BackgroundColor = new Color(0f, 0f, 0f, 0.75f),
-                MaxCharacterLength = 256,
-            };
-            TextField.Position = new Vector2(graphics.Viewport.Width / 2 - TextField.Width / 2, graphics.Viewport.Height - 100);
-
             chatBox = new RectangleF(0, 0, 400, 175);
             chatBox.Position = new Point2(0, graphics.Viewport.Height - chatBox.Height);
+
+            TextField = new GuiChatText(graphics)
+            {
+                Width = (int)chatBox.Width,
+                Height = 25,
+                BackgroundColor = new Color(0f, 0f, 0f, 0.75f),
+                MaxCharacterLength = 150,
+            };
+            TextField.Position = new Vector2(0, chatBox.Position.Y - TextField.Height - 2f);
 
             chats = new List<ChatMessage>();
         }
@@ -73,7 +73,37 @@ namespace WoW_2D.Gfx.Gui.Ui
             }
 
             if (Global.Chats.Count > 0)
-                chats.Add(Global.Chats.Dequeue());
+            {
+                var chat = Global.Chats.Dequeue();
+                var message = $"[{chat.Sender}] says: {chat.Message}";
+                var wrapped = Global.WrapText(font, message, chatBox.Width);
+                chat.Message = wrapped;
+                
+                if (chats.Count == 0)
+                    chat.Bounds = new RectangleF(chatBox.X + 1f, chatBox.Y, font.MeasureString(chat.Message).Width, font.MeasureString(chat.Message).Height);
+                else
+                {
+                    var lastMessage = chats[chats.Count - 1];
+                    chat.Bounds = new RectangleF(chatBox.X + 1f, lastMessage.Bounds.Y + lastMessage.Bounds.Height, font.MeasureString(chat.Message).Width, font.MeasureString(chat.Message).Height);
+                }
+                chats.Add(chat);
+            }
+
+            if (chats.Count > 0)
+            {
+                var lastChat = chats[chats.Count - 1];
+                if (lastChat.Bounds.Y + lastChat.Bounds.Height > chatBox.Y + chatBox.Height)
+                {
+                    for (int i = 0; i < chats.Count; i++)
+                    {
+                        var chat = chats[i];
+                        var chatPos = chat.Bounds;
+                        chatPos.Y -= chats[0].Bounds.Height;
+                        chat.Bounds = chatPos;
+                    }
+                    chats.RemoveAt(0);
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -86,18 +116,12 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.FillRectangle(chatBox, new Color(0f, 0f, 0f, alpha));
                 spriteBatch.DrawRectangle(chatBox, Color.Gray);
                 spriteBatch.End();
-                
+
                 spriteBatch.Begin();
                 for (int i = 0; i < chats.Count; i++)
                 {
-                    var chatMessage = chats[i];
-                    var message = $"[{chatMessage.Sender}] says: {chatMessage.Message}";
-                    var wrapped = Global.WrapText(font, message, chatBox.Width);
-
-                    if (i == 0)
-                        spriteBatch.DrawString(font, wrapped, new Vector2(chatBox.X + 1f, chatBox.Y), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    else
-                        spriteBatch.DrawString(font, wrapped, new Vector2(chatBox.X + 1f, chatBox.Y + (i * font.LineHeight)), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    var chat = chats[i];
+                    spriteBatch.DrawString(font, chat.Message, chat.Bounds.Position, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
                 spriteBatch.End();
             }

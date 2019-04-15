@@ -1,4 +1,5 @@
 ﻿using Framework.Entity;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace WoW_2D.Utils
         public ChatFlag Flag { get; set; }
         public string Sender { get; set; } = string.Empty;
         public string Message { get; set; }
+        
+        public RectangleF Bounds { get; set; }
     }
 }
