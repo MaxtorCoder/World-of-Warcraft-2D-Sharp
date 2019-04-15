@@ -10,7 +10,6 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
-using TiledSharp;
 using WorldServer.Command;
 using WorldServer.Network;
 using WorldServer.Network.Handlers;
@@ -28,6 +27,7 @@ namespace WorldServer
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         private readonly string VersionStr = $"WorldServer Version v{Version}";
+        public static string MOTD = $"Welcome to v{Version} of World of Warcraft 2D!";
         private TCPSocketServer tcpServer;
         private Thread coreThread;
         private int port = 1338;

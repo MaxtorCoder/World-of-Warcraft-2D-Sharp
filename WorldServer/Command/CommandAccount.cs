@@ -17,6 +17,7 @@ namespace WorldServer.Command
         public CommandAccount() : base("account", AccountSecurity.Administrator)
         {
             _subCommands.Add("create", GetType().GetMethod("HandleCreation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+            _subCommands.Add("gmlevel", GetType().GetMethod("HandleSecurity", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
         }
 
         public override void HandleCommand(string[] args)
@@ -33,6 +34,8 @@ namespace WorldServer.Command
                     }
                 }
             }
+            else
+                MainWindow.QueueLogMessage(ToString());
         }
 
         /// <summary>
@@ -59,9 +62,44 @@ namespace WorldServer.Command
             }
         }
 
+        /// <summary>
+        /// Handle the gmlevel command.
+        /// </summary>
+        /// <param name="args"></param>
+        private void HandleSecurity(string[] args)
+        {
+            string username = args[2].ToUpper();
+            int level = int.Parse(args[3]);
+
+            if (Enum.IsDefined(typeof(AccountSecurity), level))
+            {
+                AccountSecurity security = (AccountSecurity)Enum.ToObject(typeof(AccountSecurity), level);
+
+                var status = DatabaseManager.SetSecurity(username, level);
+                switch (status)
+                {
+                    case DatabaseManager.Status.OK:
+                        MainWindow.QueueLogMessage($"Security of {username} set to {security}.");
+                        break;
+                    case DatabaseManager.Status.Fatal:
+                        MainWindow.QueueLogMessage($"Unable to set the security of {username}.");
+                        break;
+                }
+            }
+        }
+
         public override string ToString()
         {
-            return null;
+            var sb = new StringBuilder();
+            for (int i = 0; i < _subCommands.Count; i++)
+            {
+                var keys = _subCommands.Keys.ToList();
+                if (i < _subCommands.Count - 1)
+                    sb.Append(keys[i] + ", ");
+                else
+                    sb.Append(keys[i]);
+            }
+            return $"Available commands for 'account': {sb.ToString()}";
         }
     }
 }

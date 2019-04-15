@@ -1,5 +1,6 @@
 ﻿using Framework;
 using Framework.Entity;
+using Framework.Network;
 using Framework.Network.Connection;
 using Framework.Network.Entity;
 using Framework.Network.Packet.Client;
@@ -66,6 +67,12 @@ namespace WorldServer.Network.Handlers
             DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
             MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
 
+            worldConnection.Send(new SMSG_Chat()
+            {
+                Flag = (byte)ChatFlag.Server,
+                Message = MainWindow.MOTD
+            });
+
             worldConnection.Send(new SMSG_World_Enter()
             {
                 WorldCharacter = worldConnection.Account.Character
@@ -86,6 +93,10 @@ namespace WorldServer.Network.Handlers
         {
             var worldConnection = (WorldConnection)connection;
             var packet = (CMSG_Chat)new CMSG_Chat().Deserialize(buffer);
+            var flag = (byte)ChatFlag.Player;
+
+            if (worldConnection.Account.Security >= AccountSecurity.Gamemaster)
+                flag = (byte)ChatFlag.GM;
             
             var players = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
             if (players != null)
@@ -94,7 +105,7 @@ namespace WorldServer.Network.Handlers
                 {
                     player.Send(new SMSG_Chat()
                     {
-                        Flag = (byte)ChatFlag.Player,
+                        Flag = flag,
                         Sender = worldConnection.Account.Character.Name,
                         Message = packet.Message
                     });

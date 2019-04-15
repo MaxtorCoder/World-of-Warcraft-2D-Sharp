@@ -799,6 +799,31 @@ namespace Framework
         }
 
         /// <summary>
+        /// Set the security of the given user.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="level"></param>
+        /// <returns></returns>
+        public static Status SetSecurity(string username, int level)
+        {
+            var query = "UPDATE account SET security=@level WHERE username=@username";
+            var status = Status.OK;
+
+            using (var connection = new MySqlConnection(AuthenticationConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Parameters.AddWithValue("@level", level);
+                    command.Parameters.AddWithValue("@username", username);
+                    command.Connection = connection;
+                    status = ExecuteCommand(connection, command).Result;
+                }
+            }
+
+            return status;
+        }
+
+        /// <summary>
         /// Reset all session id's.
         /// </summary>
         public static void ResetSessions()

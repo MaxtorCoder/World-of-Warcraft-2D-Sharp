@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Framework.Entity;
 using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -75,7 +76,19 @@ namespace WoW_2D.Gfx.Gui.Ui
             if (Global.Chats.Count > 0)
             {
                 var chat = Global.Chats.Dequeue();
-                var message = $"[{chat.Sender}] says: {chat.Message}";
+                var message = string.Empty;
+                switch (chat.Flag)
+                {
+                    case ChatFlag.Player:
+                        message = $"[{chat.Sender}] says: {chat.Message}";
+                        break;
+                    case ChatFlag.GM:
+                        message = $"[GM] [{chat.Sender}] says: {chat.Message}";
+                        break;
+                    case ChatFlag.Server:
+                        message = $"{chat.Message}";
+                        break;
+                }
                 var wrapped = Global.WrapText(font, message, chatBox.Width);
                 chat.Message = wrapped;
                 
@@ -118,10 +131,15 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.End();
 
                 spriteBatch.Begin();
+                var color = Color.White;
                 for (int i = 0; i < chats.Count; i++)
                 {
                     var chat = chats[i];
-                    spriteBatch.DrawString(font, chat.Message, chat.Bounds.Position, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    if (chat.Flag == ChatFlag.Server)
+                        color = Color.Yellow;
+                    else
+                        color = Color.White;
+                    spriteBatch.DrawString(font, chat.Message, chat.Bounds.Position, color, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
                 spriteBatch.End();
             }
