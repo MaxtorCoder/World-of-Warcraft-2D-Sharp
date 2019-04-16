@@ -1,6 +1,7 @@
 ﻿using Framework;
 using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
+using Framework.Network.Packet.Server;
 using Framework.Network.Server;
 using Framework.Utils;
 using System;
@@ -117,6 +118,16 @@ namespace WorldServer
                             }
                         }
                         catch { }
+
+                        var connectionsInMap = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+                        if (connectionsInMap.Count > 0)
+                        {
+                            foreach (var c in connectionsInMap)
+                                c.Send(new SMSG_Connection_Remove()
+                                {
+                                    Name = worldConnection.Account.Character.Name
+                                });
+                        }
                     }
                 }
 

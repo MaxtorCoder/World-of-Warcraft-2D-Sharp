@@ -90,6 +90,7 @@
     <Compile Include="World\GameObject\IMob.cs" />
     <Compile Include="World\GameObject\IPlayer.cs" />
     <Compile Include="World\GameObject\Player.cs" />
+    <Compile Include="World\GameObject\PlayerMP.cs" />
     <Compile Include="World\MapManager.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -19,6 +19,7 @@ using WoW_2D.Network.Handler;
 using WoW_2D.States;
 using WoW_2D.Utils;
 using WoW_2D.World;
+using WoW_2D.World.GameObject;
 
 namespace WoW_2D
 {
@@ -39,7 +40,10 @@ namespace WoW_2D
         public static Realm Realm;
         public static List<RealmCharacter> RealmCharacters = new List<RealmCharacter>(7);
         public static WorldCharacter Character;
+
         public static ClientMap Map { get; set; }
+        public static Queue<WorldCharacter> PlayerQueue = new Queue<WorldCharacter>();
+        public static List<PlayerMP> Players = new List<PlayerMP>();
 
         public WorldofWarcraft()
         {
@@ -83,6 +87,9 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD, WorldHandler.HandleWorldLogin);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CHAT, WorldHandler.HandleChatMessage);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_ADD, WorldHandler.HandleConnectionAdd);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_MOVE, WorldHandler.HandleConnectionMovement);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_REMOVE, WorldHandler.HandleConnectionRemove);
 
             base.Initialize();
         }
@@ -110,6 +117,14 @@ namespace WoW_2D
         {
             InputHandler.Update();
             GameStateManager.Update(gameTime);
+
+            if (PlayerQueue.Count > 0)
+            {
+                var playerData = PlayerQueue.Dequeue();
+                var playerToAdd = new PlayerMP() { WorldData = playerData };
+                playerToAdd.LoadContent(Content);
+                Players.Add(playerToAdd);
+            }
         }
 
         /// <summary>
@@ -135,6 +150,13 @@ namespace WoW_2D
                 foreach (IGuiControl control in controlsSupportingTextInput)
                     control.OnKeyTyped(e.Key, e.Character);
             }
+        }
+
+        public static void RemovePlayer(string name)
+        {
+            var player = Players.Find(x => x.WorldData.Name.ToLower() == name.ToLower());
+            if (player != null)
+                Players.Remove(player);
         }
     }
 }

@@ -41,6 +41,9 @@ namespace WoW_2D.Network.Handler
             if (packet.WorldCharacter.Vector.MapID != -1) // -1 is unused at the moment.
             {
                 WorldofWarcraft.Character = packet.WorldCharacter;
+                var players = packet.Players;
+                foreach (var player in players)
+                    WorldofWarcraft.PlayerQueue.Enqueue(player);
                 NetworkManager.State = NetworkManager.NetworkState.EnterWorld;
             }
         }
@@ -62,6 +65,27 @@ namespace WoW_2D.Network.Handler
                     Message = message
                 });
             }
+        }
+
+        public static void HandleConnectionAdd(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Connection_Add)new SMSG_Connection_Add().Deserialize(buffer);
+            
+            WorldofWarcraft.PlayerQueue.Enqueue(packet.WorldCharacter);
+        }
+
+        public static void HandleConnectionRemove(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Connection_Remove)new SMSG_Connection_Remove().Deserialize(buffer);
+
+            WorldofWarcraft.RemovePlayer(packet.Name);
+        }
+
+        public static void HandleConnectionMovement(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Connection_Movement)new SMSG_Connection_Movement().Deserialize(buffer);
+
+            WorldofWarcraft.Map.UpdatePlayerMP(packet.Name, packet.X, packet.Y, packet.Direction, packet.IsMoving);
         }
     }
 }

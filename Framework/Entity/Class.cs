@@ -9,6 +9,7 @@ namespace Framework.Entity
     /// <summary>
     /// The game's classes.
     /// </summary>
+    [Serializable]
     public enum Class
     {
         Warrior,

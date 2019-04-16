@@ -18,7 +18,7 @@ namespace WoW_2D.World.GameObject
         protected SpriteSheet SpriteSheet;
         protected List<Animation> Animations = new List<Animation>();
 
-        public abstract void Initialize(GraphicsDevice graphics);
+        public virtual void Initialize(GraphicsDevice graphics) { }
         public abstract void LoadContent(ContentManager content);
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);

@@ -9,6 +9,7 @@ namespace Framework.Entity
     /// <summary>
     /// The game's different races.
     /// </summary>
+    [Serializable]
     public enum Race
     {
         Human,

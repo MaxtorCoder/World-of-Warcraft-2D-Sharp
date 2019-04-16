@@ -230,6 +230,9 @@
     <Compile Include="Network\Packet\Server\SMSG_Character_Delete.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Character_List.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Chat.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_Connection_Add.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_Connection_Movement.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_Connection_Remove.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Logon.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Realmlist.cs" />
     <Compile Include="Network\Packet\Server\SMSG_World.cs" />

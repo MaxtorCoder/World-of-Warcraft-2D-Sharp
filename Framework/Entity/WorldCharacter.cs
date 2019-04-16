@@ -9,6 +9,7 @@ namespace Framework.Entity
     /// <summary>
     /// The current character in the world.
     /// </summary>
+    [Serializable]
     public class WorldCharacter
     {
         public string GUID { get; set; }

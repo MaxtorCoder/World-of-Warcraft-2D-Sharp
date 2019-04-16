@@ -63,20 +63,39 @@ namespace WorldServer.Network.Handlers
                     };
                 }
             }
-            MapManager.AddCharacterToMap(worldConnection);
-            DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
-            MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
+
+            /** Send this new player to all connected players in the same map. **/
+            var onlinePlayers = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            if (onlinePlayers.Count > 0)
+            {
+                foreach (var player in onlinePlayers)
+                {
+                    player.Send(new SMSG_Connection_Add()
+                    {
+                        WorldCharacter = worldConnection.Account.Character
+                    });
+                }
+            }
 
             worldConnection.Send(new SMSG_Chat()
             {
                 Flag = (byte)ChatFlag.Server,
                 Message = MainWindow.MOTD
             });
+            
+            var onlineCharacters = new List<WorldCharacter>();
+            foreach (var player in onlinePlayers)
+                onlineCharacters.Add(player.Account.Character);
 
             worldConnection.Send(new SMSG_World_Enter()
             {
-                WorldCharacter = worldConnection.Account.Character
+                WorldCharacter = worldConnection.Account.Character,
+                Players = onlineCharacters
             });
+
+            MapManager.AddCharacterToMap(worldConnection);
+            DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
+            MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
         }
 
         public static void HandleMoveUpdate(IConnection connection, byte[] buffer)
@@ -87,6 +106,23 @@ namespace WorldServer.Network.Handlers
             worldConnection.Account.Character.Vector.X = packet.X;
             worldConnection.Account.Character.Vector.Y = packet.Y;
             worldConnection.Account.Character.Vector.Direction = packet.Direction;
+
+            var onlinePlayers = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            if (onlinePlayers.Count > 0)
+            {
+                foreach (var player in onlinePlayers)
+                {
+                    if (player.Account.ID != worldConnection.Account.ID)
+                        player.Send(new SMSG_Connection_Movement()
+                        {
+                            Name = worldConnection.Account.Character.Name,
+                            X = worldConnection.Account.Character.Vector.X,
+                            Y = worldConnection.Account.Character.Vector.Y,
+                            Direction = worldConnection.Account.Character.Vector.Direction,
+                            IsMoving = packet.IsMoving
+                        });
+                }
+            }
         }
 
         public static void HandleChatMessage(IConnection connection, byte[] buffer)

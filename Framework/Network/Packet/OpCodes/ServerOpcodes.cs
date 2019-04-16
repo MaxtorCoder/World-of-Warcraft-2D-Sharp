@@ -21,6 +21,9 @@ namespace Framework.Network.Packet.OpCodes
             SMSG_WORLD                      =          0x05,
             SMSG_WORLD_ENTER                =          0x06,
             SMSG_CHAT                       =          0x07,
+            SMSG_CONNECTION_ADD             =          0xFA,
+            SMSG_CONNECTION_REMOVE          =          0xFB,
+            SMSG_CONNECTION_MOVE            =          0xFC,
         }
 
         public enum Responses
