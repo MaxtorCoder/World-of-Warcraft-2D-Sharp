@@ -92,6 +92,7 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_ADD, WorldHandler.HandleConnectionAdd);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_MOVE, WorldHandler.HandleConnectionMovement);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_REMOVE, WorldHandler.HandleConnectionRemove);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_DISCONNECT, WorldHandler.HandleDisconnect);
 
             base.Initialize();
         }

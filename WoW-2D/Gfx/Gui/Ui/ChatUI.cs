@@ -164,5 +164,7 @@ namespace WoW_2D.Gfx.Gui.Ui
                 }
             }
         }
+
+        public void ClearChats() => chats.Clear();
     }
 }

@@ -88,6 +88,9 @@ namespace WoW_2D.States
 
         public override void Update(GameTime gameTime)
         {
+            if (NetworkManager.State == NetworkManager.NetworkState.Disconnected)
+                NetworkManager.State = NetworkManager.NetworkState.Waiting;
+
             loginButton.Update();
             usernameText.Update();
             passwordText.Update();

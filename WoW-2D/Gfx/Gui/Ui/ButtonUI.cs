@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.BitmapFonts;
+using MonoGameHelper.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,6 +36,19 @@ namespace WoW_2D.Gfx.Gui.Ui
             Point mousePosition = Mouse.GetState().Position;
             isHovering = ((mousePosition.X >= Position.X && mousePosition.X <= Position.X + Width && mousePosition.Y >= Position.Y && mousePosition.Y <= Position.Y + Height) && IsEnabled) ? true : false;
             hoverColor = !isHovering ? Color.White : WorldofWarcraft.DefaultYellow;
+
+            UpdatePressed();
+        }
+
+        private void UpdatePressed()
+        {
+            if (isHovering)
+            {
+                if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton))
+                {
+                    base.OnClickedEvent();
+                }
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)

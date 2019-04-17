@@ -148,5 +148,13 @@ namespace WorldServer.Network.Handlers
                 }
             }
         }
+
+        public static void HandleLogout(IConnection connection, byte[] buffer)
+        {
+            var worldConnection = (WorldConnection)connection;
+            worldConnection.ShouldDisconnect = true;
+
+            worldConnection.Send(new SMSG_Disconnect());
+        }
     }
 }

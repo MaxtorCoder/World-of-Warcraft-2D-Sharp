@@ -85,6 +85,7 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_MOVEMENT_UPDATE, WorldHandler.HandleMoveUpdate);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHAT, WorldHandler.HandleChatMessage);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_LOGOUT, WorldHandler.HandleLogout);
 
             while (true)
             {
@@ -105,9 +106,9 @@ namespace WorldServer
                         connection.Close();
                         Global.RemoveConnection(connection);
 
-                        var worldConnection = (WorldConnection)connection;
                         try
                         {
+                            var worldConnection = (WorldConnection)connection;
                             var character = worldConnection.Account.Character;
                             if (character != null)
                             {

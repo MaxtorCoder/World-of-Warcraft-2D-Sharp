@@ -87,5 +87,11 @@ namespace WoW_2D.Network.Handler
 
             WorldofWarcraft.Map.UpdatePlayerMP(packet.Name, packet.X, packet.Y, packet.Direction, packet.IsMoving);
         }
+
+        public static void HandleDisconnect(IConnection connection, byte[] buffer)
+        {
+            NetworkManager.Disconnect(NetworkManager.Direction.Both);
+            NetworkManager.State = NetworkManager.NetworkState.Disconnected;
+        }
     }
 }

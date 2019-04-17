@@ -24,6 +24,7 @@ namespace Framework.Network.Packet.OpCodes
             SMSG_CONNECTION_ADD             =          0xFA,
             SMSG_CONNECTION_REMOVE          =          0xFB,
             SMSG_CONNECTION_MOVE            =          0xFC,
+            SMSG_DISCONNECT                 =          0xFF
         }
 
         public enum Responses

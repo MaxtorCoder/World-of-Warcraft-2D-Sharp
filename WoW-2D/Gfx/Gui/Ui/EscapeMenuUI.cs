@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Framework.Network.Packet.Client;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Network;
 using WoW_2D.Utils;
 
 namespace WoW_2D.Gfx.Gui.Ui
@@ -35,6 +37,7 @@ namespace WoW_2D.Gfx.Gui.Ui
                 Height = 25
             };
             logoutButton.Position = new Vector2(menuBox.Position.X + (menuBox.Width / 2 - logoutButton.Width / 2), menuBox.Position.Y + (menuBox.Height - logoutButton.Height - 5));
+            logoutButton.OnClicked += OnLogoutClicked;
         }
 
         public override void LoadContent(ContentManager content)
@@ -69,6 +72,12 @@ namespace WoW_2D.Gfx.Gui.Ui
 
                 logoutButton.Draw(font, spriteBatch);
             }
+        }
+
+        private void OnLogoutClicked()
+        {
+            NetworkManager.Send(new CMSG_Logout(), NetworkManager.Direction.World);
+            IsVisible = false;
         }
     }
 }
