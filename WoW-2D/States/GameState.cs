@@ -22,6 +22,7 @@ namespace WoW_2D.States
     {
         private EscapeMenuUI escapeMenu;
         private ChatUI chatUi;
+        private HotbarUI hotbar;
 
         public GameState(GraphicsDevice graphics) : base(graphics) { }
 
@@ -29,6 +30,7 @@ namespace WoW_2D.States
         {
             escapeMenu = new EscapeMenuUI(graphics);
             chatUi = new ChatUI(graphics);
+            hotbar = new HotbarUI(graphics);
             Controls.Add(chatUi.TextField);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEscapePressed(); }, Keys.Escape);
@@ -60,6 +62,7 @@ namespace WoW_2D.States
 
             escapeMenu.Draw(spriteBatch);
             chatUi.Draw(spriteBatch);
+            hotbar.Draw(spriteBatch);
         }
 
         private void OnEscapePressed() => escapeMenu.IsVisible = !escapeMenu.IsVisible;

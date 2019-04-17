@@ -68,6 +68,8 @@
     <Compile Include="Gfx\Gui\Ui\ChatUI.cs" />
     <Compile Include="Gfx\Gui\Ui\EscapeMenuUI.cs" />
     <Compile Include="Gfx\Gui\Ui\ButtonUI.cs" />
+    <Compile Include="Gfx\Gui\Ui\HotbarSlotUI.cs" />
+    <Compile Include="Gfx\Gui\Ui\HotbarUI.cs" />
     <Compile Include="Gfx\Gui\Ui\UiControl.cs" />
     <Compile Include="Gfx\SpriteSheet.cs" />
     <Compile Include="Network\Connection\AuthConnection.cs" />

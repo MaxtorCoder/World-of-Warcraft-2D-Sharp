@@ -116,18 +116,18 @@ namespace WorldServer
                                 MapManager.RemoveCharacterFromMap(worldConnection);
                                 QueueLogMessage($"{worldConnection.Account.Character.Name} has left our world!");
                             }
+
+                            var connectionsInMap = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+                            if (connectionsInMap.Count > 0)
+                            {
+                                foreach (var c in connectionsInMap)
+                                    c.Send(new SMSG_Connection_Remove()
+                                    {
+                                        Name = worldConnection.Account.Character.Name
+                                    });
+                            }
                         }
                         catch { }
-
-                        var connectionsInMap = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
-                        if (connectionsInMap.Count > 0)
-                        {
-                            foreach (var c in connectionsInMap)
-                                c.Send(new SMSG_Connection_Remove()
-                                {
-                                    Name = worldConnection.Account.Character.Name
-                                });
-                        }
                     }
                 }
 

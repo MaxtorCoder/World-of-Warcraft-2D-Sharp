@@ -10,6 +10,7 @@ using MonoGameHelper.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using WoW_2D.Gfx;
@@ -36,7 +37,8 @@ namespace WoW_2D
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
         public static Color DefaultYellow = new Color(223, 195, 15);
-        public readonly static IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
+
+        public static readonly IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
         public static Realm Realm;
         public static List<RealmCharacter> RealmCharacters = new List<RealmCharacter>(7);
         public static WorldCharacter Character;
@@ -152,6 +154,10 @@ namespace WoW_2D
             }
         }
 
+        /// <summary>
+        /// Removes a player from the world.
+        /// </summary>
+        /// <param name="name"></param>
         public static void RemovePlayer(string name)
         {
             var player = Players.Find(x => x.WorldData.Name.ToLower() == name.ToLower());
