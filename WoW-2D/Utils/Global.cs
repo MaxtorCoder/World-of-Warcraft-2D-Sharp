@@ -15,9 +15,13 @@ namespace WoW_2D.Utils
     {
         public static SpriteSheet HumanSpritesheet;
 
+        public static SpriteSheet RaceSpritesheet;
+        public static SpriteSheet ClassSpritesheet;
+
         public static bool ShouldHideUI { get; set; } = false;
 
         public static Queue<ChatMessage> Chats = new Queue<ChatMessage>();
+        public static List<ClassType> Classes = new List<ClassType>();
 
         public static string WrapText(BitmapFont font, string text, float maxWidth)
         {

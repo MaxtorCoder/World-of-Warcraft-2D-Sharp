@@ -24,7 +24,7 @@ namespace WorldServer.Network.Handlers
 
             var mapId = DatabaseManager.FetchMapIDForRace((int)packet.Race);
             var map = MapManager.GetMapByID(mapId);
-            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race, map);
+            var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race, packet.Class, map);
             if (map.ID == -1)
                 status = DatabaseManager.Status.Fatal;
             switch (status)

@@ -72,6 +72,21 @@ namespace WoW_2D
             Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice);
             Global.HumanSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/Human/Human"));
 
+            Global.RaceSpritesheet = new SpriteSheet(GraphicsDevice);
+            Global.RaceSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/RaceIcons"));
+            Global.ClassSpritesheet = new SpriteSheet(GraphicsDevice);
+            Global.ClassSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/ClassIcons"));
+
+            Global.Classes.Add(new ClassType(Class.Warrior) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Undead, Race.Troll, Race.Orc } });
+            Global.Classes.Add(new ClassType(Class.Paladin) { Races = new List<Race>() { Race.Human, Race.Dwarf } });
+            Global.Classes.Add(new ClassType(Class.Rogue) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Undead, Race.Troll, Race.Orc } });
+            Global.Classes.Add(new ClassType(Class.Priest) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Undead, Race.Troll } });
+            Global.Classes.Add(new ClassType(Class.Mage) { Races = new List<Race>() { Race.Human, Race.Gnome, Race.Undead, Race.Troll } });
+            Global.Classes.Add(new ClassType(Class.Warlock) { Races = new List<Race>() { Race.Human, Race.Gnome, Race.Orc, Race.Undead } });
+            Global.Classes.Add(new ClassType(Class.Hunter) { Races = new List<Race>() { Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Troll, Race.Orc } });
+            Global.Classes.Add(new ClassType(Class.Druid) { Races = new List<Race>() { Race.NightElf, Race.Tauren } });
+            Global.Classes.Add(new ClassType(Class.Shaman) { Races = new List<Race>() { Race.Orc, Race.Tauren, Race.Troll } });
+
             GameStateManager.SetContentManager(Content);
             GameStateManager.AddState(new MainMenuState(GraphicsDevice));
             GameStateManager.AddState(new CharacterSelectState(GraphicsDevice));

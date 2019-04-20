@@ -473,7 +473,7 @@ namespace Framework
         /// <param name="name"></param>
         /// <param name="race"></param>
         /// <returns></returns>
-        public static Status CreateCharacter(int userId, string name, Race race, Map map)
+        public static Status CreateCharacter(int userId, string name, Race race, Class @class, Map map)
         {
             name = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
             var existStatus = CharacterExists(name);
@@ -492,7 +492,7 @@ namespace Framework
                     command.Parameters.AddWithValue("@characterId", guid);
                     command.Parameters.AddWithValue("@name", name);
                     command.Parameters.AddWithValue("@level", 1);
-                    command.Parameters.AddWithValue("@classId", (int)Class.Warrior);
+                    command.Parameters.AddWithValue("@classId", (int)@class);
                     command.Parameters.AddWithValue("@raceId", (int)race);
                     command.Connection = connection;
 

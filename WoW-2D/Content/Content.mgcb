@@ -103,6 +103,18 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/UI/button_enabled.png
 
+#begin Sprites/UI/ClassIcons.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/UI/ClassIcons.png
+
 #begin Sprites/UI/Horde_Banner.png
 /importer:TextureImporter
 /processor:TextureProcessor

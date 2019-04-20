@@ -16,6 +16,7 @@ namespace Framework.Network.Packet.Client
     {
         public string Name { get; set; }
         public Race Race { get; set; }
+        public Class Class { get; set; }
 
         public CMSG_Character_Create() : base((byte)ClientOpcodes.CMSG_CHARACTER_CREATE) { }
 
@@ -28,6 +29,7 @@ namespace Framework.Network.Packet.Client
                     writer.Write(_opcode);
                     writer.Write(Name);
                     writer.Write((int)Race);
+                    writer.Write((int)Class);
                 }
                 return memStr.ToArray();
             }
@@ -43,6 +45,7 @@ namespace Framework.Network.Packet.Client
                     reader.ReadByte();
                     obj.Name = reader.ReadString();
                     obj.Race = (Race)reader.ReadInt32(); // TODO: Catch the error that could happen here (for example: the client sending their own custom race).
+                    obj.Class = (Class)reader.ReadInt32();
                 }
             }
             return obj;

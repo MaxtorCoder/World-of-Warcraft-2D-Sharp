@@ -61,6 +61,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Gfx\Animation.cs" />
+    <Compile Include="Gfx\ClassType.cs" />
     <Compile Include="Gfx\Gui\GuiButton.cs" />
     <Compile Include="Gfx\Gui\GuiChatText.cs" />
     <Compile Include="Gfx\Gui\GuiEntryText.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Gfx\Gui\Ui\HotbarSlotUI.cs" />
     <Compile Include="Gfx\Gui\Ui\HotbarUI.cs" />
     <Compile Include="Gfx\Gui\Ui\UiControl.cs" />
+    <Compile Include="Gfx\RaceType.cs" />
     <Compile Include="Gfx\SpriteSheet.cs" />
     <Compile Include="Network\Connection\AuthConnection.cs" />
     <Compile Include="Network\Connection\WorldConnection.cs" />

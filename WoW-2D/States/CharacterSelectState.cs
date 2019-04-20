@@ -40,9 +40,7 @@ namespace WoW_2D.States
         private GuiButton backButton;
 
         private RealmCharacter realmCharacter;
-        private Texture2D humanTexture, dwarfTexture, nightelfTexture, gnomeTexture;
-
-        private SpriteSheet spriteSheet;
+        private Texture2D humanTexture;
 
         public CharacterSelectState(GraphicsDevice graphics) : base(graphics) { }
 

@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Network;
 
@@ -26,16 +27,26 @@ namespace WoW_2D.States
     public class CharacterCreateState : IGameState
     {
         private BitmapFont font;
+        private BitmapFont font_small;
 
         private GuiButton acceptButton;
         private GuiButton backButton;
         private GuiButton randomizeButton;
         private GuiEntryText nameText;
 
-        private RaceSelection raceSelection;
+        private Texture2D humanTexture;
 
-        private Texture2D humanTexture, dwarfTexture, nightelfTexture, gnomeTexture;
-        private Texture2D selectedTexture;
+        private RectangleF racePanel;
+        private Texture2D allyBanner, hordeBanner;
+        private Vector2 allyBanner_Position, hordeBanner_Position;
+
+        private List<RaceType> alliance = new List<RaceType>();
+        private List<RaceType> horde = new List<RaceType>();
+        private List<RaceType> allRaces = new List<RaceType>();
+
+        private RectangleF[] allianceBounds = new RectangleF[4];
+        private RectangleF[] hordeBounds = new RectangleF[4];
+        private RectangleF[] classBounds = new RectangleF[9];
 
         public CharacterCreateState(GraphicsDevice graphics) : base(graphics) { }
 
@@ -61,7 +72,8 @@ namespace WoW_2D.States
             Controls.Add(randomizeButton);
             Controls.Add(nameText);
 
-            raceSelection = new RaceSelection(graphics);
+            racePanel = new RectangleF(0, 0, 225, 512);
+            racePanel.Position = new Point2(50, graphics.Viewport.Height / 2 - racePanel.Height / 2);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPress(); }, Keys.Enter);
         }
@@ -71,6 +83,7 @@ namespace WoW_2D.States
             base.LoadContent(content);
 
             font = content.Load<BitmapFont>("System/Font/font");
+            font_small = content.Load<BitmapFont>("System/Font/font_small");
 
             acceptButton.LoadContent(content);
             acceptButton.Position = new Vector2(graphics.Viewport.Width - acceptButton.BaseTexture.Width - 15, graphics.Viewport.Height - acceptButton.BaseTexture.Height - 75);
@@ -83,10 +96,98 @@ namespace WoW_2D.States
 
             nameText.Position = new Vector2(graphics.Viewport.Width / 2 - nameText.Width / 2, randomizeButton.Position.Y - nameText.Height - 20);
             nameText.LoadContent(content);
+            
+            LoadRaceContent(content);
+            LoadClassContent();
+
+            /** Set a 'default' enabled. **/
+            allRaces[0].IsSelected = true;
+            allRaces[0].Classes[0].IsSelected = true;
 
             humanTexture = Utils.Global.HumanSpritesheet.GetSprite(new Point(32, 0), new Point(32));
+        }
 
-            raceSelection.LoadContent(content);
+        private void LoadRaceContent(ContentManager content)
+        {
+            allyBanner = content.Load<Texture2D>("Sprites/UI/Ally_Banner");
+            allyBanner_Position = new Vector2(racePanel.Position.X + 25, racePanel.Position.Y + (racePanel.Height / 2 - allyBanner.Height / 2) - 75);
+
+            hordeBanner = content.Load<Texture2D>("Sprites/UI/Horde_Banner");
+            hordeBanner_Position = new Vector2(racePanel.Position.X + (racePanel.Width - hordeBanner.Width - 25), racePanel.Position.Y + (racePanel.Height / 2 - hordeBanner.Height / 2) - 75);
+
+            alliance.AddRange(new[]
+            {
+                new RaceType(Race.Human) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(0), new Point(32)), IsEnabled = true },
+                new RaceType(Race.Dwarf) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(2 * 32, 0), new Point(32)) },
+                new RaceType(Race.NightElf) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(1 * 32, 0), new Point(32)) },
+                new RaceType(Race.Gnome) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(3 * 32, 0), new Point(32)) }
+            });
+
+            horde.AddRange(new[]
+            {
+                new RaceType(Race.Orc) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(3 * 32, 1 * 32), new Point(32)) },
+                new RaceType(Race.Undead) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(1 * 32, 1 * 32), new Point(32)) },
+                new RaceType(Race.Tauren) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(0, 1 * 32), new Point(32)) },
+                new RaceType(Race.Troll) { Icon = Utils.Global.RaceSpritesheet.GetSprite(new Point(2 * 32, 1 * 32), new Point(32)) },
+            });
+
+            for (int i = 0; i < allianceBounds.Length; i++)
+            {
+                allianceBounds[i] = new RectangleF(0, 0, 32, 32);
+
+                if (i == 0)
+                    allianceBounds[i].Position = new Point2((allyBanner_Position.X + (allyBanner.Width / 2 - allianceBounds[i].Width / 2)), allyBanner_Position.Y + 15);
+                else
+                {
+                    var lastBound = allianceBounds[i - 1];
+                    allianceBounds[i].Position = new Point2((allyBanner_Position.X + (allyBanner.Width / 2 - allianceBounds[i].Width / 2)), lastBound.Y + (lastBound.Height + 15));
+                }
+            }
+
+            for (int i = 0; i < hordeBounds.Length; i++)
+            {
+                hordeBounds[i] = new RectangleF(0, 0, 32, 32);
+
+                if (i == 0)
+                    hordeBounds[i].Position = new Point2((hordeBanner_Position.X + (hordeBanner.Width / 2 - hordeBounds[i].Width / 2)), hordeBanner_Position.Y + 15);
+                else
+                {
+                    var lastBound = hordeBounds[i - 1];
+                    hordeBounds[i].Position = new Point2((hordeBanner_Position.X + (hordeBanner.Width / 2 - hordeBounds[i].Width / 2)), lastBound.Y + (lastBound.Height + 15));
+                }
+            }
+
+            allRaces.AddRange(alliance);
+            allRaces.AddRange(horde);
+        }
+
+        private void LoadClassContent()
+        {
+            for (int i = 0; i < classBounds.Length; i++)
+            {
+                classBounds[i] = new RectangleF(0, 0, 32, 32);
+
+                if (i == 0)
+                    classBounds[i].Position = new Point2(allyBanner_Position.X + (allyBanner.Width / 2 - classBounds[i].Width / 2), allyBanner_Position.Y + allyBanner.Height + classBounds[i].Height);
+                else if (i > 4)
+                {
+                    if (i == 5)
+                    {
+                        var firstBound = classBounds[0];
+                        classBounds[i].Position = new Point2(firstBound.X, firstBound.Y + classBounds[i].Height + font.LineHeight);
+                    }
+                    else
+                    {
+                        var lastBound = classBounds[i - 1];
+                        classBounds[i].Position = new Point2(lastBound.X + classBounds[i].Width, lastBound.Y);
+                    }
+                }
+                else
+                {
+                    var lastBound = classBounds[i - 1];
+                    classBounds[i].Position = new Point2(lastBound.Position.X + classBounds[i].Width + 4f, lastBound.Position.Y);
+                }
+            }
         }
 
         public override void UnloadContent()
@@ -95,21 +196,61 @@ namespace WoW_2D.States
 
         public override void Update(GameTime gameTime)
         {
+            var mousePos = Mouse.GetState().Position;
+
+            UpdateRaceTypes(mousePos);
+            UpdateClassTypes(mousePos);
+
             acceptButton.IsEnabled = (nameText.Text.Length >= 3 && NetworkManager.State == NetworkManager.NetworkState.Waiting) ? true : false;
             nameText.IsEnabled = (NetworkManager.State == NetworkManager.NetworkState.Waiting) ? true : false;
 
-            raceSelection.Update();
-            var race = raceSelection.GetSelectedRace();
-            switch (race)
-            {
-                case Race.Human:
-                    selectedTexture = humanTexture;
-                    break;
-            }
             acceptButton.Update();
             backButton.Update();
             randomizeButton.Update();
             nameText.Update();
+        }
+
+        private void UpdateRaceTypes(Point mousePos)
+        {
+            for (int i = 0; i < allianceBounds.Length; i++)
+            {
+                if (allianceBounds[i].Contains(mousePos))
+                {
+                    var allyRace = alliance[i];
+                    allyRace.IsHovering = true;
+                    if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton))
+                        DeselectCurrentRace(ref allyRace);
+                }
+                else
+                    alliance[i].IsHovering = false;
+            }
+
+            for (int i = 0; i < hordeBounds.Length; i++)
+            {
+                if (hordeBounds[i].Contains(mousePos))
+                {
+                    var hordeRace = horde[i];
+                    hordeRace.IsHovering = true;
+                    if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton))
+                        DeselectCurrentRace(ref hordeRace);
+                }
+                else
+                    horde[i].IsHovering = false;
+            }
+        }
+
+        private void UpdateClassTypes(Point mousePos)
+        {
+            // TODO: Handle class selecting.
+            var race = GetSelectedRace();
+            for (int i = 0; i < race.Classes.Count; i++)
+            {
+                var @class = race.Classes[i];
+                if (classBounds[i].Contains(mousePos))
+                    @class.IsHovering = true;
+                else
+                    @class.IsHovering = false;
+            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -117,14 +258,41 @@ namespace WoW_2D.States
             graphics.Clear(Color.Black);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            if (selectedTexture != null)
-                spriteBatch.Draw(selectedTexture, new Vector2(graphics.Viewport.Width / 2 - selectedTexture.Width / 2, graphics.Viewport.Height / 2 - selectedTexture.Height / 2), null, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
-            raceSelection.Draw(font, spriteBatch);
             acceptButton.Draw(spriteBatch);
             backButton.Draw(spriteBatch);
             randomizeButton.Draw(spriteBatch);
             spriteBatch.DrawString(font, "Name", new Vector2(nameText.Position.X + (nameText.Width / 2 - font.MeasureString("Name").Width / 2), nameText.Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
             spriteBatch.End();
+
+            spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
+            spriteBatch.FillRectangle(racePanel, new Color(0f, 0f, 0f, 0.75f));
+            spriteBatch.DrawRectangle(racePanel, Color.Gray);
+            spriteBatch.End();
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(font, "Alliance", new Vector2(allyBanner_Position.X + (allyBanner.Width / 2 - font.MeasureString("Alliance").Width / 2), allyBanner_Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawString(font, "Horde", new Vector2(hordeBanner_Position.X + (hordeBanner.Width / 2 - font.MeasureString("Horde").Width / 2), hordeBanner_Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.Draw(allyBanner, allyBanner_Position, Color.White);
+            spriteBatch.Draw(hordeBanner, hordeBanner_Position, Color.White);
+
+            var race = GetSelectedRace();
+            switch (race.Race)
+            {
+                case Race.Human:
+                    spriteBatch.Draw(humanTexture, new Vector2(graphics.Viewport.Width / 2 - humanTexture.Width / 2, graphics.Viewport.Height / 2 - humanTexture.Height / 2), Color.White);
+                    break;
+            }
+            spriteBatch.End();
+
+            for (int i = 0; i < race.Classes.Count; i++)
+                race.Classes[i].Draw(font_small, spriteBatch, classBounds[i].Position);
+
+            for (int i = 0; i < alliance.Count; i++)
+                alliance[i].Draw(font_small, spriteBatch, allianceBounds[i].Position);
+
+            for (int i = 0; i < horde.Count; i++)
+                horde[i].Draw(font_small, spriteBatch, hordeBounds[i].Position);
+
             nameText.Draw(spriteBatch);
 
             DrawNetworkUpdates();
@@ -152,15 +320,32 @@ namespace WoW_2D.States
             }
         }
 
+        private void DeselectCurrentRace(ref RaceType newlySelectedRace)
+        {
+            var race = GetSelectedRace();
+            race.IsSelected = false;
+
+            newlySelectedRace.IsSelected = true;
+        }
+
+        private RaceType GetSelectedRace()
+        {
+            var race = allRaces.Find(x => x.IsSelected);
+            return race;
+        }
+
         private void OnAcceptButtonPressed()
         {
+            var race = GetSelectedRace();
+            var @class = race.Classes.Find(x => x.IsSelected).Class;
             if (acceptButton.IsEnabled)
             {
                 NetworkManager.State = NetworkManager.NetworkState.CreatingCharacter;
                 NetworkManager.Send(new CMSG_Character_Create()
                 {
                     Name = nameText.Text.Trim(),
-                    Race = raceSelection.GetSelectedRace()
+                    Race = race.Race,
+                    Class = @class
                 }, NetworkManager.Direction.World);
             }
         }
@@ -171,164 +356,5 @@ namespace WoW_2D.States
 
         private void OnEnterPress() => OnAcceptButtonPressed();
         public override void OnStateEnter() => nameText.ResetText();
-    }
-
-    /// <summary>
-    /// Handles race selection.
-    /// </summary>
-    public class RaceSelection
-    {
-        protected GraphicsDevice graphics;
-        protected Texture2D raceIcons;
-        protected Color[] colorData;
-
-        protected Rectangle humanSubRect, dwarfSubRect, nightelfSubRect, gnomeSubRect;
-        protected RectangleF humanRect, dwarfRect, nightelfRect, gnomeRect;
-
-        protected Rectangle orcSubRect, undeadSubRect, taurenSubRect, trollSubRect;
-        protected RectangleF orcRect, undeadRect, taurenRect, trollRect;
-
-        protected Texture2D humanIcon, dwarfIcon, nightelfIcon, gnomeIcon;
-        protected Texture2D orcIcon, undeadIcon, taurenIcon, trollIcon;
-
-        protected RectangleF racePanel;
-
-        protected Texture2D allyBanner, hordeBanner;
-        protected Vector2 allyBanner_Position, hordeBanner_Position;
-
-        protected float iconScale = 0.5f;
-
-        protected Race selectedRace = Race.Human;
-
-        public RaceSelection(GraphicsDevice graphics) => this.graphics = graphics;
-
-        public void LoadContent(ContentManager content)
-        {
-            raceIcons = content.Load<Texture2D>("Sprites/UI/RaceIcons");
-            allyBanner = content.Load<Texture2D>("Sprites/UI/Ally_Banner");
-            hordeBanner = content.Load<Texture2D>("Sprites/UI/Horde_Banner");
-
-            racePanel = new RectangleF(0, 0, 225, 512);
-            humanRect = new RectangleF(0, 0, 32, 32);
-            dwarfRect = new RectangleF(0, 0, 32, 32);
-            nightelfRect = new RectangleF(0, 0, 32, 32);
-            gnomeRect = new RectangleF(0, 0, 32, 32);
-
-            orcRect = new RectangleF(0, 0, 32, 32);
-            undeadRect = new RectangleF(0, 0, 32, 32);
-            taurenRect = new RectangleF(0, 0, 32, 32);
-            trollRect = new RectangleF(0, 0, 32, 32);
-
-            LoadIcons();
-            SetPositions();
-        }
-
-        protected void LoadIcons()
-        {
-            LoadAllyIcons();
-            LoadHordeIcons();
-        }
-
-        protected void LoadAllyIcons()
-        {
-            humanSubRect = new Rectangle(0, 0, 64, 64);
-            humanIcon = new Texture2D(graphics, humanSubRect.Width, humanSubRect.Height);
-            colorData = new Color[humanSubRect.Width * humanSubRect.Height];
-            raceIcons.GetData(0, humanSubRect, colorData, 0, colorData.Length);
-            humanIcon.SetData(colorData);
-
-            dwarfSubRect = new Rectangle(2 * 64, 0, 64, 64);
-            dwarfIcon = new Texture2D(graphics, dwarfSubRect.Width, dwarfSubRect.Height);
-            colorData = new Color[dwarfSubRect.Width * dwarfSubRect.Height];
-            raceIcons.GetData(0, dwarfSubRect, colorData, 0, colorData.Length);
-            dwarfIcon.SetData(colorData);
-
-            nightelfSubRect = new Rectangle(1 * 64, 0, 64, 64);
-            nightelfIcon = new Texture2D(graphics, nightelfSubRect.Width, nightelfSubRect.Height);
-            colorData = new Color[nightelfSubRect.Width * nightelfSubRect.Height];
-            raceIcons.GetData(0, nightelfSubRect, colorData, 0, colorData.Length);
-            nightelfIcon.SetData(colorData);
-
-            gnomeSubRect = new Rectangle(3 * 64, 0, 64, 64);
-            gnomeIcon = new Texture2D(graphics, gnomeSubRect.Width, gnomeSubRect.Height);
-            colorData = new Color[gnomeSubRect.Width * gnomeSubRect.Height];
-            raceIcons.GetData(0, gnomeSubRect, colorData, 0, colorData.Length);
-            gnomeIcon.SetData(colorData);
-        }
-
-        protected void LoadHordeIcons()
-        {
-            orcSubRect = new Rectangle(3 * 64, 1 * 64, 64, 64);
-            orcIcon = new Texture2D(graphics, orcSubRect.Width, orcSubRect.Height);
-            colorData = new Color[orcSubRect.Width * orcSubRect.Height];
-            raceIcons.GetData(0, orcSubRect, colorData, 0, colorData.Length);
-            orcIcon.SetData(colorData);
-
-            undeadSubRect = new Rectangle(1 * 64, 1 * 64, 64, 64);
-            undeadIcon = new Texture2D(graphics, undeadSubRect.Width, undeadSubRect.Height);
-            colorData = new Color[undeadSubRect.Width * undeadSubRect.Height];
-            raceIcons.GetData(0, undeadSubRect, colorData, 0, colorData.Length);
-            undeadIcon.SetData(colorData);
-
-            taurenSubRect = new Rectangle(0, 1 * 64, 64, 64);
-            taurenIcon = new Texture2D(graphics, taurenSubRect.Width, taurenSubRect.Height);
-            colorData = new Color[taurenSubRect.Width * taurenSubRect.Height];
-            raceIcons.GetData(0, taurenSubRect, colorData, 0, colorData.Length);
-            taurenIcon.SetData(colorData);
-
-            trollSubRect = new Rectangle(2 * 64, 1 * 64, 64, 64);
-            trollIcon = new Texture2D(graphics, trollSubRect.Width, trollSubRect.Height);
-            colorData = new Color[trollSubRect.Width * trollSubRect.Height];
-            raceIcons.GetData(0, trollSubRect, colorData, 0, colorData.Length);
-            trollIcon.SetData(colorData);
-        }
-
-        protected void SetPositions()
-        {
-            racePanel.Position = new Point2(50, graphics.Viewport.Height / 2 - racePanel.Height / 2);
-            allyBanner_Position = new Vector2(racePanel.Position.X + 25, racePanel.Position.Y + (racePanel.Height / 2 - allyBanner.Height / 2) - 75);
-            hordeBanner_Position = new Vector2(racePanel.Position.X + (racePanel.Width - hordeBanner.Width - 25), racePanel.Position.Y + (racePanel.Height / 2 - hordeBanner.Height / 2) - 75);
-
-            humanRect.Position = new Point2(allyBanner_Position.X + (allyBanner.Width / 2 - humanRect.Width / 2), allyBanner_Position.Y + 20);
-            dwarfRect.Position = new Point2(humanRect.Position.X, humanRect.Position.Y + (dwarfRect.Height + 10));
-            nightelfRect.Position = new Point2(dwarfRect.Position.X, dwarfRect.Position.Y + (nightelfRect.Height + 10));
-            gnomeRect.Position = new Point2(nightelfRect.Position.X, nightelfRect.Position.Y + (gnomeRect.Height + 10));
-
-            orcRect.Position = new Point2(hordeBanner_Position.X + (hordeBanner.Width / 2 - orcRect.Width / 2), hordeBanner_Position.Y + 20);
-            undeadRect.Position = new Point2(orcRect.Position.X, orcRect.Position.Y + (undeadRect.Height + 10));
-            taurenRect.Position = new Point2(undeadRect.Position.X, undeadRect.Position.Y + (taurenRect.Height + 10));
-            trollRect.Position = new Point2(taurenRect.Position.X, taurenRect.Position.Y + (trollRect.Height + 10));
-        }
-
-        public void Update()
-        {
-            if (humanRect.Contains(Mouse.GetState().Position))
-                if (InputHandler.IsMouseButtonPressed(InputHandler.MouseButton.LeftButton))
-                    selectedRace = Race.Human;
-        }
-
-        public void Draw(BitmapFont font, SpriteBatch spriteBatch)
-        {
-            spriteBatch.DrawRectangle(racePanel, Color.Gray, 2f);
-            spriteBatch.DrawString(font, "Alliance", new Vector2(allyBanner_Position.X + (allyBanner.Width / 2 - font.MeasureString("Alliance").Width / 2), allyBanner_Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
-            spriteBatch.DrawString(font, "Horde", new Vector2(hordeBanner_Position.X + (hordeBanner.Width / 2 - font.MeasureString("Horde").Width / 2), hordeBanner_Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
-            spriteBatch.Draw(allyBanner, allyBanner_Position, Color.White);
-            spriteBatch.Draw(hordeBanner, hordeBanner_Position, Color.White);
-
-            spriteBatch.Draw(humanIcon, humanRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(dwarfIcon, dwarfRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(nightelfIcon, nightelfRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(gnomeIcon, gnomeRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-
-            spriteBatch.Draw(orcIcon, orcRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(undeadIcon, undeadRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(taurenIcon, taurenRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-            spriteBatch.Draw(trollIcon, trollRect.Position, null, Color.White, 0f, Vector2.Zero, iconScale, SpriteEffects.None, 0f);
-        }
-
-        public Race GetSelectedRace()
-        {
-            return selectedRace;
-        }
     }
 }
