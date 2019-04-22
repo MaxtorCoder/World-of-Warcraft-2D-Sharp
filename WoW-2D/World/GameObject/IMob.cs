@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace WoW_2D.World.GameObject
     {
         protected SpriteSheet SpriteSheet;
         protected List<Animation> Animations = new List<Animation>();
+        public RectangleF BoundingBox; 
 
         public virtual void Initialize(GraphicsDevice graphics) { }
         public abstract void LoadContent(ContentManager content);

@@ -12,6 +12,7 @@ using MonoGameHelper.GameState;
 using MonoGameHelper.Utils;
 using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
+using WoW_2D.Gfx.Gui.Ui;
 using WoW_2D.Network;
 
 namespace WoW_2D.States

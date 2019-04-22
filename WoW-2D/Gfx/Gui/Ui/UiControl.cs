@@ -16,5 +16,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         public bool IsVisible { get; set; }
 
         public UiControl(GraphicsDevice graphics) : base(graphics) { }
+
+        public virtual void Activator() {}
     }
 }

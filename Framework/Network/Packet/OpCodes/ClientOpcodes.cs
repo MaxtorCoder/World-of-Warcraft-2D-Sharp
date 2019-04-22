@@ -19,7 +19,6 @@ namespace Framework.Network.Packet.OpCodes
         CMSG_WORLD              =           0x05,
         CMSG_WORLD_ENTER        =           0x06,
         CMSG_MOVEMENT_UPDATE    =           0x07,
-        CMSG_CHAT               =           0x08,
-        CMSG_LOGOUT             =           0xFF
+        CMSG_CHAT               =           0x08
     }
 }

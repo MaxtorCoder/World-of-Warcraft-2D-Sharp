@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using static Framework.Entity.Vector;
 
 namespace WoW_2D.World.GameObject
@@ -38,6 +39,8 @@ namespace WoW_2D.World.GameObject
                     break;
             }
             Animations.Find(x => x.IsActive).Update(gameTime);
+
+            BoundingBox.Position = new Point2(WorldData.Vector.X, WorldData.Vector.Y);
         }
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)

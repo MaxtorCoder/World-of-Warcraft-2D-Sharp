@@ -1,6 +1,8 @@
 ﻿using Framework.Entity;
 using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
+using Framework.Utils;
+using Framework.Utils.Configuration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -36,9 +38,10 @@ namespace WoW_2D
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
+        public static Settings ClientSettings;
         public static Color DefaultYellow = new Color(223, 195, 15);
 
-        public static readonly IPEndPoint Realmlist = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 1337);
+        public static IPEndPoint Realmlist;
         public static Realm Realm;
         public static List<RealmCharacter> RealmCharacters = new List<RealmCharacter>(7);
         public static WorldCharacter Character;
@@ -49,6 +52,13 @@ namespace WoW_2D
 
         public WorldofWarcraft()
         {
+            ClientSettings = Settings.Instance;
+            ClientSettings.Load("Data/client.ini");
+
+            Realmlist = new IPEndPoint(IPAddress.Parse(
+                ClientSettings.GetSection("Network").GetString("ip")),
+                ClientSettings.GetSection("Network").GetInt("port"));
+
             graphics = new GraphicsDeviceManager(this)
             {
                 PreferredBackBufferWidth = 1280,
@@ -69,23 +79,23 @@ namespace WoW_2D
         /// </summary>
         protected override void Initialize()
         {
-            Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice);
-            Global.HumanSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/Human/Human"));
+            Utils.Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice);
+            Utils.Global.HumanSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/Human/Human"));
 
-            Global.RaceSpritesheet = new SpriteSheet(GraphicsDevice);
-            Global.RaceSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/RaceIcons"));
-            Global.ClassSpritesheet = new SpriteSheet(GraphicsDevice);
-            Global.ClassSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/ClassIcons"));
+            Utils.Global.RaceSpritesheet = new SpriteSheet(GraphicsDevice);
+            Utils.Global.RaceSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/RaceIcons"));
+            Utils.Global.ClassSpritesheet = new SpriteSheet(GraphicsDevice);
+            Utils.Global.ClassSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/ClassIcons"));
 
-            Global.Classes.Add(new ClassType(Class.Warrior) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Undead, Race.Troll, Race.Orc } });
-            Global.Classes.Add(new ClassType(Class.Paladin) { Races = new List<Race>() { Race.Human, Race.Dwarf } });
-            Global.Classes.Add(new ClassType(Class.Rogue) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Undead, Race.Troll, Race.Orc } });
-            Global.Classes.Add(new ClassType(Class.Priest) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Undead, Race.Troll } });
-            Global.Classes.Add(new ClassType(Class.Mage) { Races = new List<Race>() { Race.Human, Race.Gnome, Race.Undead, Race.Troll } });
-            Global.Classes.Add(new ClassType(Class.Warlock) { Races = new List<Race>() { Race.Human, Race.Gnome, Race.Orc, Race.Undead } });
-            Global.Classes.Add(new ClassType(Class.Hunter) { Races = new List<Race>() { Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Troll, Race.Orc } });
-            Global.Classes.Add(new ClassType(Class.Druid) { Races = new List<Race>() { Race.NightElf, Race.Tauren } });
-            Global.Classes.Add(new ClassType(Class.Shaman) { Races = new List<Race>() { Race.Orc, Race.Tauren, Race.Troll } });
+            Utils.Global.Classes.Add(new ClassType(Class.Warrior) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Undead, Race.Troll, Race.Orc } });
+            Utils.Global.Classes.Add(new ClassType(Class.Paladin) { Races = new List<Race>() { Race.Human, Race.Dwarf } });
+            Utils.Global.Classes.Add(new ClassType(Class.Rogue) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Undead, Race.Troll, Race.Orc } });
+            Utils.Global.Classes.Add(new ClassType(Class.Priest) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Undead, Race.Troll } });
+            Utils.Global.Classes.Add(new ClassType(Class.Mage) { Races = new List<Race>() { Race.Human, Race.Gnome, Race.Undead, Race.Troll } });
+            Utils.Global.Classes.Add(new ClassType(Class.Warlock) { Races = new List<Race>() { Race.Human, Race.Gnome, Race.Orc, Race.Undead } });
+            Utils.Global.Classes.Add(new ClassType(Class.Hunter) { Races = new List<Race>() { Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Troll, Race.Orc } });
+            Utils.Global.Classes.Add(new ClassType(Class.Druid) { Races = new List<Race>() { Race.NightElf, Race.Tauren } });
+            Utils.Global.Classes.Add(new ClassType(Class.Shaman) { Races = new List<Race>() { Race.Orc, Race.Tauren, Race.Troll } });
 
             GameStateManager.SetContentManager(Content);
             GameStateManager.AddState(new MainMenuState(GraphicsDevice));

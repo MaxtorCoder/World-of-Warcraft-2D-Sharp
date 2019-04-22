@@ -85,7 +85,6 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_MOVEMENT_UPDATE, WorldHandler.HandleMoveUpdate);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHAT, WorldHandler.HandleChatMessage);
-            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_LOGOUT, WorldHandler.HandleLogout);
 
             while (true)
             {

@@ -82,6 +82,8 @@ namespace WoW_2D.World.GameObject
                     Animations[3].IsActive = true;
                     break;
             }
+
+            BoundingBox = new RectangleF(0, 0, 32, 32);
         }
     }
 }

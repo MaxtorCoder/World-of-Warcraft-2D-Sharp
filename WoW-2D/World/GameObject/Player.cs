@@ -52,7 +52,7 @@ namespace WoW_2D.World.GameObject
                     IsMovingLeft = false;
                 }
 
-
+            BoundingBox.Position = new Point2(WorldData.Vector.X, WorldData.Vector.Y);
         }
 
         private void UpdateKeyPress()

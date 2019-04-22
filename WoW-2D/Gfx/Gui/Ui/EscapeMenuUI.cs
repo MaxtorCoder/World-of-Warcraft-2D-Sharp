@@ -23,35 +23,57 @@ namespace WoW_2D.Gfx.Gui.Ui
         private BitmapFont font;
         private RectangleF menuBox;
 
-        private ButtonUI logoutButton;
+        private ButtonUI interfaceButton;
+        private ButtonUI exitButton;
+
+        private InterfaceOptionsUI interfaceOptionsUI;
 
         public EscapeMenuUI(GraphicsDevice graphics) : base(graphics)
         {
             menuBox = new RectangleF(0, 0, 175, 256);
             menuBox.Position = new Point2(graphics.Viewport.Width / 2 - menuBox.Width / 2, graphics.Viewport.Height / 2 - menuBox.Height / 2);
 
-            logoutButton = new ButtonUI(graphics)
+            interfaceButton = new ButtonUI(graphics)
             {
-                Text = "Logout",
+                Text = "Interface",
                 Width = menuBox.Width - 15,
                 Height = 25
             };
-            logoutButton.Position = new Vector2(menuBox.Position.X + (menuBox.Width / 2 - logoutButton.Width / 2), menuBox.Position.Y + (menuBox.Height - logoutButton.Height - 5));
-            logoutButton.OnClicked += OnLogoutClicked;
+            interfaceButton.Position = new Vector2(menuBox.Position.X + (menuBox.Width / 2 - interfaceButton.Width / 2), menuBox.Position.Y + interfaceButton.Height);
+            interfaceButton.OnClicked += OnInterfaceClicked;
+
+            exitButton = new ButtonUI(graphics)
+            {
+                Text = "Exit Game",
+                Width = menuBox.Width - 15,
+                Height = 25
+            };
+            exitButton.Position = new Vector2(menuBox.Position.X + (menuBox.Width / 2 - exitButton.Width / 2), menuBox.Position.Y + (menuBox.Height - exitButton.Height - 5));
+            exitButton.OnClicked += OnLogoutClicked;
+
+            interfaceOptionsUI = new InterfaceOptionsUI(graphics);
         }
 
         public override void LoadContent(ContentManager content)
         {
             font = content.Load<BitmapFont>("System/Font/font_small");
+
+            interfaceOptionsUI.Font = font;
+            interfaceOptionsUI.LoadContent(content);
         }
 
         public override void Update()
         {
             if (IsVisible)
             {
-                logoutButton.Update();
-                Global.ShouldHideUI = true;
+                interfaceButton.Update();
+                exitButton.Update();
             }
+
+            interfaceOptionsUI.Update();
+
+            if (IsVisible || interfaceOptionsUI.IsVisible)
+                Global.ShouldHideUI = true;
             else
                 Global.ShouldHideUI = false;
         }
@@ -70,14 +92,29 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.DrawRectangle(menuBox, Color.DarkGray, 1f);
                 spriteBatch.End();
 
-                logoutButton.Draw(font, spriteBatch);
+                interfaceButton.Draw(font, spriteBatch);
+                exitButton.Draw(font, spriteBatch);
             }
+
+            interfaceOptionsUI.Draw(spriteBatch);
         }
 
-        private void OnLogoutClicked()
+        private void OnInterfaceClicked()
         {
-            NetworkManager.Send(new CMSG_Logout(), NetworkManager.Direction.World);
             IsVisible = false;
+            interfaceOptionsUI.IsVisible = true;
+        }
+
+        private void OnLogoutClicked() => Environment.Exit(0);
+
+        public override void Activator()
+        {
+            if (interfaceOptionsUI.IsVisible)
+            {
+                interfaceOptionsUI.IsVisible = false;
+                interfaceOptionsUI.Activator();
+            }
+            IsVisible = !IsVisible;
         }
     }
 }
