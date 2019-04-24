@@ -36,5 +36,10 @@ namespace Framework.Utils.Configuration
         {
             return (int.Parse(GetString(key)));
         }
+
+        public Dictionary<string, string> GetKeyValues()
+        {
+            return keyValues;
+        }
     }
 }

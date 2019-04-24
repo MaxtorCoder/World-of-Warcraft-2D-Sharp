@@ -62,6 +62,23 @@ namespace Framework.Utils.Configuration
             }
         }
 
+        public void Save()
+        {
+            using (var sw = new StreamWriter(filePath))
+            {
+                foreach (var section in Sections)
+                {
+                    sw.WriteLine(section.Name);
+
+                    var keyValues = section.GetKeyValues();
+                    foreach (var pair in keyValues)
+                    {
+                        sw.WriteLine($"{pair.Key}={pair.Value.ToLower()}");
+                    }
+                }
+            }
+        }
+
         public INISection GetSection(string name)
         {
             name = "[" + name + "]";

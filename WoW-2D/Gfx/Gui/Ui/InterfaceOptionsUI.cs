@@ -131,6 +131,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         {
             WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("myname", renderMyName.IsChecked.ToString());
             WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("players", renderPlayerNames.IsChecked.ToString());
+            WorldofWarcraft.ClientSettings.Save();
         }
     }
 }
