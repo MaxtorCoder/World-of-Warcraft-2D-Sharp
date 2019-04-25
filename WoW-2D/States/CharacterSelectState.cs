@@ -146,10 +146,8 @@ namespace WoW_2D.States
                         try
                         {
                             realmCharacter = WorldofWarcraft.RealmCharacters[i];
-                            if (!string.IsNullOrWhiteSpace(realmCharacter.Name))
-                            {
+                            if (realmCharacter != null)
                                 characterIndex = i;
-                            }
                         }
                         catch { }
                     }
@@ -162,6 +160,7 @@ namespace WoW_2D.States
             graphics.Clear(Color.Black);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            spriteBatch.Draw(WorldofWarcraft.Logo, Vector2.Zero, Color.White);
             spriteBatch.DrawRectangle(listRect, Color.Gray, 2f);
             spriteBatch.DrawString(font, WorldofWarcraft.Realm.Name, new Vector2(listRect.Position.X + (listRect.Width / 2 - font.MeasureString(WorldofWarcraft.Realm.Name).Width / 2), listRect.Position.Y + 15), Color.LightGray);
             enterWorldButton.Draw(spriteBatch);

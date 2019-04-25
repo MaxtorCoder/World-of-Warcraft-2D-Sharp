@@ -52,7 +52,10 @@ namespace WoW_2D.World.GameObject
                     IsMovingLeft = false;
                 }
 
+            var boundPos = WorldofWarcraft.Map.Player.GetCamera().WorldToScreen(WorldofWarcraft.Map.Player.ColliderRadius.Center.X, WorldofWarcraft.Map.Player.ColliderRadius.Center.Y);
+
             BoundingBox.Position = new Point2(WorldData.Vector.X, WorldData.Vector.Y);
+            ColliderRadius.Center = new Point2(BoundingBox.X + BoundingBox.Width / 2 - 8f, BoundingBox.Y + BoundingBox.Height / 2 - 8f);
         }
 
         private void UpdateKeyPress()

@@ -55,7 +55,7 @@ namespace WoW_2D.World
                         spriteBatch.End();
                         break;
                     case "foreground":
-                        spriteBatch.Begin(transformMatrix: Player.GetCamera().GetViewMatrix());
+                        spriteBatch.Begin(transformMatrix: Player.GetCamera().GetViewMatrix(), samplerState: SamplerState.PointClamp);
                         mapRenderer.Draw(layer, viewMatrix: Player.GetCamera().GetViewMatrix());
                         spriteBatch.End();
                         break;

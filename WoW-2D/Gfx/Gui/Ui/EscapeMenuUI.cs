@@ -105,7 +105,7 @@ namespace WoW_2D.Gfx.Gui.Ui
             interfaceOptionsUI.IsVisible = true;
         }
 
-        private void OnLogoutClicked() => Environment.Exit(0);
+        private void OnLogoutClicked() => Global.ShouldExit = true;
 
         public override void Activator()
         {

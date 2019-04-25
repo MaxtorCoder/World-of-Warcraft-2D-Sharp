@@ -84,6 +84,7 @@ namespace WoW_2D.World.GameObject
             }
 
             BoundingBox = new RectangleF(0, 0, 32, 32);
+            ColliderRadius = new CircleF(new Point2(BoundingBox.Width / 2, BoundingBox.Height / 2), 150f);
         }
     }
 }

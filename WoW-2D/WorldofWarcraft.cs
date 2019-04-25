@@ -38,6 +38,7 @@ namespace WoW_2D
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
+        public static Texture2D Logo;
         public static Settings ClientSettings;
         public static Color DefaultYellow = new Color(223, 195, 15);
 
@@ -127,7 +128,9 @@ namespace WoW_2D
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
-        {}
+        {
+            Logo = Content.Load<Texture2D>("Logo");
+        }
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
@@ -153,6 +156,9 @@ namespace WoW_2D
                 playerToAdd.LoadContent(Content);
                 Players.Add(playerToAdd);
             }
+
+            if (Utils.Global.ShouldExit)
+                Exit();
         }
 
         /// <summary>

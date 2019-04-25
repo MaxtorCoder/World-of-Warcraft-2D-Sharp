@@ -267,6 +267,7 @@ namespace WoW_2D.States
             spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
             spriteBatch.FillRectangle(racePanel, new Color(0f, 0f, 0f, 0.75f));
             spriteBatch.DrawRectangle(racePanel, Color.Gray);
+            spriteBatch.Draw(WorldofWarcraft.Logo, new Vector2(racePanel.X + (racePanel.Width / 2 - WorldofWarcraft.Logo.Width / 2), racePanel.Y - (WorldofWarcraft.Logo.Height / 2) - 15), Color.White);
             spriteBatch.End();
 
             spriteBatch.Begin();

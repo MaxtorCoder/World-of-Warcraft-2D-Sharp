@@ -112,6 +112,7 @@ namespace WoW_2D.States
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
             spriteBatch.Draw(background, new Vector2(0f), Color.White);
+            spriteBatch.Draw(WorldofWarcraft.Logo, Vector2.Zero, Color.White);
             DrawUIStrings();
             loginButton.Draw(spriteBatch);
             spriteBatch.End();
