@@ -1,4 +1,5 @@
-﻿using Framework.Entity;
+﻿using DiscordRPC;
+using Framework.Entity;
 using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
 using Framework.Utils;
@@ -38,6 +39,7 @@ namespace WoW_2D
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
+        public static DiscordRpcClient Discord;
         public static Texture2D Logo;
         public static Settings ClientSettings;
         public static Color DefaultYellow = new Color(223, 195, 15);
@@ -119,6 +121,9 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_MOVE, WorldHandler.HandleConnectionMovement);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_REMOVE, WorldHandler.HandleConnectionRemove);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_DISCONNECT, WorldHandler.HandleDisconnect);
+
+            Discord = new DiscordRpcClient("572201528799264770");
+            Discord.Initialize();
 
             base.Initialize();
         }

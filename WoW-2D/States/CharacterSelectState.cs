@@ -1,4 +1,5 @@
-﻿using Framework.Entity;
+﻿using DiscordRPC;
+using Framework.Entity;
 using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -269,6 +270,16 @@ namespace WoW_2D.States
         {
             NetworkManager.State = NetworkManager.NetworkState.RetrievingCharacters;
             NetworkManager.Send(new CMSG_Character_List(), NetworkManager.Direction.World);
+
+            WorldofWarcraft.Discord.SetPresence(new RichPresence()
+            {
+                State = "Selecting character...",
+                Assets = new Assets()
+                {
+                    LargeImageKey = "wow_icon_discord",
+                    LargeImageText = "World of Warcraft 2D"
+                }
+            });
         }
     }
 }

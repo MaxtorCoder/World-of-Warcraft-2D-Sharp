@@ -1,4 +1,5 @@
-﻿using Framework.Entity;
+﻿using DiscordRPC;
+using Framework.Entity;
 using Framework.Network.Packet.Client;
 using Framework.Utils;
 using Microsoft.Xna.Framework;
@@ -356,6 +357,20 @@ namespace WoW_2D.States
         {}
 
         private void OnEnterPress() => OnAcceptButtonPressed();
-        public override void OnStateEnter() => nameText.ResetText();
+
+        public override void OnStateEnter()
+        {
+            nameText.ResetText();
+
+            WorldofWarcraft.Discord.SetPresence(new RichPresence()
+            {
+                State = "Creating new character...",
+                Assets = new Assets()
+                {
+                    LargeImageKey = "wow_icon_discord",
+                    LargeImageText = "World of Warcraft 2D"
+                }
+            });
+        }
     }
 }

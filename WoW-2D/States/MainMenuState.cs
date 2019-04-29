@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using DiscordRPC;
 using Framework.Network.Packet.Client;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -209,5 +210,18 @@ namespace WoW_2D.States
         
         private void OnEnterPress() => OnLoginPress();
         #endregion
+
+        public override void OnStateEnter()
+        {
+            WorldofWarcraft.Discord.SetPresence(new RichPresence()
+            {
+                State = "Logging in...",
+                Assets = new Assets()
+                {
+                    LargeImageKey = "wow_icon_discord",
+                    LargeImageText = "World of Warcraft 2D"
+                }
+            });
+        }
     }
 }
