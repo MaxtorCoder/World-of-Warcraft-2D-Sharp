@@ -211,7 +211,13 @@ namespace WorldServer
             });
         }
 
-        private void ClearOutput() => _logOuput.Text = string.Empty;
+        private void ClearOutput()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _logOuput.Text = string.Empty;
+            });
+        }
         private void ClearInput() => _logInput.Text = string.Empty;
 
         private void DisplayErrorCode()
