@@ -18,6 +18,8 @@ namespace WoW_2D.World
     /// </summary>
     public class ClientMap
     {
+        // TODO: Change to only render/update players within view of the camera.
+
         public TiledMap ZoneMap { get; set; }
         public Player Player { get; set; }
 

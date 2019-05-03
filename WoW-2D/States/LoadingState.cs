@@ -1,4 +1,6 @@
 ﻿using Framework.Entity;
+using Framework.Network.Packet.Client;
+using Framework.Network.Packet.OpCodes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,6 +12,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WoW_2D.Gfx.Gui;
+using WoW_2D.Network;
+using WoW_2D.Utils;
 using WoW_2D.World;
 
 namespace WoW_2D.States
@@ -22,6 +26,7 @@ namespace WoW_2D.States
         private ContentManager _content;
         private bool isLoading = false;
         private bool hasStarted = false;
+        private bool shouldRequestData = false;
         private BitmapFont font;
 
         public LoadingState(GraphicsDevice graphics) : base(graphics) { }
@@ -59,9 +64,35 @@ namespace WoW_2D.States
                     {
                         WorldofWarcraft.Map.Initialize(graphics);
                         WorldofWarcraft.Map.Player.LoadContent(_content);
-                        GameStateManager.EnterState(5);
+                        if (!shouldRequestData)
+                        {
+                            NetworkManager.State = NetworkManager.NetworkState.RetrievingMOTD;
+                            shouldRequestData = true;
+                        }
                     }
                 }
+            }
+
+            HandleNetUpdates();
+        }
+
+        private void HandleNetUpdates()
+        {
+            if (Global.IsRequestingLoadingData)
+                return;
+            switch (NetworkManager.State)
+            {
+                case NetworkManager.NetworkState.RetrievingMOTD:
+                    NetworkManager.Send(new CMSG_Generic() { Type = (byte)Requests.MOTD }, NetworkManager.Direction.World);
+                    Global.IsRequestingLoadingData = true;
+                    break;
+                case NetworkManager.NetworkState.RetrievingPlayers:
+                    NetworkManager.Send(new CMSG_Generic() { Type = (byte)Requests.OnlineList }, NetworkManager.Direction.World);
+                    Global.IsRequestingLoadingData = true;
+                    break;
+                case NetworkManager.NetworkState.Play:
+                    GameStateManager.EnterState(5);
+                    break;
             }
         }
 

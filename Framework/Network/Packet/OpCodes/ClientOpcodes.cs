@@ -19,6 +19,13 @@ namespace Framework.Network.Packet.OpCodes
         CMSG_WORLD              =           0x05,
         CMSG_WORLD_ENTER        =           0x06,
         CMSG_MOVEMENT_UPDATE    =           0x07,
-        CMSG_CHAT               =           0x08
+        CMSG_CHAT               =           0x08,
+        CMSG_GENERIC_REQUEST    =           0xF0
+    }
+
+    public enum Requests
+    {
+        MOTD                    =           0x01,
+        OnlineList              =           0x02
     }
 }

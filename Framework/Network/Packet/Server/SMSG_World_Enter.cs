@@ -17,13 +17,11 @@ namespace Framework.Network.Packet.Server
     public class SMSG_World_Enter : IPacket
     {
         public WorldCharacter WorldCharacter { get; set; }
-        public List<WorldCharacter> Players { get; set; }
 
         public SMSG_World_Enter() : base((byte)ServerOpcodes.Opcodes.SMSG_WORLD_ENTER) { }
 
         public override byte[] Serialize()
         {
-            var formatter = new BinaryFormatter();
             using (var memStr = new MemoryStream())
             {
                 using (var writer = new BinaryWriter(memStr))
@@ -38,7 +36,6 @@ namespace Framework.Network.Packet.Server
                     writer.Write(WorldCharacter.Vector.X);
                     writer.Write(WorldCharacter.Vector.Y);
                     writer.Write((int)WorldCharacter.Vector.Direction);
-                    formatter.Serialize(memStr, Players);
                 }
                 return memStr.ToArray();
             }
@@ -48,7 +45,6 @@ namespace Framework.Network.Packet.Server
         {
             var obj = new SMSG_World_Enter();
             var worldCharacter = new WorldCharacter();
-            var formatter = new BinaryFormatter();
             using (var memStr = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memStr))
@@ -66,7 +62,6 @@ namespace Framework.Network.Packet.Server
                         Y = reader.ReadSingle(),
                         Direction = (MoveDirection)reader.ReadInt32()
                     };
-                    obj.Players = (List<WorldCharacter>)formatter.Deserialize(memStr);
                 }
             }
             obj.WorldCharacter = worldCharacter;

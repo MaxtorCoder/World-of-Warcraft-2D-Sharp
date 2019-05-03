@@ -36,6 +36,9 @@ namespace WoW_2D.Network
             DeletingCharacter,
             EnteringWorld,
             EnterWorld,
+            RetrievingMOTD,
+            RetrievingPlayers,
+            Play,
             Disconnected,
             ServerError
         }

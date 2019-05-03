@@ -121,6 +121,7 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_MOVE, WorldHandler.HandleConnectionMovement);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_REMOVE, WorldHandler.HandleConnectionRemove);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_DISCONNECT, WorldHandler.HandleDisconnect);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_ONLINE, WorldHandler.HandleOnlineList);
 
             Discord = new DiscordRpcClient("572201528799264770");
             Discord.Initialize();

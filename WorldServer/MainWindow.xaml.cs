@@ -85,6 +85,7 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_WORLD_ENTER, WorldHandler.HandleWorldEnter);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_MOVEMENT_UPDATE, WorldHandler.HandleMoveUpdate);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHAT, WorldHandler.HandleChatMessage);
+            PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_GENERIC_REQUEST, WorldHandler.HandleGenericRequest);
 
             while (true)
             {
@@ -117,7 +118,7 @@ namespace WorldServer
                                 QueueLogMessage($"{worldConnection.Account.Character.Name} has left our world!");
                             }
 
-                            var connectionsInMap = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+                            var connectionsInMap = MapManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
                             if (connectionsInMap.Count > 0)
                             {
                                 foreach (var c in connectionsInMap)

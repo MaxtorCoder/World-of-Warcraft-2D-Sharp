@@ -51,7 +51,23 @@ namespace WorldServer.World
             }
         }
 
-        public static List<WorldConnection> GetCharactersWithinMap(int id)
+        public static List<WorldConnection> GetAllPlayers()
+        {
+            List<IConnection> generics = new List<IConnection>();
+            List<WorldConnection> worldConnections = new List<WorldConnection>();
+            foreach (var map in _maps)
+                generics.AddRange(map.Characters);
+
+            if (generics != null)
+            {
+                foreach (var connection in generics)
+                    worldConnections.Add((WorldConnection)connection);
+                return worldConnections;
+            }
+            return null;
+        }
+
+        public static List<WorldConnection> GetPlayersWithinMap(int id)
         {
             List<IConnection> generics = null;
             List<WorldConnection> worldConnections = new List<WorldConnection>();

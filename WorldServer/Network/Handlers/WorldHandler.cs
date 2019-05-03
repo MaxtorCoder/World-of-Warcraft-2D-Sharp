@@ -64,8 +64,8 @@ namespace WorldServer.Network.Handlers
                 }
             }
 
-            /** Send this new player to all connected players in the same map. **/
-            var onlinePlayers = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            /** Send this new player to all connected players.**/
+            var onlinePlayers = MapManager.GetAllPlayers();
             if (onlinePlayers.Count > 0)
             {
                 foreach (var player in onlinePlayers)
@@ -77,25 +77,38 @@ namespace WorldServer.Network.Handlers
                 }
             }
 
-            worldConnection.Send(new SMSG_Chat()
-            {
-                Flag = (byte)ChatFlag.Server,
-                Message = MainWindow.MOTD
-            });
-            
-            var onlineCharacters = new List<WorldCharacter>();
-            foreach (var player in onlinePlayers)
-                onlineCharacters.Add(player.Account.Character);
-
             worldConnection.Send(new SMSG_World_Enter()
             {
-                WorldCharacter = worldConnection.Account.Character,
-                Players = onlineCharacters
+                WorldCharacter = worldConnection.Account.Character
             });
 
             MapManager.AddCharacterToMap(worldConnection);
             DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
             MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
+        }
+
+        public static void HandleGenericRequest(IConnection connection, byte[] buffer)
+        {
+            var packet = (CMSG_Generic)new CMSG_Generic().Deserialize(buffer);
+            var worldConnection = (WorldConnection)connection;
+            switch (packet.Type)
+            {
+                case (byte)Requests.MOTD:
+                    connection.Send(new SMSG_Chat()
+                    {
+                        Flag = (byte)ChatFlag.Server,
+                        Message = MainWindow.MOTD
+                    });
+                    break;
+                case (byte)Requests.OnlineList:
+                    var onlinePlayers = MapManager.GetAllPlayers();
+                    var onlineCharacters = new List<WorldCharacter>();
+                    foreach (var player in onlinePlayers)
+                        if (worldConnection.Account.ID != player.Account.ID)
+                            onlineCharacters.Add(player.Account.Character);
+                    connection.Send(new SMSG_Online() { Characters = onlineCharacters });
+                    break;
+            }
         }
 
         public static void HandleMoveUpdate(IConnection connection, byte[] buffer)
@@ -107,7 +120,7 @@ namespace WorldServer.Network.Handlers
             worldConnection.Account.Character.Vector.Y = packet.Y;
             worldConnection.Account.Character.Vector.Direction = packet.Direction;
 
-            var onlinePlayers = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            var onlinePlayers = MapManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
             if (onlinePlayers.Count > 0)
             {
                 foreach (var player in onlinePlayers)
@@ -134,7 +147,7 @@ namespace WorldServer.Network.Handlers
             if (worldConnection.Account.Security >= AccountSecurity.Gamemaster)
                 flag = (byte)ChatFlag.GM;
             
-            var players = MapManager.GetCharactersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            var players = MapManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
             if (players != null)
             {
                 foreach (var player in players)

@@ -2,6 +2,7 @@
 using Framework.Network.Connection;
 using Framework.Network.Packet.OpCodes;
 using Framework.Network.Packet.Server;
+using MonoGameHelper.GameState;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +42,6 @@ namespace WoW_2D.Network.Handler
             if (packet.WorldCharacter.Vector.MapID != -1) // -1 is unused at the moment.
             {
                 WorldofWarcraft.Character = packet.WorldCharacter;
-                var players = packet.Players;
-                foreach (var player in players)
-                    WorldofWarcraft.PlayerQueue.Enqueue(player);
                 NetworkManager.State = NetworkManager.NetworkState.EnterWorld;
             }
         }
@@ -64,6 +62,26 @@ namespace WoW_2D.Network.Handler
                     Sender = sender,
                     Message = message
                 });
+            }
+
+            if (Global.IsRequestingLoadingData)
+            {
+                Global.IsRequestingLoadingData = false;
+                NetworkManager.State = NetworkManager.NetworkState.RetrievingPlayers;
+            }
+        }
+
+        public static void HandleOnlineList(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Online)new SMSG_Online().Deserialize(buffer);
+
+            foreach (var character in packet.Characters)
+                WorldofWarcraft.PlayerQueue.Enqueue(character);
+
+            if (Global.IsRequestingLoadingData)
+            {
+                Global.IsRequestingLoadingData = false;
+                NetworkManager.State = NetworkManager.NetworkState.Play;
             }
         }
 
