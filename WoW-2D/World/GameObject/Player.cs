@@ -52,10 +52,12 @@ namespace WoW_2D.World.GameObject
                     IsMovingLeft = false;
                 }
 
-            var boundPos = WorldofWarcraft.Map.Player.GetCamera().WorldToScreen(WorldofWarcraft.Map.Player.ColliderRadius.Center.X, WorldofWarcraft.Map.Player.ColliderRadius.Center.Y);
-
+            NorthBounds.Position = new Point2(WorldData.Vector.X + ((16 * 0.6f) / 2), WorldData.Vector.Y);
+            EastBounds.Position = new Point2(NorthBounds.Position.X + NorthBounds.Width, WorldData.Vector.Y + ((16 * 0.6f) / 2));
+            SouthBounds.Position = new Point2(WorldData.Vector.X + ((16 * 0.6f) / 2), WorldData.Vector.Y + (16 * 0.6f) + SouthBounds.Height);
+            WestBounds.Position = new Point2(WorldData.Vector.X, WorldData.Vector.Y + ((16 * 0.6f) / 2));
+            ColliderRadius.Center = new Point2(WorldData.Vector.X, WorldData.Vector.Y);
             BoundingBox.Position = new Point2(WorldData.Vector.X, WorldData.Vector.Y);
-            ColliderRadius.Center = new Point2(BoundingBox.X + BoundingBox.Width / 2 - 8f, BoundingBox.Y + BoundingBox.Height / 2 - 8f);
         }
 
         private void UpdateKeyPress()
@@ -111,40 +113,67 @@ namespace WoW_2D.World.GameObject
 
         private void UpdatePosition(GameTime gameTime)
         {
+            var collisionObjects = WorldofWarcraft.Map.ZoneMap.ObjectLayers[1].Objects;
+
             if (IsMovingUp || IsMovingDown || IsMovingLeft || IsMovingRight)
             {
+                float offsetX = WorldData.Vector.X;
+                float offsetY = WorldData.Vector.Y;
+
                 SentStop = false;
                 switch (WorldData.Vector.Direction)
                 {
                     case MoveDirection.North:
-                        WorldData.Vector.Y -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.North_East:
-                        WorldData.Vector.Y -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        WorldData.Vector.X += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.North_West:
-                        WorldData.Vector.Y -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        WorldData.Vector.X -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.East:
-                        WorldData.Vector.X += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.South:
-                        WorldData.Vector.Y += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.South_East:
-                        WorldData.Vector.Y += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        WorldData.Vector.X += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.South_West:
-                        WorldData.Vector.Y += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        WorldData.Vector.X -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.West:
-                        WorldData.Vector.X -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                 }
+
+                foreach (var collider in collisionObjects)
+                {
+                    if (ColliderRadius.Contains(collider.Position.ToPoint()))
+                    {
+                        var colliderRect = new RectangleF(collider.Position.ToPoint(), collider.Size);
+                        if (NorthBounds.Intersects(colliderRect))
+                            offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+
+                        if (EastBounds.Intersects(colliderRect))
+                            offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+
+                        if (SouthBounds.Intersects(colliderRect))
+                            offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+
+                        if (WestBounds.Intersects(colliderRect))
+                            offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                    }
+                }
+
+                WorldData.Vector.X = offsetX;
+                WorldData.Vector.Y = offsetY;
 
                 NetworkManager.Send(new CMSG_Movement_Update()
                 {

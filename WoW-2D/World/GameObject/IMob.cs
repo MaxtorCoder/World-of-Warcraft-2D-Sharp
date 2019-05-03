@@ -18,7 +18,7 @@ namespace WoW_2D.World.GameObject
     {
         protected SpriteSheet SpriteSheet;
         protected List<Animation> Animations = new List<Animation>();
-        public RectangleF BoundingBox;
+        public RectangleF NorthBounds, EastBounds, SouthBounds, WestBounds, BoundingBox;
         public CircleF ColliderRadius;
 
         public virtual void Initialize(GraphicsDevice graphics) { }

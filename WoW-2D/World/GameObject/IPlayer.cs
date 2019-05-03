@@ -83,8 +83,13 @@ namespace WoW_2D.World.GameObject
                     break;
             }
 
-            BoundingBox = new RectangleF(0, 0, 32, 32);
-            ColliderRadius = new CircleF(new Point2(BoundingBox.Width / 2, BoundingBox.Height / 2), 150f);
+            NorthBounds = new RectangleF(0, 0, 16 * 0.6f, 6);
+            EastBounds = new RectangleF(0, 0, 6, (16 * 0.6f));
+            SouthBounds = new RectangleF(0, 0, 16 * 0.6f, 6);
+            WestBounds = new RectangleF(0, 0, 6, (16 * 0.6f));
+
+            BoundingBox = new RectangleF(0, 0, 32 * 0.6f, 32 * 0.6f);
+            ColliderRadius = new CircleF(Point2.Zero, 150f);
         }
     }
 }
