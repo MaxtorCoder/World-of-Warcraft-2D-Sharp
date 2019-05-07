@@ -1,14 +1,18 @@
 ﻿using Framework;
+using Framework.Network.Connection;
 using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
 using Framework.Network.Packet.Server;
 using Framework.Network.Server;
 using Framework.Utils;
+using Framework.Utils.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using WorldServer.Command;
@@ -23,21 +27,25 @@ namespace WorldServer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly string Version = $"" +
+        public static readonly string Version = $"" +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMajorPart}." +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         private readonly string VersionStr = $"WorldServer Version v{Version}";
-        public static string MOTD = $"Welcome to v{Version} of World of Warcraft 2D!";
+        public static Settings WorldSettings;
         private TCPSocketServer tcpServer;
         private Thread coreThread;
-        private int port = 1338;
+
+        private System.Timers.Timer saveTimer;
+
         private static Queue<string> LogMessageQueue = new Queue<string>();
 
         private readonly List<AbstractCommand> commands = new List<AbstractCommand>()
         {
             new CommandAccount()
         };
+
+        public static List<IScript> Scripts = new List<IScript>();
 
         public MainWindow()
         {
@@ -51,8 +59,25 @@ namespace WorldServer
         private void InitializeWorld()
         {
             QueueLogMessage(VersionStr);
+            QueueLogMessage("Loading settings...");
+            WorldSettings = Settings.Instance;
+            WorldSettings.Load("Data/world.ini");
 
-            tcpServer = new TCPSocketServer("127.0.0.1", port);
+            QueueLogMessage("Loading scripts...");
+            var scriptFiles = Directory.GetFiles(WorldSettings.GetSection("Data").GetString("scripts"), "*.dll");
+            foreach (var file in scriptFiles)
+            {
+                var fileName = file.Split('/')[2].Split('.')[0];
+                var fileFullPath = Path.GetFullPath(file);
+                var asmFile = Assembly.LoadFile(fileFullPath);
+                var asmType = asmFile.GetType(string.Format("{0}.ConsoleTest", fileName));
+                Scripts.Add(Activator.CreateInstance(asmType) as IScript);
+            }
+
+            foreach (var script in Scripts)
+                script.OnLoaded();
+
+            tcpServer = new TCPSocketServer("127.0.0.1", WorldSettings.GetSection("Network").GetInt("port"));
             tcpServer.OnClientConnected += OnClientConnected;
 
             if (DatabaseManager.Initialize() == DatabaseManager.Status.Fatal)
@@ -69,7 +94,7 @@ namespace WorldServer
                 QueueLogMessage("Initializing map data...");
                 MapManager.Initialize();
 
-                QueueLogMessage($"Initialized on {port}");
+                QueueLogMessage($"Initialized on {tcpServer.GetLocalEP().Port}");
             }
 
             coreThread = new Thread(new ThreadStart(CoreThread));
@@ -87,12 +112,25 @@ namespace WorldServer
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_CHAT, WorldHandler.HandleChatMessage);
             PacketRegistry.DefineHandler((byte)ClientOpcodes.CMSG_GENERIC_REQUEST, WorldHandler.HandleGenericRequest);
 
+            saveTimer = new System.Timers.Timer(45000);
+            saveTimer.Elapsed += OnTimerElapsed;
+            saveTimer.AutoReset = true;
+
             while (true)
             {
                 if (tcpServer.ExitCode > 0 || tcpServer.ExitCode < 0)
                     tcpServer.IsDisposed = true;
                 if (tcpServer.IsDisposed)
                     break;
+
+                if (MapManager.GetAllPlayers().Count > 0)
+                {
+                    if (!saveTimer.Enabled)
+                        saveTimer.Start();
+                }
+                else
+                    if (saveTimer.Enabled)
+                        saveTimer.Stop();
 
                 HandleQueuedLog();
 
@@ -203,12 +241,22 @@ namespace WorldServer
             }
         }
 
+        private void OnTimerElapsed(object source, ElapsedEventArgs e)
+        {
+            QueueLogMessage("Saving players...");
+
+            var players = MapManager.GetAllPlayers();
+            foreach (var wCharacter in players)
+                DatabaseManager.SaveCharacter(wCharacter.Account.Character);
+        }
+
         public static void QueueLogMessage(string message) => LogMessageQueue.Enqueue($"→ {message} {Environment.NewLine}");
         private void AppendToLog(string message)
         {
             Dispatcher.Invoke(() =>
             {
                 _logOuput.Text += message;
+                _logOuput.ScrollToEnd();
             });
         }
 

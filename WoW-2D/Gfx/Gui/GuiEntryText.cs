@@ -53,7 +53,14 @@ namespace WoW_2D.Gfx.Gui
             spriteBatch.GraphicsDevice.ScissorRectangle = oldClip;
             spriteBatch.End();
         }
-        
+
+        public void SetText(string text)
+        {
+            Text = text;
+            foreach (var c in text)
+                cursorPosition++;
+        }
+
         public override void OnKeyTyped(Keys key, char character)
         {
             if (IsEnabled)

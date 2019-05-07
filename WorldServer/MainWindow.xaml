@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="DemiCore - World" Height="400" Width="600" ResizeMode="NoResize" Background="Gray">
     <Grid>
+        <TextBox x:Name="_logOuput" Margin="10,10,10,58" TextWrapping="Wrap" Text="" Background="LightGray" Focusable="False" Foreground="Black" />
         <TextBox x:Name="_logInput" TextWrapping="Wrap" Text="" Background="LightGray" FontFamily="Yu Gothic UI" FontSize="14" Margin="10,0,10,16" RenderTransformOrigin="0.502,0.493" Height="25" VerticalAlignment="Bottom"/>
-        <TextBlock x:Name="_logOuput" Margin="10,10,10,58" TextWrapping="Wrap" Text="" Background="LightGray" Focusable="False" Foreground="Black"/>
     </Grid>
 </Window>

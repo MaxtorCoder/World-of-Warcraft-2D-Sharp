@@ -211,7 +211,9 @@
     <Compile Include="Entity\RealmCharacter.cs" />
     <Compile Include="Entity\Vector.cs" />
     <Compile Include="Entity\WorldCharacter.cs" />
+    <Compile Include="IScript.cs" />
     <Compile Include="Network\Connection\IConnection.cs" />
+    <Compile Include="Network\Connection\WorldConnection.cs" />
     <Compile Include="Network\Cryptography\CryptoHelper.cs" />
     <Compile Include="Network\Packet\Client\CMSG_Character_Create.cs" />
     <Compile Include="Network\Packet\Client\CMSG_Character_Delete.cs" />

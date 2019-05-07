@@ -97,7 +97,7 @@ namespace WorldServer.Network.Handlers
                     connection.Send(new SMSG_Chat()
                     {
                         Flag = (byte)ChatFlag.Server,
-                        Message = MainWindow.MOTD
+                        Message = string.Format(MainWindow.WorldSettings.GetSection("Data").GetString("motd"), MainWindow.Version)
                     });
                     break;
                 case (byte)Requests.OnlineList:

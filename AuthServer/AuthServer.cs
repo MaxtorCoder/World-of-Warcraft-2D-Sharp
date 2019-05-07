@@ -7,6 +7,7 @@ using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
 using Framework.Network.Server;
 using Framework.Utils;
+using Framework.Utils.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,7 @@ namespace AuthServer
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         private readonly string VersionStr = $"AuthServer Version v{Version}";
+        public static Settings AuthSettings;
         private TCPSocketServer tcpServer;
 
         private static List<Realm> Realmlist;
@@ -37,8 +39,12 @@ namespace AuthServer
         {
             Console.Title = "DemiCore - Authentication";
             Logger.Write(Logger.LogType.Server, VersionStr);
+            Logger.Write(Logger.LogType.Server, "Loading settings...");
 
-            tcpServer = new TCPSocketServer("127.0.0.1", 1337);
+            AuthSettings = Settings.Instance;
+            AuthSettings.Load("Data/auth.ini");
+
+            tcpServer = new TCPSocketServer("127.0.0.1", AuthSettings.GetSection("Network").GetInt("port"));
             tcpServer.OnClientConnected += OnClientConnected;
 
             if (DatabaseManager.Initialize() == DatabaseManager.Status.Fatal)
@@ -48,7 +54,7 @@ namespace AuthServer
             {
                 Realmlist = DatabaseManager.FetchRealms();
                 foreach (var realm in Realmlist)
-                    Logger.Write(Logger.LogType.Server, $"Loaded {realm.Name}:{realm.Port}");
+                    Logger.Write(Logger.LogType.Server, $"Added realm: {realm.Name}");
                 Logger.Write(Logger.LogType.Server, $"Initialized on {tcpServer.GetLocalEP().Port}");
             }
             (new Thread(new ThreadStart(CoreThread))).Start();

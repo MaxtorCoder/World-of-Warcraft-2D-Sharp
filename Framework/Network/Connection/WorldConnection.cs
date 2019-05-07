@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WorldServer.Network
+namespace Framework.Network.Connection
 {
     /// <summary>
     /// World-type connection.

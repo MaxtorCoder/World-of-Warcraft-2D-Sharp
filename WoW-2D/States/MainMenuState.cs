@@ -29,6 +29,7 @@ namespace WoW_2D.States
         private GuiButton loginButton;
         private GuiEntryText usernameText;
         private GuiEntryText passwordText;
+        private CheckboxUI checkbox;
 
         private const string accountLabel = "Account Name";
         private const string passwordLabel = "Account Password";
@@ -48,8 +49,7 @@ namespace WoW_2D.States
             {
                 Width = 210,
                 Height = 25,
-                BackgroundColor = new Color(0f, 0f, 0f, 0.75f),
-                IsActive = true
+                BackgroundColor = new Color(0f, 0f, 0f, 0.75f)
             };
 
             passwordText = new GuiEntryText(graphics)
@@ -58,6 +58,13 @@ namespace WoW_2D.States
                 Height = 25,
                 BackgroundColor = new Color(0, 0f, 0f, 0.75f),
                 MaskCharacter = '*'
+            };
+
+            checkbox = new CheckboxUI(graphics)
+            {
+                Text = "Remember Account Name",
+                DrawBackdrop = true,
+                IsChecked = WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("account")
             };
 
             Controls.Add(loginButton);
@@ -80,9 +87,19 @@ namespace WoW_2D.States
 
             usernameText.Position = new Vector2(graphics.Viewport.Width / 2 - usernameText.Width / 2, graphics.Viewport.Height / 2 - usernameText.Height / 2 - 50);
             passwordText.Position = new Vector2(graphics.Viewport.Width / 2 - passwordText.Width / 2, usernameText.Position.Y + 120);
+            checkbox.Position = new Vector2(passwordText.Position.X, passwordText.Position.Y + 30f);
 
             usernameText.LoadContent(content);
             passwordText.LoadContent(content);
+            checkbox.LoadContent(content);
+
+            if (checkbox.IsChecked)
+            {
+                usernameText.SetText(WorldofWarcraft.ClientSettings.GetSection("Interface").GetString("account_name"));
+                passwordText.IsActive = true;
+            }
+            else
+                usernameText.IsActive = true;
         }
 
         public override void UnloadContent()
@@ -96,6 +113,7 @@ namespace WoW_2D.States
             loginButton.Update();
             usernameText.Update();
             passwordText.Update();
+            checkbox.Update();
 
             UpdateUsability();
         }
@@ -121,6 +139,7 @@ namespace WoW_2D.States
             // Render the textfield outside of the last spritebatch call since we begin a new one.
             usernameText.Draw(spriteBatch);
             passwordText.Draw(spriteBatch);
+            checkbox.Draw(spriteBatch);
 
             DrawNetworkUpdates();
         }
@@ -185,9 +204,20 @@ namespace WoW_2D.States
         private void OnLoginPress()
         {
             if (loginButton.IsEnabled)
+            {
                 NetworkManager.Initialize(usernameText.GetText(), passwordText.GetText());
 
-            usernameText.ResetText();
+                WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("account", checkbox.IsChecked.ToString());
+                if (checkbox.IsChecked)
+                    WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("account_name", usernameText.Text);
+                else
+                    WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("account_name", string.Empty);
+
+                WorldofWarcraft.ClientSettings.Save();
+            }
+
+            if (!checkbox.IsChecked)
+                usernameText.ResetText();
             passwordText.ResetText();
 
             usernameText.IsActive = true;
