@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Network;
@@ -125,6 +126,20 @@ namespace WoW_2D
 
             Discord = new DiscordRpcClient("572201528799264770");
             Discord.Initialize();
+
+            try
+            {
+                using (var client = new WebClient())
+                using (var stream = client.OpenRead(new Uri("http://localhost/wow2d/alert.txt")))
+                using (var reader = new StreamReader(stream, Encoding.UTF8, true))
+                {
+                    Utils.Global.BreakingNewsText = reader.ReadToEnd();
+                    Utils.Global.ShouldDrawBreakingNews = true;
+                }
+            } catch (Exception ex)
+            {
+                Utils.Global.ShouldDrawBreakingNews = false;
+            }
 
             base.Initialize();
         }

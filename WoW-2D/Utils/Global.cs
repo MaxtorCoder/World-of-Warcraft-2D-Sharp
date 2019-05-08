@@ -20,7 +20,9 @@ namespace WoW_2D.Utils
 
         public static bool ShouldHideUI { get; set; } = false;
         public static bool ShouldExit { get; set; } = false;
+        public static bool ShouldDrawBreakingNews { get; set; } = false;
         public static bool IsRequestingLoadingData { get; set; } = false;
+        public static string BreakingNewsText = string.Empty;
 
         public static Queue<ChatMessage> Chats = new Queue<ChatMessage>();
         public static List<ClassType> Classes = new List<ClassType>();

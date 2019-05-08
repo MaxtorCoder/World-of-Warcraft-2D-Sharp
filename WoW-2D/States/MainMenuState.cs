@@ -31,6 +31,8 @@ namespace WoW_2D.States
         private GuiEntryText passwordText;
         private CheckboxUI checkbox;
 
+        private BreakingNewsUI breakingNews;
+
         private const string accountLabel = "Account Name";
         private const string passwordLabel = "Account Password";
 
@@ -67,6 +69,8 @@ namespace WoW_2D.States
                 IsChecked = WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("account")
             };
 
+            breakingNews = new BreakingNewsUI(graphics);
+
             Controls.Add(loginButton);
             Controls.Add(usernameText);
             Controls.Add(passwordText);
@@ -92,6 +96,7 @@ namespace WoW_2D.States
             usernameText.LoadContent(content);
             passwordText.LoadContent(content);
             checkbox.LoadContent(content);
+            breakingNews.LoadContent(content);
 
             if (checkbox.IsChecked)
             {
@@ -140,6 +145,7 @@ namespace WoW_2D.States
             usernameText.Draw(spriteBatch);
             passwordText.Draw(spriteBatch);
             checkbox.Draw(spriteBatch);
+            breakingNews.Draw(spriteBatch);
 
             DrawNetworkUpdates();
         }

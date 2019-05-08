@@ -66,6 +66,7 @@
     <Compile Include="Gfx\Gui\GuiChatText.cs" />
     <Compile Include="Gfx\Gui\GuiEntryText.cs" />
     <Compile Include="Gfx\Gui\GuiNotification.cs" />
+    <Compile Include="Gfx\Gui\Ui\BreakingNewsUI.cs" />
     <Compile Include="Gfx\Gui\Ui\ChatUI.cs" />
     <Compile Include="Gfx\Gui\Ui\CheckboxUI.cs" />
     <Compile Include="Gfx\Gui\Ui\EscapeMenuUI.cs" />
