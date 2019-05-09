@@ -25,7 +25,7 @@ namespace WoW_2D.Gfx.Gui
             BaseTexture.SetData(bgColor);
             clippingRectangle = new Rectangle(Position.ToPoint(), new Point(Width, Height));
 
-            textFont = content.Load<BitmapFont>("System/Font/font");
+            textFont = GfxManager.GetFont("main_font");
             Text = "";
         }
 

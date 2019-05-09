@@ -27,9 +27,6 @@ namespace WoW_2D.States
     /// </summary>
     public class CharacterCreateState : IGameState
     {
-        private BitmapFont font;
-        private BitmapFont font_small;
-
         private GuiButton acceptButton;
         private GuiButton backButton;
         private GuiButton randomizeButton;
@@ -38,7 +35,6 @@ namespace WoW_2D.States
         private Texture2D humanTexture;
 
         private RectangleF racePanel;
-        private Texture2D allyBanner, hordeBanner;
         private Vector2 allyBanner_Position, hordeBanner_Position;
 
         private List<RaceType> alliance = new List<RaceType>();
@@ -83,9 +79,6 @@ namespace WoW_2D.States
         {
             base.LoadContent(content);
 
-            font = content.Load<BitmapFont>("System/Font/font");
-            font_small = content.Load<BitmapFont>("System/Font/font_small");
-
             acceptButton.LoadContent(content);
             acceptButton.Position = new Vector2(graphics.Viewport.Width - acceptButton.BaseTexture.Width - 15, graphics.Viewport.Height - acceptButton.BaseTexture.Height - 75);
 
@@ -110,11 +103,8 @@ namespace WoW_2D.States
 
         private void LoadRaceContent(ContentManager content)
         {
-            allyBanner = content.Load<Texture2D>("Sprites/UI/Ally_Banner");
-            allyBanner_Position = new Vector2(racePanel.Position.X + 25, racePanel.Position.Y + (racePanel.Height / 2 - allyBanner.Height / 2) - 75);
-
-            hordeBanner = content.Load<Texture2D>("Sprites/UI/Horde_Banner");
-            hordeBanner_Position = new Vector2(racePanel.Position.X + (racePanel.Width - hordeBanner.Width - 25), racePanel.Position.Y + (racePanel.Height / 2 - hordeBanner.Height / 2) - 75);
+            allyBanner_Position = new Vector2(racePanel.Position.X + 25, racePanel.Position.Y + (racePanel.Height / 2 - GfxManager.GetTexture("ally_banner").Height / 2) - 75);
+            hordeBanner_Position = new Vector2(racePanel.Position.X + (racePanel.Width - GfxManager.GetTexture("horde_banner").Width - 25), racePanel.Position.Y + (racePanel.Height / 2 - GfxManager.GetTexture("horde_banner").Height / 2) - 75);
 
             alliance.AddRange(new[]
             {
@@ -137,11 +127,11 @@ namespace WoW_2D.States
                 allianceBounds[i] = new RectangleF(0, 0, 32, 32);
 
                 if (i == 0)
-                    allianceBounds[i].Position = new Point2((allyBanner_Position.X + (allyBanner.Width / 2 - allianceBounds[i].Width / 2)), allyBanner_Position.Y + 15);
+                    allianceBounds[i].Position = new Point2((allyBanner_Position.X + (GfxManager.GetTexture("ally_banner").Width / 2 - allianceBounds[i].Width / 2)), allyBanner_Position.Y + 15);
                 else
                 {
                     var lastBound = allianceBounds[i - 1];
-                    allianceBounds[i].Position = new Point2((allyBanner_Position.X + (allyBanner.Width / 2 - allianceBounds[i].Width / 2)), lastBound.Y + (lastBound.Height + 15));
+                    allianceBounds[i].Position = new Point2((allyBanner_Position.X + (GfxManager.GetTexture("ally_banner").Width / 2 - allianceBounds[i].Width / 2)), lastBound.Y + (lastBound.Height + 15));
                 }
             }
 
@@ -150,11 +140,11 @@ namespace WoW_2D.States
                 hordeBounds[i] = new RectangleF(0, 0, 32, 32);
 
                 if (i == 0)
-                    hordeBounds[i].Position = new Point2((hordeBanner_Position.X + (hordeBanner.Width / 2 - hordeBounds[i].Width / 2)), hordeBanner_Position.Y + 15);
+                    hordeBounds[i].Position = new Point2((hordeBanner_Position.X + (GfxManager.GetTexture("horde_banner").Width / 2 - hordeBounds[i].Width / 2)), hordeBanner_Position.Y + 15);
                 else
                 {
                     var lastBound = hordeBounds[i - 1];
-                    hordeBounds[i].Position = new Point2((hordeBanner_Position.X + (hordeBanner.Width / 2 - hordeBounds[i].Width / 2)), lastBound.Y + (lastBound.Height + 15));
+                    hordeBounds[i].Position = new Point2((hordeBanner_Position.X + (GfxManager.GetTexture("horde_banner").Width / 2 - hordeBounds[i].Width / 2)), lastBound.Y + (lastBound.Height + 15));
                 }
             }
 
@@ -169,13 +159,13 @@ namespace WoW_2D.States
                 classBounds[i] = new RectangleF(0, 0, 32, 32);
 
                 if (i == 0)
-                    classBounds[i].Position = new Point2(allyBanner_Position.X + (allyBanner.Width / 2 - classBounds[i].Width / 2), allyBanner_Position.Y + allyBanner.Height + classBounds[i].Height);
+                    classBounds[i].Position = new Point2(allyBanner_Position.X + (GfxManager.GetTexture("ally_banner").Width / 2 - classBounds[i].Width / 2), allyBanner_Position.Y + GfxManager.GetTexture("ally_banner").Height + classBounds[i].Height);
                 else if (i > 4)
                 {
                     if (i == 5)
                     {
                         var firstBound = classBounds[0];
-                        classBounds[i].Position = new Point2(firstBound.X, firstBound.Y + classBounds[i].Height + font.LineHeight);
+                        classBounds[i].Position = new Point2(firstBound.X, firstBound.Y + classBounds[i].Height + GfxManager.GetFont("main_font").LineHeight);
                     }
                     else
                     {
@@ -262,20 +252,20 @@ namespace WoW_2D.States
             acceptButton.Draw(spriteBatch);
             backButton.Draw(spriteBatch);
             randomizeButton.Draw(spriteBatch);
-            spriteBatch.DrawString(font, "Name", new Vector2(nameText.Position.X + (nameText.Width / 2 - font.MeasureString("Name").Width / 2), nameText.Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Name", new Vector2(nameText.Position.X + (nameText.Width / 2 - GfxManager.GetFont("main_font").MeasureString("Name").Width / 2), nameText.Position.Y - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow);
             spriteBatch.End();
 
             spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
             spriteBatch.FillRectangle(racePanel, new Color(0f, 0f, 0f, 0.75f));
             spriteBatch.DrawRectangle(racePanel, Color.Gray);
-            spriteBatch.Draw(WorldofWarcraft.Logo, new Vector2(racePanel.X + (racePanel.Width / 2 - WorldofWarcraft.Logo.Width / 2), racePanel.Y - (WorldofWarcraft.Logo.Height / 2) - 15), Color.White);
+            spriteBatch.Draw(GfxManager.GetTexture("logo"), new Vector2(racePanel.X + (racePanel.Width / 2 - GfxManager.GetTexture("logo").Width / 2), racePanel.Y - (GfxManager.GetTexture("logo").Height / 2) - 15), Color.White);
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "Alliance", new Vector2(allyBanner_Position.X + (allyBanner.Width / 2 - font.MeasureString("Alliance").Width / 2), allyBanner_Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
-            spriteBatch.DrawString(font, "Horde", new Vector2(hordeBanner_Position.X + (hordeBanner.Width / 2 - font.MeasureString("Horde").Width / 2), hordeBanner_Position.Y - font.LineHeight), WorldofWarcraft.DefaultYellow);
-            spriteBatch.Draw(allyBanner, allyBanner_Position, Color.White);
-            spriteBatch.Draw(hordeBanner, hordeBanner_Position, Color.White);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Alliance", new Vector2(allyBanner_Position.X + (GfxManager.GetTexture("ally_banner").Width / 2 - GfxManager.GetFont("main_font").MeasureString("Alliance").Width / 2), allyBanner_Position.Y - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Horde", new Vector2(hordeBanner_Position.X + (GfxManager.GetTexture("horde_banner").Width / 2 - GfxManager.GetFont("main_font").MeasureString("Horde").Width / 2), hordeBanner_Position.Y - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.Draw(GfxManager.GetTexture("ally_banner"), allyBanner_Position, Color.White);
+            spriteBatch.Draw(GfxManager.GetTexture("horde_banner"), hordeBanner_Position, Color.White);
 
             var race = GetSelectedRace();
             switch (race.Race)
@@ -287,13 +277,13 @@ namespace WoW_2D.States
             spriteBatch.End();
 
             for (int i = 0; i < race.Classes.Count; i++)
-                race.Classes[i].Draw(font_small, spriteBatch, classBounds[i].Position);
+                race.Classes[i].Draw(GfxManager.GetFont("small_font"), spriteBatch, classBounds[i].Position);
 
             for (int i = 0; i < alliance.Count; i++)
-                alliance[i].Draw(font_small, spriteBatch, allianceBounds[i].Position);
+                alliance[i].Draw(GfxManager.GetFont("small_font"), spriteBatch, allianceBounds[i].Position);
 
             for (int i = 0; i < horde.Count; i++)
-                horde[i].Draw(font_small, spriteBatch, hordeBounds[i].Position);
+                horde[i].Draw(GfxManager.GetFont("small_font"), spriteBatch, hordeBounds[i].Position);
 
             nameText.Draw(spriteBatch);
 
@@ -305,19 +295,19 @@ namespace WoW_2D.States
             switch (NetworkManager.State)
             {
                 case NetworkManager.NetworkState.CreatingCharacter:
-                    GuiNotification.Draw(font, spriteBatch, "Creating character...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Creating character...");
                     break;
                 case NetworkManager.NetworkState.CharacterExists:
-                    GuiNotification.Draw(font, spriteBatch, "Name unavailable. Please try again.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Name unavailable. Please try again.", true);
                     break;
                 case NetworkManager.NetworkState.CreateCharacterError:
-                    GuiNotification.Draw(font, spriteBatch, "Server error.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Server error.", true);
                     break;
                 case NetworkManager.NetworkState.CharacterCreated:
                     GameStateManager.EnterState(2);
                     break;
                 case NetworkManager.NetworkState.ServerError:
-                    GuiNotification.Draw(font, spriteBatch, "Server error.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Server error.", true);
                     break;
             }
         }

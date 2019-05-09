@@ -28,9 +28,6 @@ namespace WoW_2D.States
     /// </summary>
     public class CharacterSelectState : IGameState
     {
-        private BitmapFont font;
-        private BitmapFont font_small;
-
         private RectangleF listRect;
         private RectangleF[] characterBoxes;
         private int characterIndex = -1;
@@ -89,8 +86,6 @@ namespace WoW_2D.States
         {
             base.LoadContent(content);
 
-            font = content.Load<BitmapFont>("System/Font/font");
-            font_small = content.Load<BitmapFont>("System/Font/font_small");
             humanTexture = Global.HumanSpritesheet.GetSprite(new Point(32, 0), new Point(32));
 
             enterWorldButton.LoadContent(content);
@@ -161,9 +156,9 @@ namespace WoW_2D.States
             graphics.Clear(Color.Black);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(WorldofWarcraft.Logo, Vector2.Zero, Color.White);
+            spriteBatch.Draw(GfxManager.GetTexture("logo"), Vector2.Zero, Color.White);
             spriteBatch.DrawRectangle(listRect, Color.Gray, 2f);
-            spriteBatch.DrawString(font, WorldofWarcraft.Realm.Name, new Vector2(listRect.Position.X + (listRect.Width / 2 - font.MeasureString(WorldofWarcraft.Realm.Name).Width / 2), listRect.Position.Y + 15), Color.LightGray);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), WorldofWarcraft.Realm.Name, new Vector2(listRect.Position.X + (listRect.Width / 2 - GfxManager.GetFont("main_font").MeasureString(WorldofWarcraft.Realm.Name).Width / 2), listRect.Position.Y + 15), Color.LightGray);
             enterWorldButton.Draw(spriteBatch);
             createCharacterButton.Draw(spriteBatch);
             deleteCharacterButton.Draw(spriteBatch);
@@ -199,10 +194,10 @@ namespace WoW_2D.States
                     var realmCharacter = WorldofWarcraft.RealmCharacters[i];
                     var box = characterBoxes[i];
 
-                    spriteBatch.DrawString(font, realmCharacter.Name, new Vector2(box.Position.X + 5, box.Position.Y), Color.Black);
-                    spriteBatch.DrawString(font, realmCharacter.Name, new Vector2(box.Position.X + 6, box.Position.Y + 1), WorldofWarcraft.DefaultYellow);
-                    spriteBatch.DrawString(font_small, $"Level {realmCharacter.Level} {realmCharacter.Class}", new Vector2(box.Position.X + 5, box.Position.Y + font_small.LineHeight), Color.White);
-                    spriteBatch.DrawString(font_small, $"{realmCharacter.Location}", new Vector2(box.Position.X + 5, box.Position.Y + (font_small.LineHeight * 2)), Color.DarkGray);
+                    spriteBatch.DrawString(GfxManager.GetFont("main_font"), realmCharacter.Name, new Vector2(box.Position.X + 5, box.Position.Y), Color.Black);
+                    spriteBatch.DrawString(GfxManager.GetFont("main_font"), realmCharacter.Name, new Vector2(box.Position.X + 6, box.Position.Y + 1), WorldofWarcraft.DefaultYellow);
+                    spriteBatch.DrawString(GfxManager.GetFont("small_font"), $"Level {realmCharacter.Level} {realmCharacter.Class}", new Vector2(box.Position.X + 5, box.Position.Y + GfxManager.GetFont("small_font").LineHeight), Color.White);
+                    spriteBatch.DrawString(GfxManager.GetFont("small_font"), $"{realmCharacter.Location}", new Vector2(box.Position.X + 5, box.Position.Y + (GfxManager.GetFont("small_font").LineHeight * 2)), Color.DarkGray);
                 }
                 spriteBatch.End();
             }
@@ -215,13 +210,13 @@ namespace WoW_2D.States
             switch (NetworkManager.State)
             {
                 case NetworkManager.NetworkState.RetrievingCharacters:
-                    GuiNotification.Draw(font, spriteBatch, "Retrieving characters...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Retrieving characters...");
                     break;
                 case NetworkManager.NetworkState.DeletingCharacter:
-                    GuiNotification.Draw(font, spriteBatch, "Deleting character...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Deleting character...");
                     break;
                 case NetworkManager.NetworkState.EnteringWorld:
-                    GuiNotification.Draw(font, spriteBatch, "Entering world...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Entering world...");
                     break;
                 case NetworkManager.NetworkState.EnterWorld:
                     GameStateManager.EnterState(4);

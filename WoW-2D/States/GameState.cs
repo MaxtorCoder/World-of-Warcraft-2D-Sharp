@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Gfx.Gui.Ui;
 using WoW_2D.Network;
@@ -25,8 +26,6 @@ namespace WoW_2D.States
         private EscapeMenuUI escapeMenu;
         private ChatUI chatUi;
         private HotbarUI hotbar;
-
-        private BitmapFont font;
 
         public GameState(GraphicsDevice graphics) : base(graphics) { }
 
@@ -44,9 +43,7 @@ namespace WoW_2D.States
         public override void LoadContent(ContentManager content)
         {
             base.LoadContent(content);
-
-            font = content.Load<BitmapFont>("System/Font/font_small");
-
+            
             escapeMenu.LoadContent(content);
             chatUi.LoadContent(content);
         }
@@ -89,10 +86,10 @@ namespace WoW_2D.States
         {
             var boundPos = WorldofWarcraft.Map.Player.GetCamera().WorldToScreen(WorldofWarcraft.Map.Player.BoundingBox.X, WorldofWarcraft.Map.Player.BoundingBox.Y);
 
-            spriteBatch.DrawString(font, WorldofWarcraft.Map.Player.WorldData.Name, 
-                new Vector2(boundPos.X + 16f - font.MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2 + 1f, boundPos.Y - font.LineHeight + 1f), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(font, WorldofWarcraft.Map.Player.WorldData.Name,
-                new Vector2(boundPos.X + 16f - font.MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2, boundPos.Y - font.LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("small_font"), WorldofWarcraft.Map.Player.WorldData.Name, 
+                new Vector2(boundPos.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2 + 1f, boundPos.Y - GfxManager.GetFont("small_font").LineHeight + 1f), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("small_font"), WorldofWarcraft.Map.Player.WorldData.Name,
+                new Vector2(boundPos.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2, boundPos.Y - GfxManager.GetFont("small_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
         }
 
         private void DrawPlayerNames(SpriteBatch spriteBatch)
@@ -106,10 +103,10 @@ namespace WoW_2D.States
                 {
                     var translatedBoundPosition = WorldofWarcraft.Map.Player.GetCamera().WorldToScreen(playerBoundingBox.X, playerBoundingBox.Y);
 
-                    spriteBatch.DrawString(font, player.WorldData.Name,
-                new Vector2(translatedBoundPosition.X + 16f - font.MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2 + 1f, translatedBoundPosition.Y - font.LineHeight + 1f), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(font, player.WorldData.Name,
-                        new Vector2(translatedBoundPosition.X + 16f - font.MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2, translatedBoundPosition.Y - font.LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(GfxManager.GetFont("small_font"), player.WorldData.Name,
+                new Vector2(translatedBoundPosition.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2 + 1f, translatedBoundPosition.Y - GfxManager.GetFont("small_font").LineHeight + 1f), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(GfxManager.GetFont("small_font"), player.WorldData.Name,
+                        new Vector2(translatedBoundPosition.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2, translatedBoundPosition.Y - GfxManager.GetFont("small_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
                 }
             }
         }

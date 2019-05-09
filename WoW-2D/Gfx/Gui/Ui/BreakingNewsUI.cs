@@ -19,9 +19,6 @@ namespace WoW_2D.Gfx.Gui.Ui
     {
         private string breakingNews = "Breaking News";
 
-        private BitmapFont bigFont;
-        private BitmapFont smallFont;
-
         private RectangleF breakingNewsBox;
 
         public BreakingNewsUI(GraphicsDevice graphics) : base(graphics)
@@ -31,10 +28,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         }
 
         public override void LoadContent(ContentManager content)
-        {
-            bigFont = content.Load<BitmapFont>("System/Font/font");
-            smallFont = content.Load<BitmapFont>("System/Font/font_small");
-        }
+        {}
 
         public override void Update()
         {}
@@ -43,7 +37,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         {
             if (Global.ShouldDrawBreakingNews)
             {
-                var text = Global.WrapText(smallFont, Global.BreakingNewsText, breakingNewsBox.Width);
+                var text = Global.WrapText(GfxManager.GetFont("small_font"), Global.BreakingNewsText, breakingNewsBox.Width);
 
                 spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
                 spriteBatch.FillRectangle(breakingNewsBox, new Color(0f, 0f, 0f, 0.75f));
@@ -51,9 +45,9 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.End();
 
                 spriteBatch.Begin();
-                spriteBatch.DrawString(bigFont, breakingNews, new Vector2(breakingNewsBox.Position.X + (breakingNewsBox.Width / 2) + 1, breakingNewsBox.Position.Y + 10f + 1), Color.Black, 0f, new Vector2(bigFont.MeasureString(breakingNews).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(bigFont, breakingNews, new Vector2(breakingNewsBox.Position.X + (breakingNewsBox.Width / 2), breakingNewsBox.Position.Y + 10f), WorldofWarcraft.DefaultYellow, 0f, new Vector2(bigFont.MeasureString(breakingNews).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(smallFont, text, new Vector2(breakingNewsBox.X + 5f, breakingNewsBox.Position.Y + 40f), Color.White);
+                spriteBatch.DrawString(GfxManager.GetFont("main_font"), breakingNews, new Vector2(breakingNewsBox.Position.X + (breakingNewsBox.Width / 2) + 1, breakingNewsBox.Position.Y + 10f + 1), Color.Black, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(breakingNews).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(GfxManager.GetFont("main_font"), breakingNews, new Vector2(breakingNewsBox.Position.X + (breakingNewsBox.Width / 2), breakingNewsBox.Position.Y + 10f), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(breakingNews).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(GfxManager.GetFont("small_font"), text, new Vector2(breakingNewsBox.X + 5f, breakingNewsBox.Position.Y + 40f), Color.White);
                 spriteBatch.End();
             }
         }

@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Gfx\Animation.cs" />
     <Compile Include="Gfx\ClassType.cs" />
+    <Compile Include="Gfx\GfxManager.cs" />
     <Compile Include="Gfx\Gui\GuiButton.cs" />
     <Compile Include="Gfx\Gui\GuiChatText.cs" />
     <Compile Include="Gfx\Gui\GuiEntryText.cs" />

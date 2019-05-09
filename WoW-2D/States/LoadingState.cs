@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Network;
 using WoW_2D.Utils;
@@ -27,7 +28,6 @@ namespace WoW_2D.States
         private bool isLoading = false;
         private bool hasStarted = false;
         private bool shouldRequestData = false;
-        private BitmapFont font;
 
         public LoadingState(GraphicsDevice graphics) : base(graphics) { }
 
@@ -38,7 +38,6 @@ namespace WoW_2D.States
         public override void LoadContent(ContentManager content)
         {
             base.LoadContent(content);
-            font = content.Load<BitmapFont>("System/Font/font");
             _content = content;
         }
 
@@ -100,7 +99,7 @@ namespace WoW_2D.States
         {
             graphics.Clear(Color.Black);
 
-            GuiNotification.Draw(font, spriteBatch, "Loading content...");
+            GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Loading content...");
         }
     }
 }

@@ -31,7 +31,7 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public override void LoadContent(ContentManager content)
         {
-            font = content.Load<BitmapFont>("System/Font/font_small");
+            font = GfxManager.GetFont("small_font");
         }
 
         public override void Update()

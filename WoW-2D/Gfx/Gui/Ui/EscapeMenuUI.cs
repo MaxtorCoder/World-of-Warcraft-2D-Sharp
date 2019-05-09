@@ -21,6 +21,7 @@ namespace WoW_2D.Gfx.Gui.Ui
     public class EscapeMenuUI : UiControl
     {
         private BitmapFont font;
+
         private RectangleF menuBox;
 
         private ButtonUI interfaceButton;
@@ -56,7 +57,7 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public override void LoadContent(ContentManager content)
         {
-            font = content.Load<BitmapFont>("System/Font/font_small");
+            font = GfxManager.GetFont("small_font");
 
             interfaceOptionsUI.Font = font;
             interfaceOptionsUI.LoadContent(content);

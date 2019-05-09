@@ -41,7 +41,6 @@ namespace WoW_2D
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
         public static DiscordRpcClient Discord;
-        public static Texture2D Logo;
         public static Settings ClientSettings;
         public static Color DefaultYellow = new Color(223, 195, 15);
 
@@ -83,13 +82,15 @@ namespace WoW_2D
         /// </summary>
         protected override void Initialize()
         {
+            GfxManager.Load(Content);
+
             Utils.Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice);
-            Utils.Global.HumanSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/Human/Human"));
+            Utils.Global.HumanSpritesheet.SetTexture(GfxManager.GetTexture("human_spritesheet"));
 
             Utils.Global.RaceSpritesheet = new SpriteSheet(GraphicsDevice);
-            Utils.Global.RaceSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/RaceIcons"));
+            Utils.Global.RaceSpritesheet.SetTexture(GfxManager.GetTexture("race_spritesheet"));
             Utils.Global.ClassSpritesheet = new SpriteSheet(GraphicsDevice);
-            Utils.Global.ClassSpritesheet.SetTexture(Content.Load<Texture2D>("Sprites/UI/ClassIcons"));
+            Utils.Global.ClassSpritesheet.SetTexture(GfxManager.GetTexture("class_spritesheet"));
 
             Utils.Global.Classes.Add(new ClassType(Class.Warrior) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Undead, Race.Troll, Race.Orc } });
             Utils.Global.Classes.Add(new ClassType(Class.Paladin) { Races = new List<Race>() { Race.Human, Race.Dwarf } });
@@ -149,9 +150,7 @@ namespace WoW_2D
         /// all of your content.
         /// </summary>
         protected override void LoadContent()
-        {
-            Logo = Content.Load<Texture2D>("Logo");
-        }
+        {}
 
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload

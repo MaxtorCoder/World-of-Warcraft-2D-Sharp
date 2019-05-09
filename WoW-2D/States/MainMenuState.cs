@@ -23,9 +23,6 @@ namespace WoW_2D.States
     /// </summary>
     public class MainMenuState : IGameState
     {
-        private Texture2D background;
-        private BitmapFont font;
-
         private GuiButton loginButton;
         private GuiEntryText usernameText;
         private GuiEntryText passwordText;
@@ -83,9 +80,6 @@ namespace WoW_2D.States
         {
             base.LoadContent(content);
 
-            background = content.Load<Texture2D>("bg_0");
-            font = content.Load<BitmapFont>("System/Font/font");
-
             loginButton.LoadContent(content);
             loginButton.Position = new Vector2(graphics.Viewport.Width / 2 - loginButton.BaseTexture.Width / 2, graphics.Viewport.Height / 2 + 150);
 
@@ -135,8 +129,8 @@ namespace WoW_2D.States
             graphics.Clear(Color.Black);
 
             spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            spriteBatch.Draw(background, new Vector2(0f), Color.White);
-            spriteBatch.Draw(WorldofWarcraft.Logo, Vector2.Zero, Color.White);
+            spriteBatch.Draw(GfxManager.GetTexture("background1"), new Vector2(0f), Color.White);
+            spriteBatch.Draw(GfxManager.GetTexture("logo"), Vector2.Zero, Color.White);
             DrawUIStrings();
             loginButton.Draw(spriteBatch);
             spriteBatch.End();
@@ -152,16 +146,16 @@ namespace WoW_2D.States
 
         private void DrawUIStrings()
         {
-            spriteBatch.DrawString(font, "March 3 2019", new Vector2(0f, graphics.Viewport.Height - font.LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(font, WorldofWarcraft.VersionStr, new Vector2(0f, graphics.Viewport.Height - font.LineHeight * 2), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "March 3 2019", new Vector2(0f, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), WorldofWarcraft.VersionStr, new Vector2(0f, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight * 2), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-            spriteBatch.DrawString(font, blizzardCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - font.LineHeight), WorldofWarcraft.DefaultYellow, 0f, new Vector2(font.MeasureString(blizzardCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(font, teamCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - (font.LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(font.MeasureString(teamCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), blizzardCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(blizzardCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), teamCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - (GfxManager.GetFont("main_font").LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(teamCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
 
-            spriteBatch.DrawString(font, accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2) + 1, usernameText.Position.Y - (font.LineHeight * 2) + 1), Color.Black, 0f, new Vector2(font.MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(font, accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2), usernameText.Position.Y - (font.LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(font.MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(font, passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2) + 1, passwordText.Position.Y - (font.LineHeight * 2) + 1), Color.Black, 0f, new Vector2(font.MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(font, passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2), passwordText.Position.Y - (font.LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(font.MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2) + 1, usernameText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2) + 1), Color.Black, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2), usernameText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2) + 1, passwordText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2) + 1), Color.Black, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2), passwordText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
         }
 
         private void DrawNetworkUpdates()
@@ -169,38 +163,38 @@ namespace WoW_2D.States
             switch (NetworkManager.State)
             {
                 case NetworkManager.NetworkState.Connecting:
-                    GuiNotification.Draw(font, spriteBatch, "Connecting...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Connecting...");
                     break;
                 case NetworkManager.NetworkState.ConnectingFailed:
-                    GuiNotification.Draw(font, spriteBatch, "Unable to connect. Please check your realmlist file or contact a developer.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Unable to connect. Please check your realmlist file or contact a developer.", true);
                     break;
                 case NetworkManager.NetworkState.Authenticating:
-                    GuiNotification.Draw(font, spriteBatch, "Authenticating...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Authenticating...");
                     break;
                 case NetworkManager.NetworkState.AuthenticatingFailed:
-                    GuiNotification.Draw(font, spriteBatch, "Incorrect username/password was entered. Please try again or contact a developer.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Incorrect username/password was entered. Please try again or contact a developer.", true);
                     break;
                 case NetworkManager.NetworkState.AuthenticatingUnk:
-                    GuiNotification.Draw(font, spriteBatch, "This account could not be found. Please try again or contact a developer.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "This account could not be found. Please try again or contact a developer.", true);
                     break;
                 case NetworkManager.NetworkState.AlreadyLoggedIn:
-                    GuiNotification.Draw(font, spriteBatch, "This account is already logged in.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "This account is already logged in.", true);
                     break;
                 case NetworkManager.NetworkState.RetrievingRealmlist:
-                    GuiNotification.Draw(font, spriteBatch, "Retrieving realmlist...");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Retrieving realmlist...");
                     break;
                 case NetworkManager.NetworkState.LoggingIntoGameServer:
-                    GuiNotification.Draw(font, spriteBatch, "Logging into game-server....");
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Logging into game-server....");
                     break;
                 case NetworkManager.NetworkState.GameServerConnectionFailed:
-                    GuiNotification.Draw(font, spriteBatch, "Failed to log-in to game-server. Please try again later.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Failed to log-in to game-server. Please try again later.", true);
                     NetworkManager.Disconnect(NetworkManager.Direction.Auth);
                     break;
                 case NetworkManager.NetworkState.GameServer:
                     GameStateManager.EnterState(2);
                     break;
                 case NetworkManager.NetworkState.ServerError:
-                    GuiNotification.Draw(font, spriteBatch, "Server error.", true);
+                    GuiNotification.Draw(GfxManager.GetFont("main_font"), spriteBatch, "Server error.", true);
                     NetworkManager.Disconnect(NetworkManager.Direction.Auth);
                     break;
             }
