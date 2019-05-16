@@ -29,7 +29,7 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public override void Update()
         {
-            healthPercent = WorldofWarcraft.Map.Player.WorldData.CurrentHP / WorldofWarcraft.Map.Player.WorldData.MaxHP;
+            healthPercent = WorldofWarcraft.Map.Player.WorldData.Stats.CurrentHP / WorldofWarcraft.Map.Player.WorldData.Stats.MaxHP;
         }
 
         public override void Draw(SpriteBatch spriteBatch)

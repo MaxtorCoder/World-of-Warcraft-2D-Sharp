@@ -28,9 +28,10 @@ namespace Framework.Network.Packet.Server
                 {
                     writer.Write(_opcode);
                     writer.Write(WorldCharacter.Name);
-                    writer.Write(WorldCharacter.Level);
-                    writer.Write(WorldCharacter.CurrentHP);
-                    writer.Write(WorldCharacter.MaxHP);
+                    writer.Write(WorldCharacter.Stats.Level);
+                    writer.Write(WorldCharacter.Stats.CurrentHP);
+                    writer.Write(WorldCharacter.Stats.MaxHP);
+                    writer.Write(WorldCharacter.Stats.WalkSpeed);
                     writer.Write((int)WorldCharacter.Class);
                     writer.Write((int)WorldCharacter.Race);
                     writer.Write(WorldCharacter.Vector.MapID);
@@ -53,9 +54,13 @@ namespace Framework.Network.Packet.Server
                 {
                     reader.ReadByte();
                     worldCharacter.Name = reader.ReadString();
-                    worldCharacter.Level = reader.ReadInt32();
-                    worldCharacter.CurrentHP = reader.ReadSingle();
-                    worldCharacter.MaxHP = reader.ReadSingle();
+                    worldCharacter.Stats = new Stats()
+                    {
+                        Level = reader.ReadInt32(),
+                        CurrentHP = reader.ReadSingle(),
+                        MaxHP = reader.ReadSingle(),
+                        WalkSpeed = reader.ReadSingle()
+                    };
                     worldCharacter.Class = (Class)reader.ReadInt32();
                     worldCharacter.Race = (Race)reader.ReadInt32();
                     worldCharacter.Vector = new Vector()

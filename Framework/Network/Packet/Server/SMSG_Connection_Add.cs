@@ -28,7 +28,8 @@ namespace Framework.Network.Packet.Server
                 {
                     writer.Write(_opcode);
                     writer.Write(WorldCharacter.Name);
-                    writer.Write(WorldCharacter.Level);
+                    writer.Write(WorldCharacter.Stats.Level);
+                    // TODO: Send other stats used in the unit frame when implemented.
                     writer.Write((int)WorldCharacter.Class);
                     writer.Write((int)WorldCharacter.Race);
                     writer.Write(WorldCharacter.Vector.MapID);
@@ -51,7 +52,10 @@ namespace Framework.Network.Packet.Server
                 {
                     reader.ReadByte();
                     worldCharacter.Name = reader.ReadString();
-                    worldCharacter.Level = reader.ReadInt32();
+                    worldCharacter.Stats = new Stats()
+                    {
+                        Level = reader.ReadInt32()
+                    };
                     worldCharacter.Class = (Class)reader.ReadInt32();
                     worldCharacter.Race = (Race)reader.ReadInt32();
                     worldCharacter.Vector = new Vector()

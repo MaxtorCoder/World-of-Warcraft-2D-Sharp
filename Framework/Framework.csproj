@@ -209,6 +209,7 @@
     <Compile Include="Entity\Race.cs" />
     <Compile Include="Entity\Realm.cs" />
     <Compile Include="Entity\RealmCharacter.cs" />
+    <Compile Include="Entity\Stats.cs" />
     <Compile Include="Entity\Vector.cs" />
     <Compile Include="Entity\WorldCharacter.cs" />
     <Compile Include="IScript.cs" />

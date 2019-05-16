@@ -190,32 +190,32 @@ namespace WoW_2D.World.GameObject
                 switch (WorldData.Vector.Direction)
                 {
                     case MoveDirection.North:
-                        offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.North_East:
-                        offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.North_West:
-                        offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.East:
-                        offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.South:
-                        offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.South_East:
-                        offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.South_West:
-                        offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
-                        offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetY += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                     case MoveDirection.West:
-                        offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                        offsetX -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                         break;
                 }
 
@@ -225,16 +225,16 @@ namespace WoW_2D.World.GameObject
                     {
                         var colliderRect = new RectangleF(collider.Position.ToPoint(), collider.Size);
                         if (NorthBounds.Intersects(colliderRect))
-                            offsetY += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                            offsetY += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
 
                         if (EastBounds.Intersects(colliderRect))
-                            offsetX -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                            offsetX -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
 
                         if (SouthBounds.Intersects(colliderRect))
-                            offsetY -= speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                            offsetY -= WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
 
                         if (WestBounds.Intersects(colliderRect))
-                            offsetX += speed * (1f / gameTime.ElapsedGameTime.Milliseconds);
+                            offsetX += WorldData.Stats.WalkSpeed * (1f / gameTime.ElapsedGameTime.Milliseconds);
                     }
                 }
 

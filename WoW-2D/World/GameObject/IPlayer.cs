@@ -21,6 +21,5 @@ namespace WoW_2D.World.GameObject
     {
         public WorldCharacter WorldData;
         public bool IsMovingUp, IsMovingDown, IsMovingLeft, IsMovingRight;
-        protected float speed = 8.5f; // TODO: Make speed server-side.
     }
 }
