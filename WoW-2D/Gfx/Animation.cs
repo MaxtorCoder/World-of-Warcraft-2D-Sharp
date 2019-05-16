@@ -77,6 +77,11 @@ namespace WoW_2D.Gfx
                 spriteBatch.Draw(frame.Texture, position, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
         }
 
+        public Texture2D GetFrame(int index)
+        {
+            return frames[index].Texture;
+        }
+
         /// <summary>
         /// Handles animation-frame data.
         /// </summary>

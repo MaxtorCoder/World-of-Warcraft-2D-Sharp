@@ -61,8 +61,8 @@ namespace WoW_2D.States
                 {
                     if (WorldofWarcraft.Map.Player != null)
                     {
-                        WorldofWarcraft.Map.Initialize(graphics);
-                        WorldofWarcraft.Map.Player.LoadContent(_content);
+                        if (!WorldofWarcraft.Map.HasInitialized)
+                            WorldofWarcraft.Map.Initialize(graphics);
                         if (!shouldRequestData)
                         {
                             NetworkManager.State = NetworkManager.NetworkState.RetrievingMOTD;

@@ -15,6 +15,8 @@ namespace Framework.Entity
         public string GUID { get; set; }
         public string Name { get; set; }
         public int Level { get; set; }
+        public float CurrentHP { get; set; }
+        public float MaxHP { get; set; }
         public Class Class { get; set; }
         public Race Race { get; set; }
         public Vector Vector { get; set; }

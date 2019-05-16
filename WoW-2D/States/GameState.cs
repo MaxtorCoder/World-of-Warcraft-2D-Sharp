@@ -26,6 +26,7 @@ namespace WoW_2D.States
         private EscapeMenuUI escapeMenu;
         private ChatUI chatUi;
         private HotbarUI hotbar;
+        private UnitFrameUI localFrame;
 
         public GameState(GraphicsDevice graphics) : base(graphics) { }
 
@@ -34,6 +35,13 @@ namespace WoW_2D.States
             escapeMenu = new EscapeMenuUI(graphics);
             chatUi = new ChatUI(graphics);
             hotbar = new HotbarUI(graphics);
+            localFrame = new UnitFrameUI(graphics)
+            {
+                UnitDisplay = new RectangleF(new Point2(2f, 2f), new Size2(42f, 42f))
+            };
+            localFrame.HealthBar = new RectangleF(new Point2(localFrame.UnitDisplay.X + localFrame.UnitDisplay.Width + 4f, localFrame.UnitDisplay.Y + GfxManager.GetFont("small_font").LineHeight), new Size2(100f, 12f));
+            localFrame.PowerBar = new RectangleF(new Point2(localFrame.HealthBar.X, localFrame.HealthBar.Y + 12f), localFrame.HealthBar.Size);
+
             Controls.Add(chatUi.TextField);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEscapePressed(); }, Keys.Escape);
@@ -57,7 +65,9 @@ namespace WoW_2D.States
 
             escapeMenu.Update();
             chatUi.Update();
+            localFrame.Update();
 
+            // TODO: Make this useful.
             if (NetworkManager.State == NetworkManager.NetworkState.Disconnected)
             {
                 chatUi.ClearChats();
@@ -71,8 +81,6 @@ namespace WoW_2D.States
             WorldofWarcraft.Map.Draw(spriteBatch, gameTime);
 
             spriteBatch.Begin();
-            if (WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("myname"))
-                DrawMyName(spriteBatch);
             if (WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("players"))
                 DrawPlayerNames(spriteBatch);
             spriteBatch.End();
@@ -80,16 +88,7 @@ namespace WoW_2D.States
             escapeMenu.Draw(spriteBatch);
             chatUi.Draw(spriteBatch);
             hotbar.Draw(spriteBatch);
-        }
-
-        private void DrawMyName(SpriteBatch spriteBatch)
-        {
-            var boundPos = WorldofWarcraft.Map.Player.GetCamera().WorldToScreen(WorldofWarcraft.Map.Player.BoundingBox.X, WorldofWarcraft.Map.Player.BoundingBox.Y);
-
-            spriteBatch.DrawString(GfxManager.GetFont("small_font"), WorldofWarcraft.Map.Player.WorldData.Name, 
-                new Vector2(boundPos.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2 + 1f, boundPos.Y - GfxManager.GetFont("small_font").LineHeight + 1f), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(GfxManager.GetFont("small_font"), WorldofWarcraft.Map.Player.WorldData.Name,
-                new Vector2(boundPos.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2, boundPos.Y - GfxManager.GetFont("small_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            localFrame.Draw(spriteBatch);
         }
 
         private void DrawPlayerNames(SpriteBatch spriteBatch)

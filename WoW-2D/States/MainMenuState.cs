@@ -108,7 +108,7 @@ namespace WoW_2D.States
         {
             if (NetworkManager.State == NetworkManager.NetworkState.Disconnected)
                 NetworkManager.State = NetworkManager.NetworkState.Waiting;
-
+            
             loginButton.Update();
             usernameText.Update();
             passwordText.Update();

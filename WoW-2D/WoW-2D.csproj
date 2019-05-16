@@ -7,7 +7,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{48C88C82-2943-4D39-84C8-B6F60FD67AAB}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WoW_2D</RootNamespace>
     <AssemblyName>WoW-2D</AssemblyName>
@@ -76,6 +76,7 @@
     <Compile Include="Gfx\Gui\Ui\HotbarUI.cs" />
     <Compile Include="Gfx\Gui\Ui\InterfaceOptionsUI.cs" />
     <Compile Include="Gfx\Gui\Ui\UiControl.cs" />
+    <Compile Include="Gfx\Gui\Ui\UnitFrameUI.cs" />
     <Compile Include="Gfx\RaceType.cs" />
     <Compile Include="Gfx\SpriteSheet.cs" />
     <Compile Include="Network\Connection\AuthConnection.cs" />

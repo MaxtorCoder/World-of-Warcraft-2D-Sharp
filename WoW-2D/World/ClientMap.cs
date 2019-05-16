@@ -22,6 +22,7 @@ namespace WoW_2D.World
 
         public TiledMap ZoneMap { get; set; }
         public Player Player { get; set; }
+        public bool HasInitialized { get; set; }
 
         private GraphicsDevice graphics;
         private TiledMapRenderer mapRenderer;
@@ -31,6 +32,8 @@ namespace WoW_2D.World
             this.graphics = graphics;
             mapRenderer = new TiledMapRenderer(graphics);
             Player.Initialize(graphics);
+
+            HasInitialized = true;
         }
 
         public void Update(GameTime gameTime)

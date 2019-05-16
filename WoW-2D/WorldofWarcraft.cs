@@ -173,7 +173,7 @@ namespace WoW_2D
             {
                 var playerData = PlayerQueue.Dequeue();
                 var playerToAdd = new PlayerMP() { WorldData = playerData };
-                playerToAdd.LoadContent(Content);
+                playerToAdd.Initialize(graphics.GraphicsDevice);
                 Players.Add(playerToAdd);
             }
 

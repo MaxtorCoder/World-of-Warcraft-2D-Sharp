@@ -22,7 +22,6 @@ namespace WoW_2D.World.GameObject
         public CircleF ColliderRadius;
 
         public virtual void Initialize(GraphicsDevice graphics) { }
-        public abstract void LoadContent(ContentManager content);
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
 
@@ -50,6 +49,11 @@ namespace WoW_2D.World.GameObject
                 if (isIdle)
                     animation.Reset();
             }
+        }
+
+        public Animation GetAnimation()
+        {
+            return Animations.Find(x => x.IsActive);
         }
     }
 }

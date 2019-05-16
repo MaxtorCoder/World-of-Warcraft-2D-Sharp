@@ -70,7 +70,7 @@ namespace WorldServer
                 var fileName = file.Split('/')[2].Split('.')[0];
                 var fileFullPath = Path.GetFullPath(file);
                 var asmFile = Assembly.LoadFile(fileFullPath);
-                var asmType = asmFile.GetType(string.Format("{0}.ConsoleTest", fileName));
+                var asmType = asmFile.GetType($"{fileName}.ConsoleTest");
                 Scripts.Add(Activator.CreateInstance(asmType) as IScript);
             }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace WoW_2D.Gfx.Gui.Ui
     public class HotbarUI : UiControl
     {
         private const int slotCount = 11;
+        private RectangleF hotbarSize;
         private HotbarSlotUI[] slots;
 
         public HotbarUI(GraphicsDevice graphics) : base(graphics)
@@ -35,6 +37,11 @@ namespace WoW_2D.Gfx.Gui.Ui
                     slot.Position = new Vector2(lastSlot.Position.X + slot.GetSize().Width + 2f, lastSlot.Position.Y);
                 }
             }
+
+            hotbarSize = new RectangleF(new Point2((graphics.Viewport.Width / 2 - slots[0].GetSize().Width / 2) - ((slots.Length * slots[0].GetSize().Width / 2)) - 2f, graphics.Viewport.Height - slots[0].GetSize().Height - 2f), new Size2())
+            {
+                Size = new Size2(slots.Length * slots[0].GetSize().Width + slots[0].GetSize().Width - 6.5f, slots[0].GetSize().Height + 2f)
+            };
         }
 
         public override void LoadContent(ContentManager content)
@@ -52,6 +59,11 @@ namespace WoW_2D.Gfx.Gui.Ui
                     slot.Draw(spriteBatch);
                 spriteBatch.End();
             }
+        }
+
+        public RectangleF GetSize()
+        {
+            return hotbarSize;
         }
     }
 }

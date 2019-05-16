@@ -57,6 +57,8 @@ namespace WorldServer.Network.Handlers
                         GUID = character.GUID,
                         Name = character.Name,
                         Level = character.Level,
+                        CurrentHP = 68,
+                        MaxHP = 68,
                         Class = character.Class,
                         Race = character.Race,
                         Vector = character.Vector

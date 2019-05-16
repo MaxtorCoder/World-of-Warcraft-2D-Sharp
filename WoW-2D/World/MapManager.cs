@@ -31,11 +31,12 @@ namespace WoW_2D.World
 
             if (mapDirectory != string.Empty)
             {
-                WorldofWarcraft.Map = new ClientMap()
-                {
-                    ZoneMap = content.Load<TiledMap>(mapDirectory),
-                    Player = new Player()
-                };
+                if (WorldofWarcraft.Map == null) 
+                    WorldofWarcraft.Map = new ClientMap()
+                    {
+                        ZoneMap = content.Load<TiledMap>(mapDirectory),
+                        Player = new Player()
+                    };
             }
         }
     }

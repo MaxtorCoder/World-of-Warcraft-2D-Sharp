@@ -20,8 +20,7 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         private RectangleF bounds;
         private RectangleF renderPanel;
-
-        private CheckboxUI renderMyName;
+        
         private CheckboxUI renderPlayerNames;
         private CheckboxUI renderNPCNames;
         private CheckboxUI renderMobNames;
@@ -36,19 +35,11 @@ namespace WoW_2D.Gfx.Gui.Ui
             renderPanel = new RectangleF(0, 0, bounds.Width / 3, 250);
             renderPanel.Position = new Point2(bounds.Position.X + 15f, bounds.Position.Y + 25f);
 
-            renderMyName = new CheckboxUI(graphics)
-            {
-                Text = "My Name",
-                DrawBackdrop = true,
-                Position = new Vector2(renderPanel.X + 4f, renderPanel.Y + 4f),
-                IsChecked = WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("myname")
-            };
-
             renderPlayerNames = new CheckboxUI(graphics)
             {
                 Text = "Players",
                 DrawBackdrop = true,
-                Position = new Vector2(renderMyName.Position.X, renderMyName.Position.Y + 20f),
+                Position = new Vector2(renderPanel.X + 4f, renderPanel.Y + 4f),
                 IsChecked = WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("players")
             };
 
@@ -78,7 +69,6 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public override void LoadContent(ContentManager content)
         {
-            renderMyName.LoadContent(content);
             renderPlayerNames.LoadContent(content);
             renderNPCNames.LoadContent(content);
             renderMobNames.LoadContent(content);
@@ -86,7 +76,6 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public override void Update()
         {
-            renderMyName.Update();
             renderPlayerNames.Update();
             renderNPCNames.Update();
             renderMobNames.Update();
@@ -112,7 +101,6 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.DrawRectangle(renderPanel, Color.Gray);
                 spriteBatch.End();
 
-                renderMyName.Draw(spriteBatch);
                 renderPlayerNames.Draw(spriteBatch);
                 renderNPCNames.Draw(spriteBatch);
                 renderMobNames.Draw(spriteBatch);
@@ -123,15 +111,14 @@ namespace WoW_2D.Gfx.Gui.Ui
 
         public override void Activator()
         {
-            renderMyName.IsChecked = WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("myname");
             renderPlayerNames.IsChecked = WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("players");
         }
 
         private void OnApplyClicked()
         {
-            WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("myname", renderMyName.IsChecked.ToString());
             WorldofWarcraft.ClientSettings.GetSection("Interface").SetValueOfKey("players", renderPlayerNames.IsChecked.ToString());
             WorldofWarcraft.ClientSettings.Save();
+            IsVisible = false;
         }
     }
 }
