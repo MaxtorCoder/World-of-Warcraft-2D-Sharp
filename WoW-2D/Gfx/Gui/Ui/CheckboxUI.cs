@@ -53,13 +53,13 @@ namespace WoW_2D.Gfx.Gui.Ui
             spriteBatch.FillRectangle(new RectangleF(checkBox.X, checkBox.Y, checkBox.Width, checkBox.Height), new Color(0f, 0f, 0f, 0.75f));
             spriteBatch.DrawRectangle(new RectangleF(checkBox.X, checkBox.Y, checkBox.Width, checkBox.Height), Color.Gray);
             if (IsChecked)
-                spriteBatch.FillRectangle(new RectangleF(checkBox.X + (checkBox.Width / 2 - 4), checkBox.Y + (checkBox.Height / 2 - 4), 8, 8), WorldofWarcraft.DefaultYellow);
+                spriteBatch.FillRectangle(new RectangleF(checkBox.X + (checkBox.Width / 2 - 4), checkBox.Y + (checkBox.Height / 2 - 4), 8, 8), GfxManager.DefaultYellow);
             spriteBatch.End();
 
             spriteBatch.Begin();
             if (DrawBackdrop)
                 spriteBatch.DrawString(font, Text, new Vector2(checkBox.X + checkBox.Width + 5f + 1f, checkBox.Y + (checkBox.Height / 2 - font.MeasureString(Text).Height / 2) + 1f), Color.Black);
-            spriteBatch.DrawString(font, Text, new Vector2(checkBox.X + checkBox.Width + 5f, checkBox.Y + (checkBox.Height / 2 - font.MeasureString(Text).Height / 2)), WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawString(font, Text, new Vector2(checkBox.X + checkBox.Width + 5f, checkBox.Y + (checkBox.Height / 2 - font.MeasureString(Text).Height / 2)), GfxManager.DefaultYellow);
             spriteBatch.End();
         }
     }

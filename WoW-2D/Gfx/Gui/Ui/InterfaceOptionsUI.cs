@@ -88,7 +88,7 @@ namespace WoW_2D.Gfx.Gui.Ui
             {
                 spriteBatch.Begin();
                 spriteBatch.DrawString(Font, "Interface", new Vector2(bounds.X + (bounds.Width / 2), bounds.Y - Font.LineHeight / 2), Color.Black, 0f, new Vector2(Font.MeasureString("Interface").Width / 2, Font.MeasureString("Interface").Height / 2), 1f, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(Font, "Interface", new Vector2(bounds.X + (bounds.Width / 2) + 1, bounds.Y - Font.LineHeight / 2 + 1), WorldofWarcraft.DefaultYellow, 0f, new Vector2(Font.MeasureString("Interface").Width / 2, Font.MeasureString("Interface").Height / 2), 1f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(Font, "Interface", new Vector2(bounds.X + (bounds.Width / 2) + 1, bounds.Y - Font.LineHeight / 2 + 1), GfxManager.DefaultYellow, 0f, new Vector2(Font.MeasureString("Interface").Width / 2, Font.MeasureString("Interface").Height / 2), 1f, SpriteEffects.None, 0f);
                 spriteBatch.End();
 
                 spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
@@ -97,7 +97,7 @@ namespace WoW_2D.Gfx.Gui.Ui
                 spriteBatch.End();
 
                 spriteBatch.Begin();
-                spriteBatch.DrawString(Font, "Names", new Vector2(renderPanel.X + (renderPanel.Width / 2 - Font.MeasureString("Names").Width / 2), renderPanel.Y - Font.MeasureString("Names").Height), WorldofWarcraft.DefaultYellow);
+                spriteBatch.DrawString(Font, "Names", new Vector2(renderPanel.X + (renderPanel.Width / 2 - Font.MeasureString("Names").Width / 2), renderPanel.Y - Font.MeasureString("Names").Height), GfxManager.DefaultYellow);
                 spriteBatch.DrawRectangle(renderPanel, Color.Gray);
                 spriteBatch.End();
 

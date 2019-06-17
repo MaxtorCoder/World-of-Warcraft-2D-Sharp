@@ -1,4 +1,7 @@
-﻿using Framework.Network;
+﻿using Framework.Entity;
+using Framework.Network;
+using Framework.Network.Connection;
+using Framework.Network.Packet.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +31,37 @@ namespace WorldServer.Command
         /// Handle the command input.
         /// </summary>
         /// <param name="args"></param>
-        public abstract void HandleCommand(string[] args);
+        public virtual void HandleCommand(IConnection connection, string[] args)
+        {
+            if (connection != null)
+            {
+                WorldConnection worldConnection = (WorldConnection)connection;
+                if (worldConnection.Account.Security < _security)
+                {
+                    worldConnection.Send(new SMSG_Chat()
+                    {
+                        Flag = (byte)ChatFlag.Server,
+                        Message = "Insufficient security."
+                    });
+                    return;
+                }
+            }
+
+            if (args.Length > 1)
+            {
+                var subCommand = args[1].ToLower();
+                foreach (var keyvalue in _subCommands)
+                {
+                    if (keyvalue.Key == subCommand)
+                    {
+                        var method = keyvalue.Value;
+                        method.Invoke(this, new object[] { connection, args });
+                    }
+                }
+            }
+            else
+                MainWindow.QueueLogMessage(ToString());
+        }
 
         public string GetPrefix()
         {

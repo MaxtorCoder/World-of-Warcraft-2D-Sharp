@@ -2,8 +2,10 @@
 using Framework.Network;
 using Framework.Network.Cryptography;
 using Framework.Network.Entity;
+using Framework.Utils.Behaviour;
 using Isopoh.Cryptography.Argon2;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +36,9 @@ namespace Framework
 
         private static readonly string CharacterConnectionStr =
             $"Server={SqlServer}; Database=demi_character; User Id={SqlUsername}; Password={SqlPassword};";
+
+        private static readonly string WorldConnectionStr =
+            $"Server={SqlServer}; Database=demi_world; User Id={SqlUsername}; Password={SqlPassword};";
 
         private static async Task<Status> InitializeAsync(MySqlConnection connection)
         {
@@ -198,6 +203,99 @@ namespace Framework
         }
 
         /// <summary>
+        /// Execute creature reader.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private static async Task<List<WorldCreature>> ExecuteCreatureReader(MySqlConnection connection, MySqlCommand command)
+        {
+            var creatures = new List<WorldCreature>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    var creature = new WorldCreature()
+                    {
+                        GUID = string.Empty,
+                        ID = reader.GetInt32(0),
+                        ModelID = reader.GetInt32(1),
+                        Name = reader.GetString(2),
+                        SubName = string.Empty,
+                        Stats = new Stats()
+                        {
+                            Level = 1 // TODO: Get this along with other stats and such from DB.
+                        },
+                        BehaviourIDs = JsonConvert.DeserializeObject<int[]>(reader.GetString(3)),
+                        Behaviours = new List<IBehaviour>()
+                    };
+
+                    creatures.Add(creature);
+                }
+            }
+            catch (MySqlException) { }
+
+            return creatures;
+        }
+
+        /// <summary>
+        /// Execute behaviour reader.
+        /// </summary>
+        /// <param name="connection"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        private static async Task<List<IBehaviour>> ExecuteBehaviourReader(MySqlConnection connection, MySqlCommand command)
+        {
+            var behaviours = new List<IBehaviour>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    IBehaviour behaviour = null;
+
+                    int id = reader.GetInt32(0);
+                    IBehaviour.Behaviours type = (IBehaviour.Behaviours)reader.GetInt32(1);
+                    int subType = reader.GetInt32(2);
+                    string name = reader.GetString(3);
+                    var settings = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(reader.GetString(4));
+
+                    switch (type)
+                    {
+                        case IBehaviour.Behaviours.Patrol:
+                            switch ((IPatrol.PatrolTypes)subType)
+                            {
+                                case IPatrol.PatrolTypes.Random:
+                                    string[] timeValues;
+                                    if (settings.TryGetValue("times", out timeValues))
+                                    {
+                                        behaviour = new RandomPatrol()
+                                        {
+                                            ID = id,
+                                            Name = name,
+                                            WaitTimer = int.Parse(timeValues[0]),
+                                            MoveTimer = int.Parse(timeValues[1])
+                                        };
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+
+                    behaviours.Add(behaviour);
+                }
+            }
+            catch (MySqlException) { }
+
+            return behaviours;
+        }
+
+        /// <summary>
         /// Execute a character reader.
         /// </summary>
         /// <param name="connection"></param>
@@ -321,6 +419,46 @@ namespace Framework
                 }
             }
             return realmlist;
+        }
+        
+        /// <summary>
+        /// Fetch all creatures.
+        /// </summary>
+        /// <returns></returns>
+        public static List<WorldCreature> FetchCreatures()
+        {
+            var creatures = new List<WorldCreature>();
+            var query = "SELECT * FROM creature";
+
+            using (var connection = new MySqlConnection(WorldConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Connection = connection;
+                    creatures = ExecuteCreatureReader(connection, command).Result;
+                }
+            }
+            return creatures;
+        }
+
+        /// <summary>
+        /// Fetch all behaviours.
+        /// </summary>
+        /// <returns></returns>
+        public static List<IBehaviour> FetchBehaviours()
+        {
+            var behaviours = new List<IBehaviour>();
+            var query = "SELECT * FROM creature_behaviour";
+
+            using (var connection = new MySqlConnection(WorldConnectionStr))
+            {
+                using (var command = new MySqlCommand(query))
+                {
+                    command.Connection = connection;
+                    behaviours = ExecuteBehaviourReader(connection, command).Result;
+                }
+            }
+            return behaviours;
         }
 
         /// <summary>

@@ -22,29 +22,10 @@ namespace WoW_2D.Utils
         public static bool ShouldExit { get; set; } = false;
         public static bool ShouldDrawBreakingNews { get; set; } = false;
         public static bool IsRequestingLoadingData { get; set; } = false;
+        public static int FullscreenFlag { get; set; } = 0;
         public static string BreakingNewsText = string.Empty;
 
         public static Queue<ChatMessage> Chats = new Queue<ChatMessage>();
         public static List<ClassType> Classes = new List<ClassType>();
-
-        public static string WrapText(BitmapFont font, string text, float maxWidth)
-        {
-            string line = string.Empty;
-            string returnString = string.Empty;
-            string[] wordArray = text.Split(' ');
-
-            foreach (string word in wordArray)
-            {
-                if (font.MeasureString(line + word).Width > maxWidth)
-                {
-                    returnString = returnString + line + '\n';
-                    line = string.Empty;
-                }
-
-                line = line + word + ' ';
-            }
-
-            return returnString + line;
-        }
     }
 }

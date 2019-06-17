@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using TiledSharp;
 using WorldServer.Network;
 
@@ -14,40 +15,56 @@ namespace WorldServer.World
     /// <summary>
     /// Manages general map data.
     /// </summary>
-    public class MapManager
+    public class WorldManager
     {
         private static List<Map> _maps = new List<Map>();
         private const string _mapDirectory = "Data/Maps";
+        private static Timer _worldTimer;
 
         public static void Initialize()
         {
             foreach (var mapFile in Directory.EnumerateFiles(_mapDirectory, "*.tmx"))
             {
                 var tmx = new TmxMap(mapFile);
-                _maps.Add(new Map()
+                var map = new Map()
                 {
                     ID = int.Parse(tmx.Properties["MapID"]),
                     Name = tmx.Properties["MapName"],
                     Spawns = tmx.ObjectGroups["SpawnObjects"]
-                });
+                };
+                map.Initialize();
+
+                _maps.Add(map);
             }
+
+            _worldTimer = new Timer();
+            _worldTimer.Elapsed += OnUpdateWorld;
+            _worldTimer.Interval = 1;
+            _worldTimer.Enabled = true;
         }
 
-        public static void AddCharacterToMap(WorldConnection character)
+        private static void OnUpdateWorld(object sender, ElapsedEventArgs e)
+        {
+            foreach (var map in _maps)
+                if (map.Characters.Count > 0)
+                    map.Update();
+        }
+
+        public static void AddCharacterToMap(WorldConnection connection)
         {
             foreach (var map in _maps)
             {
-                if (map.ID == character.Account.Character.Vector.MapID)
-                    map.Characters.Add(character);
+                if (map.ID == connection.Account.Character.Vector.MapID)
+                    map.Characters.Add(connection);
             }
         }
 
-        public static void RemoveCharacterFromMap(WorldConnection character)
+        public static void RemoveCharacterFromMap(WorldConnection connection)
         {
             foreach (var map in _maps)
             {
-                if (map.ID == character.Account.Character.Vector.MapID)
-                    map.Characters.Remove(character);
+                if (map.ID == connection.Account.Character.Vector.MapID)
+                    map.Characters.Remove(connection);
             }
         }
 

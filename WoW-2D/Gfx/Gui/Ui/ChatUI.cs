@@ -57,7 +57,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         public override void Update()
         {
             TextField.Update();
-            WorldofWarcraft.Map.Player.CanMove = !TextField.IsVisible;
+            WorldofWarcraft.World.Player.CanMove = !TextField.IsVisible;
 
             var mousePosition = Mouse.GetState().Position;
             if (chatBox.Contains(mousePosition))
@@ -89,7 +89,7 @@ namespace WoW_2D.Gfx.Gui.Ui
                         message = $"{chat.Message}";
                         break;
                 }
-                var wrapped = Global.WrapText(font, message, chatBox.Width);
+                var wrapped = GfxManager.Wrap(font, message, chatBox.Width);
                 chat.Message = wrapped;
                 
                 if (chats.Count == 0)

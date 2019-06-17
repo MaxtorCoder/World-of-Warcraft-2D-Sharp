@@ -4,6 +4,7 @@ using Framework.Network.Packet.OpCodes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended.BitmapFonts;
 using MonoGameHelper.GameState;
 using System;
@@ -56,13 +57,14 @@ namespace WoW_2D.States
                 {
                     hasStarted = true;
                     MapManager.LoadMap(_content);
+                    //MediaPlayer.Stop();
                 }
                 else
                 {
-                    if (WorldofWarcraft.Map.Player != null)
+                    if (WorldofWarcraft.World.Player != null)
                     {
-                        if (!WorldofWarcraft.Map.HasInitialized)
-                            WorldofWarcraft.Map.Initialize(graphics);
+                        if (!WorldofWarcraft.World.HasInitialized)
+                            WorldofWarcraft.World.Initialize(graphics);
                         if (!shouldRequestData)
                         {
                             NetworkManager.State = NetworkManager.NetworkState.RetrievingMOTD;
@@ -87,6 +89,10 @@ namespace WoW_2D.States
                     break;
                 case NetworkManager.NetworkState.RetrievingPlayers:
                     NetworkManager.Send(new CMSG_Generic() { Type = (byte)Requests.OnlineList }, NetworkManager.Direction.World);
+                    Global.IsRequestingLoadingData = true;
+                    break;
+                case NetworkManager.NetworkState.RetrievingCreatures:
+                    NetworkManager.Send(new CMSG_Generic() { Type = (byte)Requests.CreatureList }, NetworkManager.Direction.World);
                     Global.IsRequestingLoadingData = true;
                     break;
                 case NetworkManager.NetworkState.Play:

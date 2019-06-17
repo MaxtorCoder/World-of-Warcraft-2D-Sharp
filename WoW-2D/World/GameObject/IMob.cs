@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
+using MonoGameHelper.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,23 +17,22 @@ namespace WoW_2D.World.GameObject
     /// </summary>
     public abstract class IMob
     {
-        protected SpriteSheet SpriteSheet;
-        protected List<Animation> Animations = new List<Animation>();
+        protected ModelManager.Model Model;
         public RectangleF NorthBounds, EastBounds, SouthBounds, WestBounds, BoundingBox;
         public CircleF ColliderRadius;
 
-        public virtual void Initialize(GraphicsDevice graphics) { }
+        public virtual void Initialize() { }
         public abstract void Update(GameTime gameTime);
         public abstract void Draw(SpriteBatch spriteBatch, GameTime gameTime);
 
         protected void SetAnimation(Predicate<Animation> predicate)
         {
-            var animation = Animations.Find(predicate);
+            var animation = Model.Animations.Find(predicate);
             if (animation != null)
             {
                 if (!animation.IsActive)
                 {
-                    var currentlyActiveAnimation = Animations.Find(x => x.IsActive);
+                    var currentlyActiveAnimation = Model.Animations.Find(x => x.IsActive);
                     if (currentlyActiveAnimation != null)
                         currentlyActiveAnimation.IsActive = false;
                     animation.IsActive = true;
@@ -42,7 +42,7 @@ namespace WoW_2D.World.GameObject
 
         protected void SetAnimationIdle(bool isIdle)
         {
-            var animation = Animations.Find(x => x.IsActive);
+            var animation = Model.Animations.Find(x => x.IsActive);
             if (animation != null)
             {
                 animation.IsIdle = isIdle;
@@ -53,7 +53,7 @@ namespace WoW_2D.World.GameObject
 
         public Animation GetAnimation()
         {
-            return Animations.Find(x => x.IsActive);
+            return Model.Animations.Find(x => x.IsActive);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Framework;
 using Framework.Network;
+using Framework.Network.Connection;
 using Framework.Utils;
 using System;
 using System.Collections.Generic;
@@ -18,24 +19,6 @@ namespace WorldServer.Command
         {
             _subCommands.Add("create", GetType().GetMethod("HandleCreation", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
             _subCommands.Add("gmlevel", GetType().GetMethod("HandleSecurity", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
-        }
-
-        public override void HandleCommand(string[] args)
-        {
-            if (args.Length > 1)
-            {
-                var subCommand = args[1].ToLower();
-                foreach (var keyvalue in _subCommands)
-                {
-                    if (keyvalue.Key == subCommand)
-                    {
-                        var method = keyvalue.Value;
-                        method.Invoke(this, new object[] { args });
-                    }
-                }
-            }
-            else
-                MainWindow.QueueLogMessage(ToString());
         }
 
         /// <summary>

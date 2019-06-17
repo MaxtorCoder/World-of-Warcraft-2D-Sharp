@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended.BitmapFonts;
 using System;
 using System.Collections.Generic;
@@ -16,6 +18,10 @@ namespace WoW_2D.Gfx
     {
         private static Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
         private static Dictionary<string, BitmapFont> Fonts = new Dictionary<string, BitmapFont>();
+        private static Dictionary<string, Song> Songs = new Dictionary<string, Song>();
+        private static Dictionary<string, Texture2D> Models = new Dictionary<string, Texture2D>();
+
+        public static Color DefaultYellow = new Color(223, 195, 15);
 
         public static void Load(ContentManager content)
         {
@@ -31,6 +37,11 @@ namespace WoW_2D.Gfx
 
             Fonts.Add("main_font", content.Load<BitmapFont>("System/Font/font"));
             Fonts.Add("small_font", content.Load<BitmapFont>("System/Font/font_small"));
+
+            Songs.Add("main_theme", content.Load<Song>("System/Music/wow_main_theme"));
+
+            Models.Add("model_zomboid_1", content.Load<Texture2D>("Sprites/NPC/1"));
+            Models.Add("model_human", content.Load<Texture2D>("Sprites/Human/Human"));
         }
 
         public static Texture2D GetTexture(string name)
@@ -47,6 +58,39 @@ namespace WoW_2D.Gfx
                 if (string.Equals(keyvalues.Key, name))
                     return keyvalues.Value;
             return null;
+        }
+
+        public static Song GetSong(string name)
+        {
+            foreach (var keyvalues in Songs)
+                if (string.Equals(keyvalues.Key, name))
+                    return keyvalues.Value;
+            return null;
+        }
+
+        public static Dictionary<string, Texture2D> GetModels()
+        {
+            return Models;
+        }
+
+        public static string Wrap(BitmapFont font, string text, float maxWidth)
+        {
+            string line = string.Empty;
+            string returnString = string.Empty;
+            string[] wordArray = text.Split(' ');
+
+            foreach (string word in wordArray)
+            {
+                if (font.MeasureString(line + word).Width > maxWidth)
+                {
+                    returnString = returnString + line + '\n';
+                    line = string.Empty;
+                }
+
+                line = line + word + ' ';
+            }
+
+            return returnString + line;
         }
     }
 }

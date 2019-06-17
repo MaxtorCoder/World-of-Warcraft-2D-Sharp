@@ -195,7 +195,7 @@ namespace WoW_2D.States
                     var box = characterBoxes[i];
 
                     spriteBatch.DrawString(GfxManager.GetFont("main_font"), realmCharacter.Name, new Vector2(box.Position.X + 5, box.Position.Y), Color.Black);
-                    spriteBatch.DrawString(GfxManager.GetFont("main_font"), realmCharacter.Name, new Vector2(box.Position.X + 6, box.Position.Y + 1), WorldofWarcraft.DefaultYellow);
+                    spriteBatch.DrawString(GfxManager.GetFont("main_font"), realmCharacter.Name, new Vector2(box.Position.X + 6, box.Position.Y + 1), GfxManager.DefaultYellow);
                     spriteBatch.DrawString(GfxManager.GetFont("small_font"), $"Level {realmCharacter.Level} {realmCharacter.Class}", new Vector2(box.Position.X + 5, box.Position.Y + GfxManager.GetFont("small_font").LineHeight), Color.White);
                     spriteBatch.DrawString(GfxManager.GetFont("small_font"), $"{realmCharacter.Location}", new Vector2(box.Position.X + 5, box.Position.Y + (GfxManager.GetFont("small_font").LineHeight * 2)), Color.DarkGray);
                 }

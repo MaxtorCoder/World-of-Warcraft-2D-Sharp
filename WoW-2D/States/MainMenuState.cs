@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended.BitmapFonts;
 using MonoGame.Extended.TextureAtlases;
 using MonoGameHelper.GameState;
@@ -99,6 +100,8 @@ namespace WoW_2D.States
             }
             else
                 usernameText.IsActive = true;
+
+            //MediaPlayer.Play(GfxManager.GetSong("main_theme"));
         }
 
         public override void UnloadContent()
@@ -146,16 +149,16 @@ namespace WoW_2D.States
 
         private void DrawUIStrings()
         {
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "March 3 2019", new Vector2(0f, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), WorldofWarcraft.VersionStr, new Vector2(0f, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight * 2), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "March 3 2019", new Vector2(0f, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight), GfxManager.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), WorldofWarcraft.VersionStr, new Vector2(0f, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight * 2), GfxManager.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
 
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), blizzardCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(blizzardCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), teamCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - (GfxManager.GetFont("main_font").LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(teamCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), blizzardCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - GfxManager.GetFont("main_font").LineHeight), GfxManager.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(blizzardCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), teamCopyright, new Vector2(graphics.Viewport.Width / 2, graphics.Viewport.Height - (GfxManager.GetFont("main_font").LineHeight * 2)), GfxManager.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(teamCopyright).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
 
             spriteBatch.DrawString(GfxManager.GetFont("main_font"), accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2) + 1, usernameText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2) + 1), Color.Black, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2), usernameText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), accountLabel, new Vector2(usernameText.Position.X + (usernameText.BaseTexture.Width / 2), usernameText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2)), GfxManager.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(accountLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
             spriteBatch.DrawString(GfxManager.GetFont("main_font"), passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2) + 1, passwordText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2) + 1), Color.Black, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2), passwordText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2)), WorldofWarcraft.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), passwordLabel, new Vector2(passwordText.Position.X + (passwordText.BaseTexture.Width / 2), passwordText.Position.Y - (GfxManager.GetFont("main_font").LineHeight * 2)), GfxManager.DefaultYellow, 0f, new Vector2(GfxManager.GetFont("main_font").MeasureString(passwordLabel).Width / 2, 0f), 1f, SpriteEffects.None, 0f);
         }
 
         private void DrawNetworkUpdates()

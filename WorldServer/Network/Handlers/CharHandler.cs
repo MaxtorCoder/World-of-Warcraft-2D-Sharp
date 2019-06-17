@@ -23,7 +23,7 @@ namespace WorldServer.Network.Handlers
             var packet = (CMSG_Character_Create)new CMSG_Character_Create().Deserialize(buffer);
 
             var mapId = DatabaseManager.FetchMapIDForRace((int)packet.Race);
-            var map = MapManager.GetMapByID(mapId);
+            var map = WorldManager.GetMapByID(mapId);
             var status = DatabaseManager.CreateCharacter(((WorldConnection)connection).Account.ID, packet.Name, packet.Race, packet.Class, map);
             if (map.ID == -1)
                 status = DatabaseManager.Status.Fatal;
@@ -48,7 +48,7 @@ namespace WorldServer.Network.Handlers
             for (int i = 0; i < characters.Count; i++)
             {
                 var mapId = DatabaseManager.FetchMapIDForCharacter(characters[i].GUID);
-                var map = MapManager.GetMapByID(mapId);
+                var map = WorldManager.GetMapByID(mapId);
                 characters[i].Location = map.Name;
             }
 

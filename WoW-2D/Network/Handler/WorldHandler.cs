@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WoW_2D.Utils;
+using WoW_2D.World;
 
 namespace WoW_2D.Network.Handler
 {
@@ -41,7 +42,10 @@ namespace WoW_2D.Network.Handler
 
             if (packet.WorldCharacter.Vector.MapID != -1) // -1 is unused at the moment.
             {
-                WorldofWarcraft.Character = packet.WorldCharacter;
+                WorldofWarcraft.World = new WoWWorld()
+                {
+                    Player = new World.GameObject.Player() { Info = packet.WorldCharacter }
+                };
                 NetworkManager.State = NetworkManager.NetworkState.EnterWorld;
             }
         }
@@ -81,6 +85,28 @@ namespace WoW_2D.Network.Handler
             if (Global.IsRequestingLoadingData)
             {
                 Global.IsRequestingLoadingData = false;
+                NetworkManager.State = NetworkManager.NetworkState.RetrievingCreatures;
+            }
+        }
+
+        public static void HandleCreature(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Creature)new SMSG_Creature().Deserialize(buffer);
+
+            WorldofWarcraft.World.UpdateCreature(packet.Creature, packet.State);
+        }
+
+        public static void HandleCreatureList(IConnection connection, byte[] buffer)
+        {
+            var packet = (SMSG_Creature_List)new SMSG_Creature_List().Deserialize(buffer);
+            var creatures = packet.Creatures;
+
+            foreach (var c in creatures)
+                WorldofWarcraft.World.UpdateCreature(c, SMSG_Creature.CreatureState.Add);
+
+            if (Global.IsRequestingLoadingData)
+            {
+                Global.IsRequestingLoadingData = false;
                 NetworkManager.State = NetworkManager.NetworkState.Play;
             }
         }
@@ -96,16 +122,17 @@ namespace WoW_2D.Network.Handler
         {
             var packet = (SMSG_Connection_Remove)new SMSG_Connection_Remove().Deserialize(buffer);
 
-            WorldofWarcraft.RemovePlayer(packet.Name);
+            WorldofWarcraft.World.RemovePlayer(packet.Name);
         }
 
         public static void HandleConnectionMovement(IConnection connection, byte[] buffer)
         {
             var packet = (SMSG_Connection_Movement)new SMSG_Connection_Movement().Deserialize(buffer);
 
-            WorldofWarcraft.Map.UpdatePlayerMP(packet.Name, packet.X, packet.Y, packet.Direction, packet.IsMoving);
+            WorldofWarcraft.World.UpdatePlayerMP(packet.Name, packet.X, packet.Y, packet.Direction, packet.IsMoving);
         }
 
+        // TODO: Disconnect packet unused.
         public static void HandleDisconnect(IConnection connection, byte[] buffer)
         {
             NetworkManager.Disconnect(NetworkManager.Direction.Both);

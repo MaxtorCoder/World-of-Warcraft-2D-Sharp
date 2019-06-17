@@ -4,33 +4,39 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.Network.Packet.Client
+namespace Framework.Network.Packet.Server
 {
     /// <summary>
-    /// Client character creation packet.
+    /// Describes the state of a creature.
     /// </summary>
-    public class CMSG_Character_Create : IPacket
+    public class SMSG_Creature : IPacket
     {
-        public string Name { get; set; }
-        public Race Race { get; set; }
-        public Class Class { get; set; }
+        public enum CreatureState : byte
+        {
+            Add = 0x0,
+            Move = 0x01,
+            MoveStop = 0x02,
+        }
 
-        public CMSG_Character_Create() : base((byte)ClientOpcodes.CMSG_CHARACTER_CREATE) { }
+        public WorldCreature Creature;
+        public CreatureState State;
+
+        public SMSG_Creature() : base((byte)ServerOpcodes.Opcodes.SMSG_CREATURE) { }
 
         public override byte[] Serialize()
         {
+            var formatter = new BinaryFormatter();
             using (var memStr = new MemoryStream())
             {
                 using (var writer = new BinaryWriter(memStr))
                 {
-                    // TODO: (CreateChar) Change ints to byte values.
                     writer.Write(_opcode);
-                    writer.Write(Name);
-                    writer.Write((int)Race);
-                    writer.Write((int)Class);
+                    writer.Write((byte)State);
+                    formatter.Serialize(memStr, Creature);
                 }
                 return memStr.ToArray();
             }
@@ -38,15 +44,15 @@ namespace Framework.Network.Packet.Client
 
         public override IPacket Deserialize(byte[] data)
         {
-            var obj = new CMSG_Character_Create();
+            var obj = new SMSG_Creature();
+            var formatter = new BinaryFormatter();
             using (var memStr = new MemoryStream(data))
             {
                 using (var reader = new BinaryReader(memStr))
                 {
                     reader.ReadByte();
-                    obj.Name = reader.ReadString();
-                    obj.Race = (Race)reader.ReadInt32(); // TODO: Catch the error that could happen here (for example: the client sending their own custom race).
-                    obj.Class = (Class)reader.ReadInt32();
+                    obj.State = (CreatureState)reader.ReadByte();
+                    obj.Creature = (WorldCreature)formatter.Deserialize(memStr);
                 }
             }
             return obj;

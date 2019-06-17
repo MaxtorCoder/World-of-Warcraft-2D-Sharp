@@ -35,10 +35,10 @@ namespace WoW_2D.Gfx.Gui
 
         public static void Draw(BitmapFont font, SpriteBatch spriteBatch, string text, bool drawButton = false)
         {
-            var wrapped = Global.WrapText(font, text, rectangle.Width);
+            var wrapped = GfxManager.Wrap(font, text, rectangle.Width);
             spriteBatch.Begin();
             spriteBatch.FillRectangle(rectangle, new Color(0f, 0f, 0f, 0.85f));
-            spriteBatch.DrawRectangle(rectangle, WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawRectangle(rectangle, GfxManager.DefaultYellow);
             spriteBatch.DrawString(font, wrapped, new Vector2(rectangle.X + (rectangle.Width / 2 - font.MeasureString(wrapped).Width / 2), rectangle.Y + (rectangle.Height / 2 - font.MeasureString(wrapped).Height / 2)), Color.White);
             if (drawButton)
                 button.Draw(spriteBatch);

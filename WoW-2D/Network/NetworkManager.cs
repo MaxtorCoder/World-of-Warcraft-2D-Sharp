@@ -38,6 +38,7 @@ namespace WoW_2D.Network
             EnterWorld,
             RetrievingMOTD,
             RetrievingPlayers,
+            RetrievingCreatures,
             Play,
             Disconnected,
             ServerError

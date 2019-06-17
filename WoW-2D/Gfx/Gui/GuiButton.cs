@@ -31,7 +31,7 @@ namespace WoW_2D.Gfx.Gui
         {
             Point mousePosition = Mouse.GetState().Position;
             isHovering = ((mousePosition.X >= Position.X && mousePosition.X <= Position.X + BaseTexture.Width && mousePosition.Y >= Position.Y && mousePosition.Y <= Position.Y + BaseTexture.Height) && IsEnabled) ? true : false;
-            hoverColor = isHovering ? Color.White : WorldofWarcraft.DefaultYellow;
+            hoverColor = isHovering ? Color.White : GfxManager.DefaultYellow;
             BaseTexture = IsEnabled ? GfxManager.GetTexture("button_enabled") : GfxManager.GetTexture("button_disabled");
 
             UpdateMousePress();

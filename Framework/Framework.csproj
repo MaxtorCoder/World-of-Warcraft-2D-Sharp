@@ -54,6 +54,9 @@
     <Reference Include="MySql.Data, Version=8.0.15.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\packages\MySql.Data.8.0.15\lib\net452\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net463\System.AppContext.dll</HintPath>
@@ -212,6 +215,7 @@
     <Compile Include="Entity\Stats.cs" />
     <Compile Include="Entity\Vector.cs" />
     <Compile Include="Entity\WorldCharacter.cs" />
+    <Compile Include="Entity\WorldCreature.cs" />
     <Compile Include="IScript.cs" />
     <Compile Include="Network\Connection\IConnection.cs" />
     <Compile Include="Network\Connection\WorldConnection.cs" />
@@ -238,6 +242,8 @@
     <Compile Include="Network\Packet\Server\SMSG_Connection_Add.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Connection_Movement.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Connection_Remove.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_Creature.cs" />
+    <Compile Include="Network\Packet\Server\SMSG_Creature_List.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Disconnect.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Logon.cs" />
     <Compile Include="Network\Packet\Server\SMSG_Online.cs" />
@@ -247,11 +253,14 @@
     <Compile Include="Network\Server\IServer.cs" />
     <Compile Include="Network\Server\TCPSocketServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\Configuration\INISection.cs" />
+    <Compile Include="Utils\BehaviourManager.cs" />
+    <Compile Include="Utils\Behaviour\IBehaviour.cs" />
+    <Compile Include="Utils\Behaviour\IPatrol.cs" />
+    <Compile Include="Utils\Behaviour\RandomPatrol.cs" />
+    <Compile Include="Utils\CreatureManager.cs" />
     <Compile Include="Utils\ExitCode.cs" />
     <Compile Include="Utils\Global.cs" />
     <Compile Include="Utils\Logger.cs" />
-    <Compile Include="Utils\Configuration\Settings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

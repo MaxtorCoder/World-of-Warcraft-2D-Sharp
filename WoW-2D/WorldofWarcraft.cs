@@ -3,7 +3,7 @@ using Framework.Entity;
 using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
 using Framework.Utils;
-using Framework.Utils.Configuration;
+using INI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -41,21 +41,18 @@ namespace WoW_2D
             $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         public static string VersionStr = $"v{Version}";
         public static DiscordRpcClient Discord;
-        public static Settings ClientSettings;
-        public static Color DefaultYellow = new Color(223, 195, 15);
+        public static INIFile ClientSettings;
 
         public static IPEndPoint Realmlist;
         public static Realm Realm;
         public static List<RealmCharacter> RealmCharacters = new List<RealmCharacter>(7);
-        public static WorldCharacter Character;
 
-        public static ClientMap Map { get; set; }
+        public static WoWWorld World { get; set; }
         public static Queue<WorldCharacter> PlayerQueue = new Queue<WorldCharacter>();
-        public static List<PlayerMP> Players = new List<PlayerMP>();
 
         public WorldofWarcraft()
         {
-            ClientSettings = Settings.Instance;
+            ClientSettings = INIFile.Instance;
             ClientSettings.Load("Data/client.ini");
 
             Realmlist = new IPEndPoint(IPAddress.Parse(
@@ -83,14 +80,11 @@ namespace WoW_2D
         protected override void Initialize()
         {
             GfxManager.Load(Content);
-
-            Utils.Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice);
-            Utils.Global.HumanSpritesheet.SetTexture(GfxManager.GetTexture("human_spritesheet"));
-
-            Utils.Global.RaceSpritesheet = new SpriteSheet(GraphicsDevice);
-            Utils.Global.RaceSpritesheet.SetTexture(GfxManager.GetTexture("race_spritesheet"));
-            Utils.Global.ClassSpritesheet = new SpriteSheet(GraphicsDevice);
-            Utils.Global.ClassSpritesheet.SetTexture(GfxManager.GetTexture("class_spritesheet"));
+            ModelManager.Load(GraphicsDevice);
+            
+            Utils.Global.HumanSpritesheet = new SpriteSheet(GraphicsDevice).SetTexture(GfxManager.GetTexture("human_spritesheet"));
+            Utils.Global.RaceSpritesheet = new SpriteSheet(GraphicsDevice).SetTexture(GfxManager.GetTexture("race_spritesheet"));
+            Utils.Global.ClassSpritesheet = new SpriteSheet(GraphicsDevice).SetTexture(GfxManager.GetTexture("class_spritesheet"));
 
             Utils.Global.Classes.Add(new ClassType(Class.Warrior) { Races = new List<Race>() { Race.Human, Race.NightElf, Race.Dwarf, Race.Gnome, Race.Tauren, Race.Undead, Race.Troll, Race.Orc } });
             Utils.Global.Classes.Add(new ClassType(Class.Paladin) { Races = new List<Race>() { Race.Human, Race.Dwarf } });
@@ -124,6 +118,8 @@ namespace WoW_2D
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CONNECTION_REMOVE, WorldHandler.HandleConnectionRemove);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_DISCONNECT, WorldHandler.HandleDisconnect);
             PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_ONLINE, WorldHandler.HandleOnlineList);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CREATURE, WorldHandler.HandleCreature);
+            PacketRegistry.DefineHandler((byte)ServerOpcodes.Opcodes.SMSG_CREATURE_LIST, WorldHandler.HandleCreatureList);
 
             Discord = new DiscordRpcClient("572201528799264770");
             Discord.Initialize();
@@ -137,10 +133,7 @@ namespace WoW_2D
                     Utils.Global.BreakingNewsText = reader.ReadToEnd();
                     Utils.Global.ShouldDrawBreakingNews = true;
                 }
-            } catch (Exception ex)
-            {
-                Utils.Global.ShouldDrawBreakingNews = false;
-            }
+            } catch { Utils.Global.ShouldDrawBreakingNews = false; }
 
             base.Initialize();
         }
@@ -172,9 +165,15 @@ namespace WoW_2D
             if (PlayerQueue.Count > 0)
             {
                 var playerData = PlayerQueue.Dequeue();
-                var playerToAdd = new PlayerMP() { WorldData = playerData };
-                playerToAdd.Initialize(graphics.GraphicsDevice);
-                Players.Add(playerToAdd);
+                var playerToAdd = new PlayerMP() { Info = playerData };
+                playerToAdd.Initialize();
+                World.Players.Add(playerToAdd);
+            }
+
+            if (Utils.Global.FullscreenFlag == 1)
+            {
+                Utils.Global.FullscreenFlag = 0;
+                graphics.ToggleFullScreen();
             }
 
             if (Utils.Global.ShouldExit)
@@ -204,17 +203,6 @@ namespace WoW_2D
                 foreach (IGuiControl control in controlsSupportingTextInput)
                     control.OnKeyTyped(e.Key, e.Character);
             }
-        }
-
-        /// <summary>
-        /// Removes a player from the world.
-        /// </summary>
-        /// <param name="name"></param>
-        public static void RemovePlayer(string name)
-        {
-            var player = Players.Find(x => x.WorldData.Name.ToLower() == name.ToLower());
-            if (player != null)
-                Players.Remove(player);
         }
     }
 }

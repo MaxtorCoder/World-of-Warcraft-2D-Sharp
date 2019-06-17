@@ -68,7 +68,7 @@ namespace WorldServer.Network.Handlers
             }
 
             /** Send this new player to all connected players.**/
-            var onlinePlayers = MapManager.GetAllPlayers();
+            var onlinePlayers = WorldManager.GetAllPlayers();
             if (onlinePlayers.Count > 0)
             {
                 foreach (var player in onlinePlayers)
@@ -85,7 +85,7 @@ namespace WorldServer.Network.Handlers
                 WorldCharacter = worldConnection.Account.Character
             });
 
-            MapManager.AddCharacterToMap(worldConnection);
+            WorldManager.AddCharacterToMap(worldConnection);
             DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, worldConnection.Account.Character.GUID);
             MainWindow.QueueLogMessage($"{worldConnection.Account.Character.Name} has joined our world!");
         }
@@ -97,6 +97,7 @@ namespace WorldServer.Network.Handlers
             switch (packet.Type)
             {
                 case (byte)Requests.MOTD:
+                    // TODO: Fix lowercase text.
                     connection.Send(new SMSG_Chat()
                     {
                         Flag = (byte)ChatFlag.Server,
@@ -104,12 +105,16 @@ namespace WorldServer.Network.Handlers
                     });
                     break;
                 case (byte)Requests.OnlineList:
-                    var onlinePlayers = MapManager.GetAllPlayers();
+                    var onlinePlayers = WorldManager.GetAllPlayers();
                     var onlineCharacters = new List<WorldCharacter>();
                     foreach (var player in onlinePlayers)
                         if (worldConnection.Account.ID != player.Account.ID)
                             onlineCharacters.Add(player.Account.Character);
                     connection.Send(new SMSG_Online() { Characters = onlineCharacters });
+                    break;
+                case (byte)Requests.CreatureList:
+                    var creatures = WorldManager.GetMapByID(worldConnection.Account.Character.Vector.MapID).Creatures;
+                    connection.Send(new SMSG_Creature_List() { Creatures = creatures });
                     break;
             }
         }
@@ -123,7 +128,7 @@ namespace WorldServer.Network.Handlers
             worldConnection.Account.Character.Vector.Y = packet.Y;
             worldConnection.Account.Character.Vector.Direction = packet.Direction;
 
-            var onlinePlayers = MapManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
+            var onlinePlayers = WorldManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
             if (onlinePlayers.Count > 0)
             {
                 foreach (var player in onlinePlayers)
@@ -149,18 +154,27 @@ namespace WorldServer.Network.Handlers
 
             if (worldConnection.Account.Security >= AccountSecurity.Gamemaster)
                 flag = (byte)ChatFlag.GM;
-            
-            var players = MapManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
-            if (players != null)
+
+            var packetMessage = packet.Message;
+            if (packetMessage.StartsWith(MainWindow.WorldSettings.GetSection("Data").GetString("commandkey")))
             {
-                foreach (var player in players)
+                packetMessage = packetMessage.Remove(0, 1);
+                MainWindow.HandleCommandInput(worldConnection, packetMessage);
+            }
+            else
+            {
+                var players = WorldManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
+                if (players != null)
                 {
-                    player.Send(new SMSG_Chat()
+                    foreach (var player in players)
                     {
-                        Flag = flag,
-                        Sender = worldConnection.Account.Character.Name,
-                        Message = packet.Message
-                    });
+                        player.Send(new SMSG_Chat()
+                        {
+                            Flag = flag,
+                            Sender = worldConnection.Account.Character.Name,
+                            Message = packet.Message
+                        });
+                    }
                 }
             }
         }

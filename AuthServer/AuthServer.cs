@@ -7,7 +7,7 @@ using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
 using Framework.Network.Server;
 using Framework.Utils;
-using Framework.Utils.Configuration;
+using INI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -30,7 +30,7 @@ namespace AuthServer
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         private readonly string VersionStr = $"AuthServer Version v{Version}";
-        public static Settings AuthSettings;
+        public static INIFile AuthSettings;
         private TCPSocketServer tcpServer;
 
         private static List<Realm> Realmlist;
@@ -41,7 +41,7 @@ namespace AuthServer
             Logger.Write(Logger.LogType.Server, VersionStr);
             Logger.Write(Logger.LogType.Server, "Loading settings...");
 
-            AuthSettings = Settings.Instance;
+            AuthSettings = INIFile.Instance;
             AuthSettings.Load("Data/auth.ini");
 
             tcpServer = new TCPSocketServer("127.0.0.1", AuthSettings.GetSection("Network").GetInt("port"));

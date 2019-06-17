@@ -60,7 +60,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Gfx\Animation.cs" />
     <Compile Include="Gfx\ClassType.cs" />
     <Compile Include="Gfx\GfxManager.cs" />
     <Compile Include="Gfx\Gui\GuiButton.cs" />
@@ -95,16 +94,22 @@
     <Compile Include="WorldofWarcraft.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="World\ClientMap.cs" />
+    <Compile Include="World\Camera.cs" />
+    <Compile Include="World\GameObject\NPC.cs" />
+    <Compile Include="World\WoWWorld.cs" />
     <Compile Include="World\GameObject\IMob.cs" />
     <Compile Include="World\GameObject\IPlayer.cs" />
     <Compile Include="World\GameObject\Player.cs" />
     <Compile Include="World\GameObject\PlayerMP.cs" />
     <Compile Include="World\MapManager.cs" />
+    <Compile Include="World\ModelManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DiscordRPC, Version=1.0.95.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DiscordRichPresence.1.0.95\lib\net35\DiscordRPC.dll</HintPath>
+    </Reference>
+    <Reference Include="INI">
+      <HintPath>..\..\IniLib\INI\bin\Debug\INI.dll</HintPath>
     </Reference>
     <Reference Include="MonoGame.Extended, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MonoGame.Extended.1.1.0\lib\portable-net45+win8+wpa81\MonoGame.Extended.dll</HintPath>
@@ -122,8 +127,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\MonoGameHelper\MonoGameHelper\bin\Release\MonoGameHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />

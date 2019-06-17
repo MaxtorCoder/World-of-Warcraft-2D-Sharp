@@ -35,7 +35,7 @@ namespace WoW_2D.Gfx.Gui.Ui
         {
             Point mousePosition = Mouse.GetState().Position;
             isHovering = ((mousePosition.X >= Position.X && mousePosition.X <= Position.X + Width && mousePosition.Y >= Position.Y && mousePosition.Y <= Position.Y + Height) && IsEnabled) ? true : false;
-            hoverColor = !isHovering ? Color.White : WorldofWarcraft.DefaultYellow;
+            hoverColor = !isHovering ? Color.White : GfxManager.DefaultYellow;
 
             UpdatePressed();
         }

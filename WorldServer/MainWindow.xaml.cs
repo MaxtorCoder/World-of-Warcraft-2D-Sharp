@@ -1,11 +1,12 @@
 ﻿using Framework;
+using Framework.Entity;
 using Framework.Network.Connection;
 using Framework.Network.Packet;
 using Framework.Network.Packet.OpCodes;
 using Framework.Network.Packet.Server;
 using Framework.Network.Server;
 using Framework.Utils;
-using Framework.Utils.Configuration;
+using INI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -32,7 +33,7 @@ namespace WorldServer
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileMinorPart}." +
                     $"{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileBuildPart}";
         private readonly string VersionStr = $"WorldServer Version v{Version}";
-        public static Settings WorldSettings;
+        public static INIFile WorldSettings;
         private TCPSocketServer tcpServer;
         private Thread coreThread;
 
@@ -40,9 +41,10 @@ namespace WorldServer
 
         private static Queue<string> LogMessageQueue = new Queue<string>();
 
-        private readonly List<AbstractCommand> commands = new List<AbstractCommand>()
+        public static readonly List<AbstractCommand> Commands = new List<AbstractCommand>()
         {
-            new CommandAccount()
+            new CommandAccount(),
+            new CommandNPC()
         };
 
         public static List<IScript> Scripts = new List<IScript>();
@@ -60,7 +62,7 @@ namespace WorldServer
         {
             QueueLogMessage(VersionStr);
             QueueLogMessage("Loading settings...");
-            WorldSettings = Settings.Instance;
+            WorldSettings = INIFile.Instance;
             WorldSettings.Load("Data/world.ini");
 
             QueueLogMessage("Loading scripts...");
@@ -73,7 +75,6 @@ namespace WorldServer
                 var asmType = asmFile.GetType($"{fileName}.ConsoleTest");
                 Scripts.Add(Activator.CreateInstance(asmType) as IScript);
             }
-
             foreach (var script in Scripts)
                 script.OnLoaded();
 
@@ -91,8 +92,17 @@ namespace WorldServer
                 QueueLogMessage("Resetting online characters...");
                 DatabaseManager.ResetOnlineCharacters();
 
+                QueueLogMessage("Initializing creatures...");
+                CreatureManager.Initialize();
+
+                QueueLogMessage("Initializing behaviours...");
+                BehaviourManager.Initialize();
+
+                QueueLogMessage("Initializing creature behaviours...");
+                CreatureManager.InitializeBehaviours();
+
                 QueueLogMessage("Initializing map data...");
-                MapManager.Initialize();
+                WorldManager.Initialize();
 
                 QueueLogMessage($"Initialized on {tcpServer.GetLocalEP().Port}");
             }
@@ -123,7 +133,7 @@ namespace WorldServer
                 if (tcpServer.IsDisposed)
                     break;
 
-                if (MapManager.GetAllPlayers().Count > 0)
+                if (WorldManager.GetAllPlayers().Count > 0)
                 {
                     if (!saveTimer.Enabled)
                         saveTimer.Start();
@@ -152,11 +162,11 @@ namespace WorldServer
                             {
                                 DatabaseManager.UpdateOnlineCharacter(worldConnection.Account.ID, string.Empty);
                                 DatabaseManager.SaveCharacter(character);
-                                MapManager.RemoveCharacterFromMap(worldConnection);
+                                WorldManager.RemoveCharacterFromMap(worldConnection);
                                 QueueLogMessage($"{worldConnection.Account.Character.Name} has left our world!");
                             }
 
-                            var connectionsInMap = MapManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
+                            var connectionsInMap = WorldManager.GetPlayersWithinMap(worldConnection.Account.Character.Vector.MapID);
                             if (connectionsInMap.Count > 0)
                             {
                                 foreach (var c in connectionsInMap)
@@ -229,15 +239,18 @@ namespace WorldServer
                 case Key.Return:
                     if (tcpServer.IsDisposed)
                         Environment.Exit(tcpServer.ExitCode);
-
-                    foreach (var cmd in commands)
-                    {
-                        var command = _logInput.Text;
-                        if (command.StartsWith(cmd.GetPrefix()))
-                            cmd.HandleCommand(command.Split(' '));
-                    }
+                    HandleCommandInput(null, _logInput.Text);
                     ClearInput();
                     break;
+            }
+        }
+
+        public static void HandleCommandInput(IConnection connection, string cmdIn)
+        {
+            foreach (var cmd in Commands)
+            {
+                if (cmdIn.StartsWith(cmd.GetPrefix()))
+                    cmd.HandleCommand(connection, cmdIn.Split(' '));
             }
         }
 
@@ -245,12 +258,12 @@ namespace WorldServer
         {
             QueueLogMessage("Saving players...");
 
-            var players = MapManager.GetAllPlayers();
+            var players = WorldManager.GetAllPlayers();
             foreach (var wCharacter in players)
                 DatabaseManager.SaveCharacter(wCharacter.Account.Character);
         }
 
-        public static void QueueLogMessage(string message) => LogMessageQueue.Enqueue($"→ {message} {Environment.NewLine}");
+        public static void QueueLogMessage(string message) => LogMessageQueue.Enqueue($":: {message} {Environment.NewLine}");
         private void AppendToLog(string message)
         {
             Dispatcher.Invoke(() =>

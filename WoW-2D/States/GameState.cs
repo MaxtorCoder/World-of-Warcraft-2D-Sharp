@@ -15,6 +15,7 @@ using WoW_2D.Gfx;
 using WoW_2D.Gfx.Gui;
 using WoW_2D.Gfx.Gui.Ui;
 using WoW_2D.Network;
+using WoW_2D.Utils;
 
 namespace WoW_2D.States
 {
@@ -35,17 +36,13 @@ namespace WoW_2D.States
             escapeMenu = new EscapeMenuUI(graphics);
             chatUi = new ChatUI(graphics);
             hotbar = new HotbarUI(graphics);
-            localFrame = new UnitFrameUI(graphics)
-            {
-                UnitDisplay = new RectangleF(new Point2(2f, 2f), new Size2(42f, 42f))
-            };
-            localFrame.HealthBar = new RectangleF(new Point2(localFrame.UnitDisplay.X + localFrame.UnitDisplay.Width + 4f, localFrame.UnitDisplay.Y + GfxManager.GetFont("small_font").LineHeight), new Size2(100f, 12f));
-            localFrame.PowerBar = new RectangleF(new Point2(localFrame.HealthBar.X, localFrame.HealthBar.Y + 12f), localFrame.HealthBar.Size);
+            localFrame = new UnitFrameUI(graphics, false);
 
             Controls.Add(chatUi.TextField);
 
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEscapePressed(); }, Keys.Escape);
             InputHandler.AddKeyPressHandler(ID, delegate () { OnEnterPressed(); }, Keys.Enter);
+            InputHandler.AddKeyPressHandler(ID, delegate () { OnTabPress(); }, Keys.Tab);
         }
 
         public override void LoadContent(ContentManager content)
@@ -61,56 +58,25 @@ namespace WoW_2D.States
 
         public override void Update(GameTime gameTime)
         {
-            WorldofWarcraft.Map.Update(gameTime);
-
+            WorldofWarcraft.World.Update(gameTime);
             escapeMenu.Update();
             chatUi.Update();
             localFrame.Update();
-
-            // TODO: Make this useful.
-            if (NetworkManager.State == NetworkManager.NetworkState.Disconnected)
-            {
-                chatUi.ClearChats();
-                WorldofWarcraft.Players.Clear();
-                GameStateManager.EnterState(1);
-            }
         }
 
         public override void Draw(GameTime gameTime)
         {
-            WorldofWarcraft.Map.Draw(spriteBatch, gameTime);
+            graphics.Clear(Color.Black);
 
-            spriteBatch.Begin();
-            if (WorldofWarcraft.ClientSettings.GetSection("Interface").GetBool("players"))
-                DrawPlayerNames(spriteBatch);
-            spriteBatch.End();
-
+            WorldofWarcraft.World.Draw(spriteBatch, gameTime);
             escapeMenu.Draw(spriteBatch);
             chatUi.Draw(spriteBatch);
             hotbar.Draw(spriteBatch);
             localFrame.Draw(spriteBatch);
         }
 
-        private void DrawPlayerNames(SpriteBatch spriteBatch)
-        {
-            for (int i = 0; i < WorldofWarcraft.Players.Count; i++)
-            {
-                var player = WorldofWarcraft.Players[i];
-                var playerBoundingBox = player.BoundingBox;
-
-                if (WorldofWarcraft.Map.Player.GetCamera().BoundingRectangle.Contains(playerBoundingBox.Position))
-                {
-                    var translatedBoundPosition = WorldofWarcraft.Map.Player.GetCamera().WorldToScreen(playerBoundingBox.X, playerBoundingBox.Y);
-
-                    spriteBatch.DrawString(GfxManager.GetFont("small_font"), player.WorldData.Name,
-                new Vector2(translatedBoundPosition.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2 + 1f, translatedBoundPosition.Y - GfxManager.GetFont("small_font").LineHeight + 1f), Color.Black, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                    spriteBatch.DrawString(GfxManager.GetFont("small_font"), player.WorldData.Name,
-                        new Vector2(translatedBoundPosition.X + 16f - GfxManager.GetFont("small_font").MeasureString(WorldofWarcraft.Map.Player.WorldData.Name).Width / 2, translatedBoundPosition.Y - GfxManager.GetFont("small_font").LineHeight), WorldofWarcraft.DefaultYellow, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
-                }
-            }
-        }
-
         private void OnEscapePressed() => escapeMenu.Activator();
         private void OnEnterPressed() => chatUi.OnEnterPressed();
+        private void OnTabPress() => Global.FullscreenFlag = 1;
     }
 }

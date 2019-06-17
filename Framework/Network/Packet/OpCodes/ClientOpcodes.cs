@@ -26,6 +26,7 @@ namespace Framework.Network.Packet.OpCodes
     public enum Requests
     {
         MOTD                    =           0x01,
-        OnlineList              =           0x02
+        OnlineList              =           0x02,
+        CreatureList            =           0x03
     }
 }

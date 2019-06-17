@@ -85,7 +85,7 @@ namespace WoW_2D.Gfx.Gui.Ui
             {
                 spriteBatch.Begin();
                 spriteBatch.DrawString(font, "Options", new Vector2(menuBox.X + (menuBox.Width / 2), menuBox.Y - font.LineHeight / 2), Color.Black, 0f, new Vector2(font.MeasureString("Options").Width / 2, font.MeasureString("Options").Height / 2), 1f, SpriteEffects.None, 0f);
-                spriteBatch.DrawString(font, "Options", new Vector2(menuBox.X + (menuBox.Width / 2) + 1, menuBox.Y - font.LineHeight / 2 + 1), WorldofWarcraft.DefaultYellow, 0f, new Vector2(font.MeasureString("Options").Width / 2, font.MeasureString("Options").Height / 2), 1f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(font, "Options", new Vector2(menuBox.X + (menuBox.Width / 2) + 1, menuBox.Y - font.LineHeight / 2 + 1), GfxManager.DefaultYellow, 0f, new Vector2(font.MeasureString("Options").Width / 2, font.MeasureString("Options").Height / 2), 1f, SpriteEffects.None, 0f);
                 spriteBatch.End();
 
                 spriteBatch.Begin(blendState: BlendState.NonPremultiplied);

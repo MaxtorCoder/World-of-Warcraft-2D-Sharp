@@ -22,6 +22,8 @@ namespace Framework.Network.Packet.OpCodes
             SMSG_WORLD_ENTER                =          0x06,
             SMSG_CHAT                       =          0x07,
             SMSG_ONLINE                     =          0x08,
+            SMSG_CREATURE                   =          0x09,
+            SMSG_CREATURE_LIST              =          0x11,
             SMSG_CONNECTION_ADD             =          0xFA,
             SMSG_CONNECTION_REMOVE          =          0xFB,
             SMSG_CONNECTION_MOVE            =          0xFC,

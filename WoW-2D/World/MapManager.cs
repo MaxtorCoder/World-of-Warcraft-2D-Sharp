@@ -23,20 +23,15 @@ namespace WoW_2D.World
         {
             string mapDirectory = string.Empty;
 
-            foreach (var entry in Maps)
+            foreach (var keyValues in Maps)
             {
-                if (entry.Key == WorldofWarcraft.Character.Vector.MapID)
-                    mapDirectory = entry.Value;
+                if (keyValues.Key == WorldofWarcraft.World.Player.Info.Vector.MapID)
+                    mapDirectory = keyValues.Value;
             }
 
             if (mapDirectory != string.Empty)
             {
-                if (WorldofWarcraft.Map == null) 
-                    WorldofWarcraft.Map = new ClientMap()
-                    {
-                        ZoneMap = content.Load<TiledMap>(mapDirectory),
-                        Player = new Player()
-                    };
+                WorldofWarcraft.World.ZoneMap = content.Load<TiledMap>(mapDirectory);
             }
         }
     }

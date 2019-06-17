@@ -19,7 +19,17 @@ namespace WoW_2D.World.GameObject
     /// </summary>
     public abstract class IPlayer : IMob
     {
-        public WorldCharacter WorldData;
+        public WorldCharacter Info { get; set; }
         public bool IsMovingUp, IsMovingDown, IsMovingLeft, IsMovingRight;
+
+        public override void Initialize()
+        {
+            switch (Info.Race)
+            {
+                case Race.Human:
+                    Model = ModelManager.GetModel(m => m.Name == "model_human");
+                    break;
+            }
+        }
     }
 }

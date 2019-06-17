@@ -232,7 +232,6 @@ namespace WoW_2D.States
 
         private void UpdateClassTypes(Point mousePos)
         {
-            // TODO: Handle class selecting.
             var race = GetSelectedRace();
             for (int i = 0; i < race.Classes.Count; i++)
             {
@@ -252,7 +251,7 @@ namespace WoW_2D.States
             acceptButton.Draw(spriteBatch);
             backButton.Draw(spriteBatch);
             randomizeButton.Draw(spriteBatch);
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Name", new Vector2(nameText.Position.X + (nameText.Width / 2 - GfxManager.GetFont("main_font").MeasureString("Name").Width / 2), nameText.Position.Y - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Name", new Vector2(nameText.Position.X + (nameText.Width / 2 - GfxManager.GetFont("main_font").MeasureString("Name").Width / 2), nameText.Position.Y - GfxManager.GetFont("main_font").LineHeight), GfxManager.DefaultYellow);
             spriteBatch.End();
 
             spriteBatch.Begin(blendState: BlendState.NonPremultiplied);
@@ -262,8 +261,8 @@ namespace WoW_2D.States
             spriteBatch.End();
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Alliance", new Vector2(allyBanner_Position.X + (GfxManager.GetTexture("ally_banner").Width / 2 - GfxManager.GetFont("main_font").MeasureString("Alliance").Width / 2), allyBanner_Position.Y - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow);
-            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Horde", new Vector2(hordeBanner_Position.X + (GfxManager.GetTexture("horde_banner").Width / 2 - GfxManager.GetFont("main_font").MeasureString("Horde").Width / 2), hordeBanner_Position.Y - GfxManager.GetFont("main_font").LineHeight), WorldofWarcraft.DefaultYellow);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Alliance", new Vector2(allyBanner_Position.X + (GfxManager.GetTexture("ally_banner").Width / 2 - GfxManager.GetFont("main_font").MeasureString("Alliance").Width / 2), allyBanner_Position.Y - GfxManager.GetFont("main_font").LineHeight), GfxManager.DefaultYellow);
+            spriteBatch.DrawString(GfxManager.GetFont("main_font"), "Horde", new Vector2(hordeBanner_Position.X + (GfxManager.GetTexture("horde_banner").Width / 2 - GfxManager.GetFont("main_font").MeasureString("Horde").Width / 2), hordeBanner_Position.Y - GfxManager.GetFont("main_font").LineHeight), GfxManager.DefaultYellow);
             spriteBatch.Draw(GfxManager.GetTexture("ally_banner"), allyBanner_Position, Color.White);
             spriteBatch.Draw(GfxManager.GetTexture("horde_banner"), hordeBanner_Position, Color.White);
 
