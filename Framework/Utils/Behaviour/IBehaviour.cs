@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Framework.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,9 @@ namespace Framework.Utils.Behaviour
         {
             BehaviourType = _behaviourType;
         }
+
+        public abstract void Start();
+        public abstract void Update(ServerCreature creature);
 
         public IBehaviour Clone()
         {

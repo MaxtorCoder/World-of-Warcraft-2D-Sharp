@@ -6,11 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 using TiledSharp;
-using WorldServer.Network;
 
-namespace WorldServer.World
+namespace Framework.Utils
 {
     /// <summary>
     /// Manages general map data.

@@ -19,7 +19,6 @@ using System.Windows.Input;
 using WorldServer.Command;
 using WorldServer.Network;
 using WorldServer.Network.Handlers;
-using WorldServer.World;
 
 namespace WorldServer
 {

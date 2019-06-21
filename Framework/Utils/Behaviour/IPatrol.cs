@@ -9,7 +9,7 @@ namespace Framework.Utils.Behaviour
     /// <summary>
     /// The base for patrol behaviours.
     /// </summary>
-    public class IPatrol : IBehaviour
+    public abstract class IPatrol : IBehaviour
     {
         public enum PatrolTypes
         {

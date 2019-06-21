@@ -26,8 +26,9 @@ namespace WoW_2D.World
         public Player Player { get; set; } = null;
         public List<PlayerMP> Players = new List<PlayerMP>();
         public List<NPC> Creatures = new List<NPC>();
-        public bool HasInitialized { get; set; } = false;
         public Camera Camera = null;
+
+        public bool HasInitialized { get; set; } = false;
 
         private TiledMapRenderer mapRenderer;
 

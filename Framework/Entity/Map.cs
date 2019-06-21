@@ -59,11 +59,15 @@ namespace Framework.Entity
                 }
             }
 
-            _thread = new Thread(new ThreadStart(this.UpdateCreatures));
+            foreach (var creature in Creatures)
+                foreach (var behaviour in creature.Behaviours)
+                    behaviour.Start();
+
+            _thread = new Thread(new ThreadStart(UpdateCreatures));
             _thread.Start();
         }
 
-        public void UpdateCreatures()
+        private void UpdateCreatures()
         {
             while (true)
             {
@@ -71,7 +75,7 @@ namespace Framework.Entity
                 {
                     foreach (var creature in Creatures)
                     {
-
+                        creature.UpdateBehaviours();
                     }
                 }
             }

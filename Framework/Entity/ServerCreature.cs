@@ -23,6 +23,12 @@ namespace Framework.Entity
         public int[] BehaviourIDs;
         public List<IBehaviour> Behaviours;
 
+        public void UpdateBehaviours()
+        {
+            foreach (var b in Behaviours)
+                b.Update(this);
+        }
+
         public ServerCreature Clone()
         {
             return (ServerCreature)MemberwiseClone();

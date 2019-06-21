@@ -262,6 +262,7 @@
     <Compile Include="Utils\ExitCode.cs" />
     <Compile Include="Utils\Global.cs" />
     <Compile Include="Utils\Logger.cs" />
+    <Compile Include="Utils\WorldManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

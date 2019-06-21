@@ -29,5 +29,15 @@ namespace Framework.Entity
         public float X { get; set; }
         public float Y { get; set; }
         public MoveDirection Direction { get; set; }
+
+        public override string ToString()
+        {
+            return $"" +
+                $"Map: {MapID}," +
+                $"Cell: {CellID}," +
+                $"X: {X}," +
+                $"Y: {Y}," +
+                $"Direction: {Direction}";
+        }
     }
 }
