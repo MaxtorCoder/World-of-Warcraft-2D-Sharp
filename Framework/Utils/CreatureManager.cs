@@ -13,7 +13,7 @@ namespace Framework.Utils
     /// </summary>
     public class CreatureManager
     {
-        private static List<WorldCreature> CreaturesDB;
+        private static List<ServerCreature> CreaturesDB;
 
         public static void Initialize()
         {
@@ -26,14 +26,14 @@ namespace Framework.Utils
             {
                 foreach (int id in creature.BehaviourIDs)
                 {
-                    creature.Behaviours.Add(BehaviourManager.GetBehaviour(id)?.Clone());
+                    creature.Behaviours.Add(BehaviourManager.GetBehaviour(id));
                 }
             }
         }
 
-        public static WorldCreature GetCreatureWithEntryID(int id)
+        public static ServerCreature GetCreatureWithEntryID(int id)
         {
-            WorldCreature creatureCopy = null;
+            ServerCreature creatureCopy = null;
             foreach (var creature in CreaturesDB)
             {
                 if (creature.ID == id)
@@ -49,10 +49,10 @@ namespace Framework.Utils
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static List<WorldCreature> GetListOfID(int id)
+        public static List<ServerCreature> GetListOfID(int id)
         {
-            int count = 3;
-            var creatures = new List<WorldCreature>();
+            int count = 2;
+            var creatures = new List<ServerCreature>();
 
             for (int i = 0; i < count; i++)
             {

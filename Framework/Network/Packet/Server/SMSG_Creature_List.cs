@@ -15,7 +15,7 @@ namespace Framework.Network.Packet.Server
     /// </summary>
     public class SMSG_Creature_List : IPacket
     {
-        public List<WorldCreature> Creatures;
+        public List<ClientCreature> Creatures;
 
         public SMSG_Creature_List() : base((byte)ServerOpcodes.Opcodes.SMSG_CREATURE_LIST) { }
 
@@ -42,7 +42,7 @@ namespace Framework.Network.Packet.Server
                 using (var reader = new BinaryReader(memStr))
                 {
                     reader.ReadByte();
-                    obj.Creatures = (List<WorldCreature>)formatter.Deserialize(memStr);
+                    obj.Creatures = (List<ClientCreature>)formatter.Deserialize(memStr);
                 }
             }
             return obj;

@@ -19,7 +19,6 @@ namespace WorldServer.World
     {
         private static List<Map> _maps = new List<Map>();
         private const string _mapDirectory = "Data/Maps";
-        private static Timer _worldTimer;
 
         public static void Initialize()
         {
@@ -36,18 +35,6 @@ namespace WorldServer.World
 
                 _maps.Add(map);
             }
-
-            _worldTimer = new Timer();
-            _worldTimer.Elapsed += OnUpdateWorld;
-            _worldTimer.Interval = 1;
-            _worldTimer.Enabled = true;
-        }
-
-        private static void OnUpdateWorld(object sender, ElapsedEventArgs e)
-        {
-            foreach (var map in _maps)
-                if (map.Characters.Count > 0)
-                    map.Update();
         }
 
         public static void AddCharacterToMap(WorldConnection connection)

@@ -39,11 +39,13 @@ namespace WorldServer.Command
                 };
                 WorldManager.GetMapByID(worldConnection.Account.Character.Vector.MapID).Creatures.Add(creature);
 
+                /** TODO: Fix .npc add command.
                 connection.Send(new SMSG_Creature()
                 {
                     Creature = creature,
                     State = SMSG_Creature.CreatureState.Add
                 });
+                **/
             }
         }
 

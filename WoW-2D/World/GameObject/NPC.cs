@@ -15,17 +15,24 @@ namespace WoW_2D.World.GameObject
     /// </summary>
     public class NPC : IMob
     {
-        public WorldCreature Info { get; set; }
+        public string GUID { get; set; }
+        public int ID { get; set; }
+        public int ModelID { get; set; }
+        public string Name { get; set; }
+        public string SubName { get; set; }
+        public Stats Stats { get; set; }
+        public Vector Vector { get; set; }
+        public bool IsMoving;
 
         public override void Initialize()
         {
-            Model = ModelManager.GetModel(m => m.ID == Info.ModelID);
+            Model = ModelManager.GetModel(m => m.ID == ModelID);
             Model.Animations[0].IsActive = true;
         }
 
         public override void Update(GameTime gameTime)
         {
-            switch (Info.Vector.Direction)
+            switch (Vector.Direction)
             {
                 case MoveDirection.East:
                     SetAnimation(x => x.Name == "east_anim");
@@ -50,9 +57,9 @@ namespace WoW_2D.World.GameObject
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            bool idle = (!Info.IsMoving) ? true : false;
+            bool idle = (!IsMoving) ? true : false;
             SetAnimationIdle(idle);
-            GetAnimation().Draw(spriteBatch, new Vector2(Info.Vector.X, Info.Vector.Y));
+            GetAnimation().Draw(spriteBatch, new Vector2(Vector.X, Vector.Y));
         }
     }
 }

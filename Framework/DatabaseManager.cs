@@ -208,9 +208,9 @@ namespace Framework
         /// <param name="connection"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        private static async Task<List<WorldCreature>> ExecuteCreatureReader(MySqlConnection connection, MySqlCommand command)
+        private static async Task<List<ServerCreature>> ExecuteCreatureReader(MySqlConnection connection, MySqlCommand command)
         {
-            var creatures = new List<WorldCreature>();
+            var creatures = new List<ServerCreature>();
 
             try
             {
@@ -218,7 +218,7 @@ namespace Framework
                 var reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    var creature = new WorldCreature()
+                    var creature = new ServerCreature()
                     {
                         GUID = string.Empty,
                         ID = reader.GetInt32(0),
@@ -425,9 +425,9 @@ namespace Framework
         /// Fetch all creatures.
         /// </summary>
         /// <returns></returns>
-        public static List<WorldCreature> FetchCreatures()
+        public static List<ServerCreature> FetchCreatures()
         {
-            var creatures = new List<WorldCreature>();
+            var creatures = new List<ServerCreature>();
             var query = "SELECT * FROM creature";
 
             using (var connection = new MySqlConnection(WorldConnectionStr))

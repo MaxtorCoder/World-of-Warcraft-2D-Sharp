@@ -22,7 +22,7 @@ namespace Framework.Network.Packet.Server
             MoveStop = 0x02,
         }
 
-        public WorldCreature Creature;
+        public ClientCreature Creature;
         public CreatureState State;
 
         public SMSG_Creature() : base((byte)ServerOpcodes.Opcodes.SMSG_CREATURE) { }
@@ -36,7 +36,17 @@ namespace Framework.Network.Packet.Server
                 {
                     writer.Write(_opcode);
                     writer.Write((byte)State);
-                    formatter.Serialize(memStr, Creature);
+                    switch (State)
+                    {
+                        case CreatureState.Add:
+                            formatter.Serialize(memStr, Creature);
+                            break;
+                        case CreatureState.Move:
+                        case CreatureState.MoveStop:
+                            writer.Write(Creature.GUID);
+                            formatter.Serialize(memStr, Creature.Vector);
+                            break;
+                    }
                 }
                 return memStr.ToArray();
             }
@@ -52,7 +62,23 @@ namespace Framework.Network.Packet.Server
                 {
                     reader.ReadByte();
                     obj.State = (CreatureState)reader.ReadByte();
-                    obj.Creature = (WorldCreature)formatter.Deserialize(memStr);
+                    switch (obj.State)
+                    {
+                        case CreatureState.Add:
+                            obj.Creature = (ClientCreature)formatter.Deserialize(memStr);
+                            break;
+                        case CreatureState.Move:
+                        case CreatureState.MoveStop:
+                            var guid = reader.ReadString();
+                            var vector = (Vector)formatter.Deserialize(memStr);
+
+                            obj.Creature = new ClientCreature()
+                            {
+                                GUID = guid,
+                                Vector = vector
+                            };
+                            break;
+                    }
                 }
             }
             return obj;

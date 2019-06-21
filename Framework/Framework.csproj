@@ -208,6 +208,7 @@
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="Entity\ChatFlag.cs" />
     <Compile Include="Entity\Class.cs" />
+    <Compile Include="Entity\ClientCreature.cs" />
     <Compile Include="Entity\Map.cs" />
     <Compile Include="Entity\Race.cs" />
     <Compile Include="Entity\Realm.cs" />
@@ -215,7 +216,7 @@
     <Compile Include="Entity\Stats.cs" />
     <Compile Include="Entity\Vector.cs" />
     <Compile Include="Entity\WorldCharacter.cs" />
-    <Compile Include="Entity\WorldCreature.cs" />
+    <Compile Include="Entity\ServerCreature.cs" />
     <Compile Include="IScript.cs" />
     <Compile Include="Network\Connection\IConnection.cs" />
     <Compile Include="Network\Connection\WorldConnection.cs" />

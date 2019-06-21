@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TiledSharp;
 
@@ -20,7 +21,9 @@ namespace Framework.Entity
 
         public TmxObjectGroup Spawns { get; set; }
         public List<IConnection> Characters = new List<IConnection>();
-        public List<WorldCreature> Creatures = new List<WorldCreature>();
+        public List<ServerCreature> Creatures = new List<ServerCreature>();
+
+        private Thread _thread;
 
         public void Initialize()
         {
@@ -55,10 +58,23 @@ namespace Framework.Entity
                     }
                 }
             }
+
+            _thread = new Thread(new ThreadStart(this.UpdateCreatures));
+            _thread.Start();
         }
 
-        public void Update()
+        public void UpdateCreatures()
         {
+            while (true)
+            {
+                if (Characters.Count > 0)
+                {
+                    foreach (var creature in Creatures)
+                    {
+
+                    }
+                }
+            }
         }
     }
 }

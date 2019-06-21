@@ -10,8 +10,7 @@ namespace Framework.Entity
     /// <summary>
     /// Holds data about a creature in the world; Strictly used for data-transmission.
     /// </summary>
-    [Serializable]
-    public class WorldCreature
+    public class ServerCreature
     {
         public string GUID { get; set; }
         public int ID { get; set; }
@@ -21,18 +20,12 @@ namespace Framework.Entity
         public Stats Stats { get; set; }
         public Vector Vector { get; set; }
 
-        [NonSerialized]
-        public bool IsMoving;
-
-        [NonSerialized]
         public int[] BehaviourIDs;
-
-        [NonSerialized]
         public List<IBehaviour> Behaviours;
 
-        public WorldCreature Clone()
+        public ServerCreature Clone()
         {
-            return (WorldCreature)MemberwiseClone();
+            return (ServerCreature)MemberwiseClone();
         }
     }
 }

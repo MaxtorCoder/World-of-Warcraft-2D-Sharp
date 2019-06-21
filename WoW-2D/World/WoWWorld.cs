@@ -127,30 +127,39 @@ namespace WoW_2D.World
                 Players.Remove(player);
         }
 
-        public void UpdateCreature(WorldCreature creature, CreatureState state)
+        public void UpdateCreature(ClientCreature creature, CreatureState state)
         {
             NPC npc = null;
             switch (state)
             {
                 case CreatureState.Add:
-                    var newNpc = new NPC() { Info = creature };
+                    var newNpc = new NPC()
+                    {
+                        GUID = creature.GUID,
+                        ID = creature.ID,
+                        ModelID = creature.ModelID,
+                        Name = creature.Name,
+                        SubName = creature.SubName,
+                        Stats = creature.Stats,
+                        Vector = creature.Vector
+                    };
                     newNpc.Initialize();
                     Creatures.Add(newNpc);
                     break;
                 case CreatureState.Move:
-                    npc = Creatures.Find(c => c.Info.GUID == creature.GUID);
+                    npc = Creatures.Find(c => c.GUID == creature.GUID);
                     if (npc != null)
                     {
-                        creature.IsMoving = true;
-                        npc.Info = creature;
+                        npc.IsMoving = true;
+                        npc.Vector = creature.Vector;
                     }
                     break;
                 case CreatureState.MoveStop:
-                    npc = Creatures.Find(c => c.Info.GUID == creature.GUID);
+                    npc = Creatures.Find(c => c.GUID == creature.GUID);
                     if (npc != null)
                     {
-                        creature.IsMoving = false;
-                        npc.Info = creature;
+                        npc.IsMoving = false;
+                        npc.Vector = creature.Vector;
                     }
                     break;
             }

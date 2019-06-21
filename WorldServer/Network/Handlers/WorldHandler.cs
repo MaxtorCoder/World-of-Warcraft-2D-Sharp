@@ -114,7 +114,21 @@ namespace WorldServer.Network.Handlers
                     break;
                 case (byte)Requests.CreatureList:
                     var creatures = WorldManager.GetMapByID(worldConnection.Account.Character.Vector.MapID).Creatures;
-                    connection.Send(new SMSG_Creature_List() { Creatures = creatures });
+                    var clientCreatures = new List<ClientCreature>();
+                    foreach (var c in creatures)
+                    {
+                        clientCreatures.Add(new ClientCreature()
+                        {
+                            GUID = c.GUID,
+                            ID = c.ID,
+                            ModelID = c.ModelID,
+                            Name = c.Name,
+                            SubName = c.SubName,
+                            Stats = c.Stats,
+                            Vector = c.Vector
+                        });
+                    }
+                    connection.Send(new SMSG_Creature_List() { Creatures = clientCreatures });
                     break;
             }
         }
