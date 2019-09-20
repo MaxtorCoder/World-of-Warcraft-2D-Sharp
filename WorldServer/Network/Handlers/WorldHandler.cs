@@ -4,7 +4,7 @@ using Framework.Network;
 using Framework.Network.Connection;
 using Framework.Network.Entity;
 using Framework.Network.Packet.Client;
-using Framework.Network.Packet.OpCodes;
+using Framework.Network.Packet.Opcodes;
 using Framework.Network.Packet.Server;
 using Framework.Utils;
 using System;

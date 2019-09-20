@@ -1,4 +1,4 @@
-﻿using Framework.Network.Packet.OpCodes;
+﻿using Framework.Network.Packet.Opcodes;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Framework.Network.Packet.OpCodes
+namespace Framework.Network.Packet.Opcodes
 {
     /// <summary>
     /// The server opcodes and their responses.

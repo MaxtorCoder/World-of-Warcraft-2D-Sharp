@@ -1,6 +1,6 @@
 ﻿using Framework.Entity;
 using Framework.Network.Packet.Client;
-using Framework.Network.Packet.OpCodes;
+using Framework.Network.Packet.Opcodes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;

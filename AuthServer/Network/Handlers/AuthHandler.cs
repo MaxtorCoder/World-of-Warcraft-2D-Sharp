@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Framework.Network.Packet.OpCodes;
+using Framework.Network.Packet.Opcodes;
 
 namespace AuthServer.Network.Handlers
 {

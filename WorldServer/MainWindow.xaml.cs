@@ -2,7 +2,7 @@
 using Framework.Entity;
 using Framework.Network.Connection;
 using Framework.Network.Packet;
-using Framework.Network.Packet.OpCodes;
+using Framework.Network.Packet.Opcodes;
 using Framework.Network.Packet.Server;
 using Framework.Network.Server;
 using Framework.Utils;

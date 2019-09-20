@@ -1,7 +1,7 @@
 ﻿using DiscordRPC;
 using Framework.Entity;
 using Framework.Network.Packet;
-using Framework.Network.Packet.OpCodes;
+using Framework.Network.Packet.Opcodes;
 using Framework.Utils;
 using INI;
 using Microsoft.Xna.Framework;
